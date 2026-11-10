@@ -1,0 +1,9 @@
+{
+  "name": "IE Team Management",
+  "short_name": "IE Team",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [{ "src": "https://images.icon-icons.com/1713/PNG/512/iconfinder-viralvideobombhotnewproduct-3993850_112641.png", "sizes": "512x512", "type": "image/png" }]
+}

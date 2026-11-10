@@ -1,0 +1,15 @@
+{
+  "name": "ie-team-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IE Team Task & Project Tracking (static web app + Supabase)",
+  "scripts": {
+    "build:css": "node tools/build-css.mjs",
+    "users": "python tools/excel_to_users.py User_Team_Access.xlsx",
+    "start": "npx --yes serve -l 5500 ."
+  },
+  "devDependencies": {
+    "postcss": "^8.4.0",
+    "tailwindcss": "^4.1.0"
+  }
+}
