@@ -1,18 +1,22 @@
 (function(){
 'use strict';
 /* =====================================================================
-   HARDCODED USER LIST  (source: User_Team_Access.xlsx)
-   - To add / change / remove a user: edit HARDCODED_USER_ROWS below.
-   - Role: 'App Admin' | 'Team Admin' | 'Member'
-   - Same Member name on several rows = ONE account with several team access.
-     The FIRST row of that name is the Main team. Logging in with the password
-     of a row opens the app in that row's team.
-   - Tables users / user_team_roles / teams are NO LONGER read from or written to
-     the database. Tasks, projects, time off... still use Supabase as before.
+   HARDCODED USERS + SINGLE LOGIN + TEAM-ADMIN VIEW OTHER TEAMS
+   - User list: js/data/users.js (window.HARDCODED_USER_ROWS)
+   - Tables users / user_team_roles / teams are NOT read from / written to
+     the database. Tasks, projects, time off... still use Supabase.
+   - Only one login type: user + password (Viewer login removed).
+   - App Admin  : team dropdown = all teams, full rights (unchanged).
+   - Team Admin : team dropdown = all teams.
+                  Own teams -> normal rights. Other teams -> view only.
+   - Member     : unchanged (own team; switch between own teams if >1).
    ===================================================================== */
 const HARDCODED_USER_ROWS = Array.isArray(window.HARDCODED_USER_ROWS) ? window.HARDCODED_USER_ROWS : []; // data: js/data/users.js
+window.HARDCODED_USER_ROWS = HARDCODED_USER_ROWS;
 const N = v => String(v ?? '').trim().toLowerCase().replace(/\s+/g,' ');
-const toRole = r => N(r)==='app admin' ? 'Admin' : (N(r)==='team admin' ? 'Team Admin' : (N(r)==='viewer' ? 'Viewer' : 'Member'));
+const ESC = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toRole = r => N(r)==='app admin' ? 'Admin' : (N(r)==='team admin' ? 'Team Admin' : 'Member');
+
 /* ---------- build users / user_team_roles / teams rows ---------- */
 const HC = { users: [], roles: [], teams: [] };
 (function build(){
@@ -34,25 +38,24 @@ const HC = { users: [], roles: [], teams: [] };
   const teams = [...new Set(HARDCODED_USER_ROWS.map(r => String(r.team).trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   HC.teams = teams.map((t,i) => ({ id: i + 1, code: t, name: t, status: 'Active' }));
 })();
-window.HARDCODED_USER_ROWS = HARDCODED_USER_ROWS;
 window.HARDCODED_USERS = HC;
+
 /* ---------- fake query builder for the hardcoded tables ---------- */
 const HC_TABLES = new Set(['users','user_team_roles','teams']);
-const READ_ONLY_MSG = 'User data is hardcoded in index.html (HARDCODED_USER_ROWS). Edit the code to add or change users.';
-const val = (r,c) => r[c];
+const READ_ONLY_MSG = 'User data is hardcoded in js/data/users.js. Edit that file to add or change users.';
 class HCQuery{
   constructor(table){ this.t = table; this.f = []; this.op = 'select'; this.ord = []; this.rng = null; this.lim = null; this.sing = false; this.maybe = false; }
   select(){ return this; }
   insert(){ this.op = 'write'; return this; } update(){ this.op = 'write'; return this; }
   upsert(){ this.op = 'write'; return this; } delete(){ this.op = 'write'; return this; }
-  eq(c,v){ this.f.push(r => String(val(r,c) ?? '') === String(v ?? '')); return this; }
-  neq(c,v){ this.f.push(r => String(val(r,c) ?? '') !== String(v ?? '')); return this; }
-  in(c,a){ const s = new Set((a||[]).map(String)); this.f.push(r => s.has(String(val(r,c)))); return this; }
-  is(c,v){ this.f.push(r => v === null ? val(r,c) == null : val(r,c) === v); return this; }
-  not(c,op,v){ if(op === 'is' && v === null) this.f.push(r => val(r,c) != null); return this; }
-  gte(c,v){ this.f.push(r => String(val(r,c)) >= String(v)); return this; }
-  lte(c,v){ this.f.push(r => String(val(r,c)) <= String(v)); return this; }
-  ilike(c,p){ const re = new RegExp('^' + String(p).replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/%/g,'.*') + '$','i'); this.f.push(r => re.test(String(val(r,c) ?? ''))); return this; }
+  eq(c,v){ this.f.push(r => String(r[c] ?? '') === String(v ?? '')); return this; }
+  neq(c,v){ this.f.push(r => String(r[c] ?? '') !== String(v ?? '')); return this; }
+  in(c,a){ const s = new Set((a||[]).map(String)); this.f.push(r => s.has(String(r[c]))); return this; }
+  is(c,v){ this.f.push(r => v === null ? r[c] == null : r[c] === v); return this; }
+  not(c,op,v){ if(op === 'is' && v === null) this.f.push(r => r[c] != null); return this; }
+  gte(c,v){ this.f.push(r => String(r[c]) >= String(v)); return this; }
+  lte(c,v){ this.f.push(r => String(r[c]) <= String(v)); return this; }
+  ilike(c,p){ const re = new RegExp('^' + String(p).replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/%/g,'.*') + '$','i'); this.f.push(r => re.test(String(r[c] ?? ''))); return this; }
   or(){ return this; } match(o){ Object.entries(o||{}).forEach(([c,v]) => this.eq(c,v)); return this; }
   order(c,o){ this.ord.push([c, !(o && o.ascending === false)]); return this; }
   range(a,b){ this.rng = [a,b]; return this; } limit(n){ this.lim = n; return this; }
@@ -80,7 +83,19 @@ try{ patchClient(supabaseClient); }catch(_){}
 const prevInit = initSupabaseClient;
 initSupabaseClient = function(){ const c = prevInit.apply(this, arguments); try{ patchClient(c); patchClient(supabaseClient); }catch(_){} return c; };
 window.initSupabaseClient = initSupabaseClient;
-/* ---------- login: credentials checked against the hardcoded list ---------- */
+
+/* ---------- single login type: user + password ---------- */
+const prevSetLoginMode = setLoginMode;
+setLoginMode = function(){ try{ prevSetLoginMode('member'); }catch(_){} };
+window.setLoginMode = setLoginMode;
+function prepareLoginForm(){
+  setLoginMode('member');
+  const u = document.getElementById('loginUsername'); if(u) u.placeholder = 'Enter user name';
+  const t = document.getElementById('loginTeam'); if(t){ t.required = false; t.disabled = true; }
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepareLoginForm, { once:true });
+else prepareLoginForm();
+
 handleLogin = async function(e){
   e.preventDefault();
   const errDiv = document.getElementById('loginError');
@@ -90,24 +105,17 @@ handleLogin = async function(e){
   try{
     if(!initSupabaseClient()) throw supabaseInitError || new Error('Supabase client is not available.');
     users = HC.users.map(mapDbUserToApp);
-    if(loginMode === 'viewer'){
-      const viewerTeam = String(document.getElementById('loginTeam')?.value || '').trim();
-      if(!viewerTeam) throw new Error('Please select the team you want to view.');
-      window.activeTeamView = viewerTeam;
-      currentUser = { id:'readonly-viewer', name:'Viewer', username:'Viewer', role:'Viewer', status:'Active', isReadOnly:true, team:viewerTeam };
-    }else{
-      const uName = document.getElementById('loginUsername').value.trim();
-      const pWord = document.getElementById('loginPassword').value.trim();
-      if(!uName || !pWord) throw new Error('Please enter both username and password.');
-      const row = HARDCODED_USER_ROWS.find(r => N(r.member) === N(uName) && String(r.password) === pWord);
-      if(!row) throw new Error('Invalid username or password.');
-      const base = users.find(u => N(u.name) === N(row.member));
-      if(!base || N(base.status) !== 'active') throw new Error('This account is inactive.');
-      const team = String(row.team || '').trim();
-      if(!team) throw new Error('This account is not assigned to a team.');
-      currentUser = { ...base, team, role: toRole(row.role) };
-      window.activeTeamView = team;
-    }
+    const uName = document.getElementById('loginUsername').value.trim();
+    const pWord = document.getElementById('loginPassword').value.trim();
+    if(!uName || !pWord) throw new Error('Please enter both username and password.');
+    const row = HARDCODED_USER_ROWS.find(r => N(r.member) === N(uName) && String(r.password) === pWord);
+    if(!row) throw new Error('Invalid username or password.');
+    const base = users.find(u => N(u.name) === N(row.member));
+    if(!base || N(base.status) !== 'active') throw new Error('This account is inactive.');
+    const team = String(row.team || '').trim();
+    if(!team) throw new Error('This account is not assigned to a team.');
+    currentUser = { ...base, team, role: toRole(row.role) };
+    window.activeTeamView = team;
     const loaded = await fetchAllDataFromSheet();
     if(!loaded) throw new Error('Unable to load application data from Supabase.');
     document.getElementById('loginScreen').classList.add('hidden');
@@ -116,31 +124,144 @@ handleLogin = async function(e){
     startMultiUserAutoSync();
     applyGlobalFilters();
     switchTab('overall');
-    if(currentUser?.isReadOnly) applyViewerReadOnlyMode();
   }catch(err){
     console.error('Login error:', err);
     errDiv.textContent = err?.message || 'Unable to sign in.';
     errDiv.classList.remove('hidden'); errDiv.style.display = 'block';
     currentUser = null;
   }finally{
-    if(btn){ btn.disabled = false; btn.textContent = loginMode === 'viewer' ? 'Continue as Viewer' : 'Log In'; }
+    if(btn){ btn.disabled = false; btn.textContent = 'Log In'; }
   }
 };
 window.handleLogin = handleLogin;
+
+/* ---------- reversible read-only mode (used when a Team Admin views another team) ---------- */
+const RO_BTN = /create|add task|new task|edit task|delete task|save task|save project|new project|add project|register|approve|reject|submit request|time.?off request|manage user|add phase|add milestone|delete project|edit project/;
+const RO_CLICK = /create|add task|new task|edit task|delete task|save|register|approve|reject|submit request|add phase|add milestone|delete project|edit project/;
+let roGuardInstalled = false;
+applyViewerReadOnlyMode = function(){
+  document.body.classList.add('viewer-read-only');
+  const badge = document.getElementById('currentUserRoleBadge'); if(badge) badge.textContent = 'Viewer';
+  document.querySelectorAll('button,a,[role="button"]').forEach(el => {
+    if(el.closest('#loginScreen,#teamSwitcherCard')) return;
+    const label = ((el.innerText||el.getAttribute('aria-label')||el.title||'')+' '+(el.getAttribute('onclick')||'')).toLowerCase();
+    if(RO_BTN.test(label) && el.style.display !== 'none'){ el.dataset.roHidden = '1'; el.style.display = 'none'; }
+  });
+  document.querySelectorAll('input,select,textarea').forEach(el => {
+    if(el.closest('#loginScreen,#teamSwitcherCard')) return;
+    const k = ((el.id||'')+' '+(el.name||'')).toLowerCase();
+    if(/search|filter|date|month|year|week|category|status|pic|owner|priority|view|page/.test(k)) return;
+    if(el.type === 'button' || el.type === 'submit' || el.disabled) return;
+    el.dataset.roDisabled = '1'; el.disabled = true;
+  });
+  if(!roGuardInstalled){
+    roGuardInstalled = true;
+    document.body.addEventListener('click', ev => {
+      if(!currentUser?.isReadOnly) return;
+      const el = ev.target.closest('button,a,[role="button"]'); if(!el || el.closest('#teamSwitcherCard')) return;
+      const label = ((el.innerText||el.getAttribute('aria-label')||el.title||'')+' '+(el.getAttribute('onclick')||'')).toLowerCase();
+      if(RO_CLICK.test(label)){
+        ev.preventDefault(); ev.stopImmediatePropagation();
+        try{ showAppNotification('You are viewing another team (view only). Switch back to your team to make changes.', 'View only'); }catch(_){}
+      }
+    }, true);
+  }
+};
+window.applyViewerReadOnlyMode = applyViewerReadOnlyMode;
+function clearViewerReadOnlyMode(){
+  document.body.classList.remove('viewer-read-only');
+  document.querySelectorAll('[data-ro-hidden]').forEach(el => { el.style.display = ''; delete el.dataset.roHidden; });
+  document.querySelectorAll('[data-ro-disabled]').forEach(el => { el.disabled = false; delete el.dataset.roDisabled; });
+  const nav = document.getElementById('nav-workload'); if(nav) nav.style.display = '';
+}
+
+/* ---------- Team Admin: dropdown of all teams, other teams = view only ---------- */
+const realUser = () => currentUser ? (currentUser.__viewAs || currentUser) : null;
+const isAppAdminUser = u => !!u && (u.role === 'Admin' || u.__base?.role === 'Admin');
+function myMemberships(u){
+  if(!u) return [];
+  if(Array.isArray(u.memberships) && u.memberships.length) return u.memberships;
+  try{ return window.getUserMemberships?.({ id:u.id, team:u.__base?.team || u.team, role:u.__base?.role || u.role }) || []; }catch(_){ return []; }
+}
+const isTeamAdminUser = u => !!u && !isAppAdminUser(u) && myMemberships(u).some(m => m.role === 'Team Admin');
+const allTeams = () => HC.teams.map(t => t.code);
+
+function ensureSwitchBox(){
+  let box = document.getElementById('mtrSwitchBox');
+  if(!box){
+    const card = document.getElementById('teamSwitcherCard'); if(!card) return null;
+    box = document.createElement('div'); box.id = 'mtrSwitchBox';
+    box.innerHTML = '<label for="mtrScopeSel" class="sr-only">Active team</label><select id="mtrScopeSel"></select><p class="mt-1.5 text-[10px] text-slate-400" id="mtrScopeHint"></p>';
+    const label = document.getElementById('teamStaticLabel');
+    label ? label.insertAdjacentElement('afterend', box) : card.appendChild(box);
+    box.querySelector('select').addEventListener('change', e => window.switchTeamView(e.target.value));
+  }
+  box.setAttribute('data-mtr-free','1');
+  return box;
+}
+
+const inheritedRender = window.renderTeamSwitcher;
+window.renderTeamSwitcher = function(){
+  const result = typeof inheritedRender === 'function' ? inheritedRender.apply(this, arguments) : undefined;
+  const real = realUser();
+  if(!isTeamAdminUser(real)) return result;
+  const box = ensureSwitchBox(); if(!box) return result;
+  const mine = myMemberships(real);
+  const others = allTeams().filter(t => !mine.some(m => N(m.team) === N(t)));
+  const sel = box.querySelector('select');
+  sel.innerHTML =
+    '<optgroup label="My teams">' + mine.map(m => `<option value="${ESC(m.team)}">${ESC(m.team)} · ${ESC(m.role)}</option>`).join('') + '</optgroup>' +
+    (others.length ? '<optgroup label="Other teams (view only)">' + others.map(t => `<option value="${ESC(t)}">${ESC(t)} · View</option>`).join('') + '</optgroup>' : '');
+  const active = String(window.activeTeamView || currentUser.team || '').trim();
+  const opt = [...sel.options].find(o => N(o.value) === N(active)); if(opt) sel.value = opt.value;
+  sel.disabled = false;
+  box.classList.remove('hidden'); box.classList.toggle('v20-viewer-team-picker', !!currentUser.__viewAs);
+  document.getElementById('teamStaticLabel')?.classList.add('hidden');
+  document.getElementById('teamAdminControls')?.classList.add('hidden');
+  const hint = document.getElementById('mtrScopeHint');
+  if(hint) hint.textContent = currentUser.__viewAs ? 'View only · switch back to your team to edit.' : 'Choose a team. Other teams are view only.';
+  const greet = document.getElementById('teamGreeting'); if(greet) greet.textContent = sel.value || active;
+  return result;
+};
+try{ renderTeamSwitcher = window.renderTeamSwitcher; }catch(_){}
+
+const inheritedSwitch = window.switchTeamView;
+window.switchTeamView = async function(value){
+  const real = realUser();
+  if(!isTeamAdminUser(real)) return typeof inheritedSwitch === 'function' ? inheritedSwitch.apply(this, arguments) : undefined;
+  const team = allTeams().find(t => N(t) === N(value)) || String(value || '').trim();
+  if(!team) return;
+  const own = myMemberships(real).find(m => N(m.team) === N(team));
+  if(own){
+    if(currentUser.__viewAs){               // leave view mode -> back to the real account
+      clearViewerReadOnlyMode();
+      currentUser = real;
+    }
+    await inheritedSwitch.call(this, own.team);
+    try{ initUserSession(); }catch(_){}
+  }else{
+    if(!currentUser.__viewAs){              // enter view mode with a read-only clone
+      currentUser = { id:'readonly-viewer', name:real.name, username:real.name, role:'Viewer', status:'Active',
+                      isReadOnly:true, team:String(currentUser.team || ''), __viewAs:real };
+    }
+    await inheritedSwitch.call(this, team); // viewer branch: loads the selected team
+    try{ applyViewerReadOnlyMode(); }catch(_){}
+    if(!document.getElementById('tab-users')?.classList.contains('hidden')) try{ switchTab('overall'); }catch(_){}
+  }
+  window.renderTeamSwitcher();
+};
+try{ switchTeamView = window.switchTeamView; }catch(_){}
+
+/* logout: always leave view mode cleanly */
+const prevLogout = window.logout;
+if(typeof prevLogout === 'function'){
+  window.logout = function(){ clearViewerReadOnlyMode(); return prevLogout.apply(this, arguments); };
+  try{ logout = window.logout; }catch(_){}
+}
+
 /* Users page: every write path explains that users are maintained in code. */
 ['saveUser','deleteUser','mtrDeleteUser','mtrToggleShow','createTeam','mtrOpenUser','openAddUserModal','openEditUserModal','openTeamModal','handleUserImport']
   .forEach(name => { window[name] = function(e){ try{ e?.preventDefault?.(); }catch(_){} showAppNotification(READ_ONLY_MSG, 'Users are hardcoded'); };
                      try{ (0,eval)(name + ' = window.' + name + ';'); }catch(_){} });
 document.getElementById('mtrUserForm')?.addEventListener('submit', e => { e.preventDefault(); e.stopImmediatePropagation(); showAppNotification(READ_ONLY_MSG, 'Users are hardcoded'); }, true);
-/* Login "Team" dropdown is built from the hardcoded list (no database call, works instantly). */
-function fillLoginTeams(){
-  const sel = document.getElementById('loginTeam'); if(!sel) return;
-  sel.innerHTML = '<option value="">-- Select team --</option>' + HC.teams.map(t => `<option value="${escapeHtml(t.code)}">${escapeHtml(t.name)}</option>`).join('');
-  sel.disabled = false;
-  const err = document.getElementById('loginError'); if(err){ err.textContent=''; err.classList.add('hidden'); err.style.display='none'; }
-}
-window.loadLoginTeams = fillLoginTeams;
-try{ (0,eval)('loadLoginTeams = window.loadLoginTeams;'); }catch(_){}
-fillLoginTeams();
-document.addEventListener('DOMContentLoaded', fillLoginTeams, { once:true });
 })();

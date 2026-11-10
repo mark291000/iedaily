@@ -1579,6 +1579,7 @@ body.report-exporting #tab-dashboard > .grid.grid-cols-2.md\\:grid-cols-4.xl\\:g
     #tab-projects .pm-ref-new-project span{display:none}
     #tab-projects .pm-ref-new-project{width:34px;padding:0;justify-content:center}
 }
+} /* auto-closed: the browser closed these at the end of the original <style> */
 
 /* ===== style ===== */
 #tab-projects .pm-reference-actions{display:flex!important;align-items:center!important;gap:8px!important;width:100%!important;justify-content:flex-start!important;flex-wrap:nowrap!important;min-width:0!important}

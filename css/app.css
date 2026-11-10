@@ -1982,3 +1982,6 @@ body.report-exporting .tab-content>.bom-page-filter::before{display:none!importa
 #mtrUsers [onclick*="mtrOpenUser"],#mtrImportBtn,#mtrTemplateBtn,#mtrUsers [onclick*="openTeamModal"],
 #mtrUsers .mtr-icon.del,#mtrUsers .mtr-icon[onclick*="mtrOpenUser"]{display:none!important}
 #mtrUsers button.mtr-show{pointer-events:none!important;cursor:default!important}
+/* Single login type: user + password only. */
+#accessSwitch,#viewerTeamBox,#viewerHint{display:none!important}
+#memberCredentials.viewer-hidden{display:block!important}

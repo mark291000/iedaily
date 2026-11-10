@@ -1,6 +1,5 @@
 /* Builds css/tailwind.css from the classes used in index.html + js/**.
-   Usage: npm install && npm run build:css
-   Replaces the Tailwind CDN (its runtime JIT re-scanned the DOM on every change -> lag). */
+   Usage: npm install && npm run build:css */
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -25,7 +24,6 @@ for (const file of sources) {
   const text = fs.readFileSync(file, 'utf8');
   for (const t of text.split(/[\s"'`<>=;{}(),\\]+/)) if (t && t.length < 80) candidates.add(t);
 }
-
 const input = fs.readFileSync(path.join(root, 'tools/tailwind.input.css'), 'utf8');
 const compiler = await compile(input, {
   base: root,
@@ -35,7 +33,6 @@ const compiler = await compile(input, {
   },
 });
 let css = compiler.build([...candidates]);
-
 /* Unwrap @layer so cascade order matches the old CDN (utilities after css/base.css, before css/app.css). */
 const ast = postcss.parse(css);
 ast.walkAtRules('layer', r => { if (r.nodes) r.replaceWith(r.nodes); else r.remove(); });
