@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['02c-perf-index']='1.4.1';
 /* =====================================================================
    PERF INDEX - fast workload calculation
    The old functions scanned EVERY task (and re-normalised every PIC name
@@ -114,4 +115,26 @@ getTimeOffHoursForPIC=function(picName,dateIso){
 };
 window.getTimeOffHoursForPIC=getTimeOffHoursForPIC;
 window.__invalidateWorkloadIndex=()=>{tickCache=null;};
+})();
+/* Workload sidebar: show Gantt project hours as their own line so the task list adds up to the total */
+(function(){
+  const prev=openWorkloadSidebar;
+  openWorkloadSidebar=function(userName,dateIso){
+    const r=prev.apply(this,arguments);
+    try{
+      const box=document.getElementById('workloadSidebarContent');
+      const lines=[];
+      (projectsList||[]).forEach(p=>{
+        const owners=Array.isArray(p.owners)?p.owners:(p.owner?String(p.owner).split(',').map(x=>x.trim()).filter(Boolean):[]);
+        if(!owners.some(x=>String(x).trim().toLowerCase()===String(userName).trim().toLowerCase()))return;
+        const hours=p.hoursUsed&&typeof p.hoursUsed==='object'?p.hoursUsed:{};
+        if(!Object.prototype.hasOwnProperty.call(hours,dateIso)||hasDailyProjectTaskFor(p,userName,dateIso))return;
+        const h=(Number(hours[dateIso])||0)/Math.max(1,owners.length);
+        if(h>0)lines.push(`<div class="py-1.5 border-b border-slate-100"><div class="font-semibold text-slate-700">Project hours (Gantt): ${escapeHtml(p.name||'')}</div><div class="text-indigo-600 font-bold">Workload: ${h.toFixed(2)} h</div></div>`);
+      });
+      if(box&&lines.length)box.insertAdjacentHTML('beforeend',`<div class="border border-slate-200 rounded-lg p-3 mt-2"><div class="font-bold text-slate-800 mb-1">Project hours</div>${lines.join('')}</div>`);
+    }catch(e){console.warn('sidebar project hours',e);}
+    return r;
+  };
+  window.openWorkloadSidebar=openWorkloadSidebar;
 })();

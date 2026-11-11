@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['48-renderSkip']='1.4.1';
 /* =====================================================================
    RENDER SKIP - faster page switching
    switchTab() re-built Team Performance charts, Weekly Workload and
@@ -39,7 +40,7 @@ function signature(rootIds){
 }
 const visible=ids=>ids.some(id=>{const el=document.getElementById(id);return el&&!el.classList.contains('hidden');});
 const last={};
-function guard(name,rootIds){
+function guard(name,rootIds,ready){
   const fn=W[name];if(typeof fn!=='function'||fn.__skipGuard)return;
   const g=function(){
     if(inSwitch&&visible(rootIds)&&last[name]){
@@ -49,14 +50,17 @@ function guard(name,rootIds){
     }
     if(W.__skipDebug)console.log('render-run',name,'inSwitch='+inSwitch,'hasLast='+!!last[name],'vis='+visible(rootIds));
     const r=fn.apply(this,arguments);
-    if(visible(rootIds)){try{last[name]=signature(rootIds);}catch(_){last[name]='';}}
+    /* remember the signature ONLY when the render really completed (e.g. charts exist);
+       otherwise the next call must render again */
+    let ok=true;try{ok=!ready||!!ready();}catch(_){ok=false;}
+    if(ok&&visible(rootIds)){try{last[name]=signature(rootIds);}catch(_){last[name]='';}}else delete last[name];
     return r;
   };
   g.__skipGuard=true;W[name]=g;try{(0,eval)(`${name}=window.${name};`);}catch(_){}
 }
-guard('updateDashboardCharts',['tab-dashboard']);
-guard('renderWeeklyCalendar',['tab-weekly-calendar','tab-dashboard']);
-guard('renderMyTasksTable',['tab-my-tasks']);
+guard('updateDashboardCharts',['tab-dashboard'],()=>typeof chartWorkload!=='undefined'&&!!chartWorkload&&typeof chartStatus!=='undefined'&&!!chartStatus&&!/No data/.test(document.getElementById('dashWorkloadSummaryBody')?.textContent||''));
+guard('renderWeeklyCalendar',['tab-weekly-calendar','tab-dashboard'],()=>!!document.querySelector('#weeklyCalendarBody tr'));
+guard('renderMyTasksTable',['tab-my-tasks'],()=>!!currentUser);
 
 /* must be the OUTERMOST switchTab wrapper (other patches wrap it on load) */
 function wrapSwitch(){

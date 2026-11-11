@@ -30,6 +30,18 @@ Sửa `js/data/users.js`, hoặc `python tools/excel_to_users.py User_Team_Acces
 `npm install && npm run build:css`
 
 ## Changelog
+- **v1.4.0**
+  - Mở app chỉ tải task của **tuần hiện tại** (+ task chưa hoàn thành). Đổi Year/Month/Week hoặc
+    chuyển tuần/tháng/năm ở Weekly Workload -> chỉ tải lại bảng Tasks cho đúng khoảng đó.
+    Xoá hết filter Year/Month/Week = tải toàn bộ.
+  - IE Overall chỉ tải Year/Month/Week đang chọn (trước: cả năm, mọi team).
+  - Category Setup: workload trung bình tính từ toàn bộ dữ liệu trên server.
+  - Ẩn khỏi báo cáo nằm trong file lõi + `js/config.js` (`HIDDEN_FROM_REPORTS`).
+  - Export Daily Tracking / My Tasks: luôn có PIC, cột **Usage Time** (không có "h"), mọi ô định dạng Text.
+  - Sửa lỗi lần đầu mở Team Performance biểu đồ/bảng trống (từ v1.3).
+  - Owner của project hiện đúng tên (kể cả người ẩn khỏi báo cáo).
+  - Sidebar Workload hiện thêm dòng "Project hours (Gantt)".
+  - `js/version-check.js` + `version.json`: báo đỏ nếu file trên server chưa cập nhật, tự tải lại khi có bản mới.
 - **v1.3.0**
   - Export Project: sửa lỗi file rỗng (module đọc bản sao cũ `window.projectsList`); cột giống hệt bảng trên app.
   - Ẩn khỏi báo cáo cấu hình trong `js/config.js` → `HIDDEN_FROM_REPORTS` (mặc định `['Anny']`).
@@ -46,4 +58,4 @@ Sửa `js/data/users.js`, hoặc `python tools/excel_to_users.py User_Team_Acces
 - **v1.0** – Tách project, bỏ Tailwind CDN, giảm lag.
 
 ## Khi phát hành bản mới
-Đổi `?v=1.3.0` trong `index.html` (Find & Replace) và `APP_VERSION` để trình duyệt tải lại file mới.
+Đổi cùng 1 số phiên bản ở: `?v=` trong `index.html`, `APP_VERSION` trong `js/config.js`, `version.json`, và chuỗi `'1.4.0'` trong các file có `__appFiles`.

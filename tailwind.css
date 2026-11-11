@@ -486,6 +486,9 @@ button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-se
 .table {
     display: table;
   }
+.table\! {
+    display: table !important;
+  }
 .h-3 {
     height: calc(var(--spacing) * 3);
   }

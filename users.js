@@ -121,3 +121,4 @@ window.HARDCODED_USER_ROWS = [
   {"member": "Zane", "team": "Cover Drawing", "role": "Member", "password": "8326"},
   {"member": "Ellie", "team": "BOM UPH", "role": "Member", "password": "3326"}
 ];
+(window.__appFiles=window.__appFiles||{})['users']='1.4.1';

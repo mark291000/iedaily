@@ -1,5 +1,6 @@
 /* =====================================================================
    TASK EXPORT V2 - Daily Tracking / My Tasks
+   Columns: always PIC; 'Usage Time' without 'h'; every cell formatted as Text.
    Old export copied the HTML table, so:
    - My Tasks has no PIC column on screen -> no PIC in the file
    - Daily Tracking showed "-" for PICs hidden from reports / other teams
@@ -10,11 +11,14 @@
    ===================================================================== */
 (function(){
 'use strict';
+(window.__appFiles=window.__appFiles||{})['47-taskExportV2']='1.4.1';
 const W=window;
-const COLS=['Category','Task Name','Detail','Scope','Priority','PIC','Team','Start','Plan','Actual','Usage (h)','Discipline','Status','Created By'];
+const COLS=['Category','Task Name','Detail','Scope','Priority','PIC','Team','Start','Plan','Actual','Usage Time','Discipline','Status','Created By'];
 const WIDTH=[18,28,40,16,10,24,14,12,12,12,10,12,12,16];
 const N=v=>String(v??'').trim().toLowerCase();
 const fmt=v=>{const s=typeof cleanDateStr==='function'?cleanDateStr(v):String(v||'');if(!s)return '';const [y,m,d]=s.split('-');return y&&m&&d?`${m}/${d}/${y}`:s;};
+/* Usage Time as plain text number: 0.5 -> "0.5", 4 -> "4" (no "h") */
+const usageText=v=>{const s=String(v??'').replace(/\s*h(ours?)?\s*$/i,'').trim();if(s==='')return '';const n=Number(s);return Number.isFinite(n)?String(n):s;};
 const pics=t=>{try{return taskPICs(t);}catch(_){return String(t?.pic||'').split(',').map(x=>x.trim()).filter(Boolean);}};
 const tasksSrc=()=>(W.bomFilteredTasks||(typeof dailyTasks!=='undefined'?dailyTasks:[]));
 
@@ -46,7 +50,7 @@ function exportTasks(tab){
   if(!list.length){showAppNotification('No task data to export.','Export');return;}
   const body=list.map(t=>{try{calculateTaskMetadata(t);}catch(_){}
     return [t.category||'',t.name||'',t.items||'',t.scope||(typeof getDailyTaskScope==='function'?getDailyTaskScope(t):'')||'',t.priority||'',pics(t).join(', '),t.team||'',
-            fmt(t.start||t.startDate),fmt(t.plan||t.planDate),fmt(t.actual||t.actualDate),Number(t.usageTime)||0,t.discipline||'',t.status||'',t.createdBy||''];});
+            fmt(t.start||t.startDate),fmt(t.plan||t.planDate),fmt(t.actual||t.actualDate),usageText(t.usageTime),t.discipline||'',t.status||'',t.createdBy||''].map(v=>String(v??''));});
   const ws=XLSX.utils.aoa_to_sheet([COLS,...body]);
   ws['!cols']=WIDTH.map(w=>({wch:w}));
   ws['!autofilter']={ref:`A1:${XLSX.utils.encode_col(COLS.length-1)}${body.length+1}`};
@@ -54,9 +58,10 @@ function exportTasks(tab){
   const border={top:{style:'thin',color:{rgb:'D1D5DB'}},bottom:{style:'thin',color:{rgb:'D1D5DB'}},left:{style:'thin',color:{rgb:'D1D5DB'}},right:{style:'thin',color:{rgb:'D1D5DB'}}};
   for(let r=0;r<=body.length;r++)for(let c=0;c<COLS.length;c++){
     const cell=ws[XLSX.utils.encode_cell({r,c})];if(!cell)continue;
-    cell.s=r===0?{font:{bold:true,color:{rgb:'0F172A'}},fill:{patternType:'solid',fgColor:{rgb:'E2E8F0'}},alignment:{horizontal:'center',vertical:'center'},border}
-               :{border,alignment:{vertical:'center',wrapText:c===2}};
-    if(r>0&&c===10)cell.z='0.0#';
+    /* every cell is TEXT (@): keeps leading zeros, no auto date/number conversion */
+    cell.t='s';cell.v=String(cell.v??'');cell.z='@';
+    cell.s=r===0?{font:{bold:true,color:{rgb:'0F172A'}},fill:{patternType:'solid',fgColor:{rgb:'E2E8F0'}},alignment:{horizontal:'center',vertical:'center'},border,numFmt:'@'}
+               :{border,alignment:{vertical:'center',wrapText:c===2},numFmt:'@'};
   }
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,tab==='tab-daily-tracking'?'Daily Tracking':'My Tasks');

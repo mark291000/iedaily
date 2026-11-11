@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['46-projectExportV2']='1.4.1';
 /* =====================================================================
    PROJECT EXPORT V2 - Excel / PDF in the NEW Project Management format
    Columns = the current project table:

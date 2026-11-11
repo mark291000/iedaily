@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['02-app-core']='1.4.1';
         const SUPABASE_URL = window.APP_CONFIG.SUPABASE_URL;
         const SUPABASE_PUBLISHABLE_KEY = window.APP_CONFIG.SUPABASE_PUBLISHABLE_KEY;
         let supabaseClient = null;
@@ -187,10 +188,17 @@
         window.synchronizePICReferences=synchronizePICReferences;
 
         let __hiddenCache={ref:null,len:-1,set:new Set()};
+        // Members counted in Overall headcount but hidden from every report / workload view.
+        // Source: js/config.js -> HIDDEN_FROM_REPORTS (default: Anny).
+        function configHiddenMembers(){
+            const list=(window.APP_CONFIG&&Array.isArray(window.APP_CONFIG.HIDDEN_FROM_REPORTS))?window.APP_CONFIG.HIDDEN_FROM_REPORTS:['Anny'];
+            return list.map(n=>normalizePersonKey(n)).filter(Boolean);
+        }
+        window.configHiddenMembers=configHiddenMembers;
         function hiddenMemberSet(){
             const list=(typeof users!=='undefined'&&Array.isArray(users))?users:[];
             if(__hiddenCache.ref!==list||__hiddenCache.len!==list.length){
-                __hiddenCache={ref:list,len:list.length,set:new Set(list.filter(u=>u&&u.show===false).map(u=>normalizePersonKey(u.name||u.username||u.displayName||'')).filter(Boolean))};
+                __hiddenCache={ref:list,len:list.length,set:new Set([...list.filter(u=>u&&u.show===false).map(u=>normalizePersonKey(u.name||u.username||u.displayName||'')),...configHiddenMembers()].filter(Boolean))};
             }
             return __hiddenCache.set;
         }
@@ -397,7 +405,7 @@
         }
 
         function mapDbUserToApp(r){
-            return { id:r?.id, team:r?.team||'', name:r?.name||'', password:r?.password??'', role:r?.role||'Member', status:r?.status||'Active', show:r?.show_in_reports!==false, createdAt:r?.created_at||'', updatedAt:r?.updated_at||'' };
+            return { id:r?.id, team:r?.team||'', name:r?.name||'', password:r?.password??'', role:r?.role||'Member', status:r?.status||'Active', show:r?.show_in_reports!==false&&!configHiddenMembers().includes(normalizePersonKey(r?.name||'')), createdAt:r?.created_at||'', updatedAt:r?.updated_at||'' };
         }
         function mapDbCapacityToApp(r){
             return { id:r?.id, team:r?.team||'', category:r?.category||'', task:r?.task||'', scope:r?.scope||"In BOM's scope", workload:Number(r?.workload||0) };

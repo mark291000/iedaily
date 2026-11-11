@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['02b-state-bridge']='1.4.1';
 /* STATE BRIDGE
    App state lives in top-level `let` variables (js/core/02-app-core.js), which are NOT
    properties of window. Several modules read window.projectsList / window.users ...
