@@ -30,6 +30,8 @@ Sửa `js/data/users.js`, hoặc `python tools/excel_to_users.py User_Team_Acces
 `npm install && npm run build:css`
 
 ## Changelog
+- **v1.2.2** – Xuất Excel/PDF trang Project theo format mới (Team, Project name, Owner, Start, Plan Completed, Actual, Status, Current Stage, %Progress, Archived goal, Saving, Key Project), theo search + filter đang áp dụng.
+- **v1.2.1** – Task Daily Tracking "Project: Project processing" luôn được tính workload; giờ Gantt của project chỉ cộng khi PIC chưa log task Project processing cùng ngày (không tính trùng).
 - **v1.2** – Overall đếm đủ App Admin; user `report:false` chỉ tính headcount;
   lưu Project chỉ ghi phần thay đổi (song song, không tải lại toàn bộ);
   task Daily Tracking category *Project* được tính vào workload.

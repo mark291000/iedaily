@@ -5633,20 +5633,29 @@ function setCalendarView(view) {
             return Math.max(0, standardHours - timeOffHours);
         }
 
+        // Is there a Daily Tracking "Project processing" row for this PIC + project covering dateIso?
+        function hasDailyProjectTaskFor(project,picName,dateIso){
+            const me=String(picName||'').trim().toLowerCase();
+            return dailyTasks.some(t=>{
+                if(!isProjectHoursTask(t))return false;
+                const linked=(String(t.projectId??'')!==''&&String(t.projectId)===String(project.id))||String(t.items||'').trim().toLowerCase()===String(project.name||'').trim().toLowerCase();
+                if(!linked)return false;
+                if(!taskPICs(t).some(x=>String(x).trim().toLowerCase()===me))return false;
+                const s0=cleanDateStr(t.start||t.plan||t.actual),e0=cleanDateStr(t.actual||t.plan||t.start);
+                return !!s0&&!!e0&&s0<=dateIso&&dateIso<=e0;
+            });
+        }
+        // Project hours from the Gantt (projects.hours_used). Skipped when the same PIC already
+        // logged a Daily Tracking "Project processing" task for that project/day (no double count).
         function getProjectHoursUsedForPIC(picName,dateIso){
             let total=0;
             projectsList.forEach(p=>{
                 const owners=Array.isArray(p.owners)?p.owners:(p.owner?String(p.owner).split(',').map(x=>x.trim()).filter(Boolean):[]);
                 if(!owners.some(x=>String(x).trim().toLowerCase()===String(picName).trim().toLowerCase()))return;
                 const hours=p.hoursUsed&&typeof p.hoursUsed==='object'?p.hoursUsed:{};
-                // New behavior: a project hour entry is workload only; it is never mirrored to Tasks.
-                if(Object.prototype.hasOwnProperty.call(hours,dateIso)){
-                    total+=(Number(hours[dateIso])||0)/Math.max(1,owners.length); // fix: split only this project's hours
-                    return;
-                }
-                // Backward compatibility for historical Project Processing rows created by older versions.
-                const linkedTasks=dailyTasks.filter(t=>String(t.category||'').trim().toLowerCase()==='project'&&String(t.name||'').trim().toLowerCase()==='project processing'&&String(t.projectId??'')!==''&&String(t.projectId??'')===String(p.id)&&taskPICs(t).some(x=>String(x).trim().toLowerCase()===String(picName).trim().toLowerCase())&&cleanDateStr(t.start||t.plan||t.actual)===dateIso);
-                if(linkedTasks.length)total+=linkedTasks.reduce((sum,t)=>sum+(Number(t.usageTime)||0),0);
+                if(!Object.prototype.hasOwnProperty.call(hours,dateIso))return;
+                if(hasDailyProjectTaskFor(p,picName,dateIso))return;
+                total+=(Number(hours[dateIso])||0)/Math.max(1,owners.length);
             });
             return total;
         }
@@ -5673,9 +5682,7 @@ function setCalendarView(view) {
                 const pics = taskPICs(t);
                 if (!pics.some(p => String(p).trim().toLowerCase() === String(picName).trim().toLowerCase())) return;
 
-                // Only Gantt-generated rows (linked by projectId) are counted through project hours.
-                // Every Daily Tracking task, including category "Project", is workload.
-                if (isProjectHoursTask(t) && t.projectId !== undefined && t.projectId !== null && String(t.projectId) !== '') return;
+                // Every Daily Tracking task is workload, including "Project: Project processing".
 
                 const startDate = cleanDateStr(t.start);
                 const endDate = cleanDateStr(t.actual || t.plan);
