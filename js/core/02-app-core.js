@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['02-app-core']='1.4.1';
         const SUPABASE_URL = window.APP_CONFIG.SUPABASE_URL;
         const SUPABASE_PUBLISHABLE_KEY = window.APP_CONFIG.SUPABASE_PUBLISHABLE_KEY;
         let supabaseClient = null;
@@ -187,10 +188,17 @@
         window.synchronizePICReferences=synchronizePICReferences;
 
         let __hiddenCache={ref:null,len:-1,set:new Set()};
+        // Members counted in Overall headcount but hidden from every report / workload view.
+        // Source: js/config.js -> HIDDEN_FROM_REPORTS (default: Anny).
+        function configHiddenMembers(){
+            const list=(window.APP_CONFIG&&Array.isArray(window.APP_CONFIG.HIDDEN_FROM_REPORTS))?window.APP_CONFIG.HIDDEN_FROM_REPORTS:['Anny'];
+            return list.map(n=>normalizePersonKey(n)).filter(Boolean);
+        }
+        window.configHiddenMembers=configHiddenMembers;
         function hiddenMemberSet(){
             const list=(typeof users!=='undefined'&&Array.isArray(users))?users:[];
             if(__hiddenCache.ref!==list||__hiddenCache.len!==list.length){
-                __hiddenCache={ref:list,len:list.length,set:new Set(list.filter(u=>u&&u.show===false).map(u=>normalizePersonKey(u.name||u.username||u.displayName||'')).filter(Boolean))};
+                __hiddenCache={ref:list,len:list.length,set:new Set([...list.filter(u=>u&&u.show===false).map(u=>normalizePersonKey(u.name||u.username||u.displayName||'')),...configHiddenMembers()].filter(Boolean))};
             }
             return __hiddenCache.set;
         }
@@ -397,7 +405,7 @@
         }
 
         function mapDbUserToApp(r){
-            return { id:r?.id, team:r?.team||'', name:r?.name||'', password:r?.password??'', role:r?.role||'Member', status:r?.status||'Active', show:r?.show_in_reports!==false, createdAt:r?.created_at||'', updatedAt:r?.updated_at||'' };
+            return { id:r?.id, team:r?.team||'', name:r?.name||'', password:r?.password??'', role:r?.role||'Member', status:r?.status||'Active', show:r?.show_in_reports!==false&&!configHiddenMembers().includes(normalizePersonKey(r?.name||'')), createdAt:r?.created_at||'', updatedAt:r?.updated_at||'' };
         }
         function mapDbCapacityToApp(r){
             return { id:r?.id, team:r?.team||'', category:r?.category||'', task:r?.task||'', scope:r?.scope||"In BOM's scope", workload:Number(r?.workload||0) };
@@ -689,8 +697,13 @@ function setupInlineRequiredValidation(){
             if(autoSyncTimer){clearInterval(autoSyncTimer);autoSyncTimer=null;}
             if(!window._bomVisBound){
                 window._bomVisBound=true;
+                // PERF: only reload everything when the tab was hidden for a while
+                // (realtime keeps data fresh while visible; short Alt+Tab no longer freezes the app).
+                let hiddenAt=0;
                 document.addEventListener('visibilitychange',()=>{
-                    if(!document.hidden&&currentUser) fetchAllDataFromSheet({background:true}).catch(()=>{});
+                    if(document.hidden){hiddenAt=Date.now();return;}
+                    if(currentUser&&hiddenAt&&Date.now()-hiddenAt>=60000) fetchAllDataFromSheet({background:true}).catch(()=>{});
+                    hiddenAt=0;
                 });
             }
         }
@@ -5633,21 +5646,29 @@ function setCalendarView(view) {
             return Math.max(0, standardHours - timeOffHours);
         }
 
+        // Is there a Daily Tracking "Project processing" row for this PIC + project covering dateIso?
+        function hasDailyProjectTaskFor(project,picName,dateIso){
+            const me=String(picName||'').trim().toLowerCase();
+            return dailyTasks.some(t=>{
+                if(!isProjectHoursTask(t))return false;
+                const linked=(String(t.projectId??'')!==''&&String(t.projectId)===String(project.id))||String(t.items||'').trim().toLowerCase()===String(project.name||'').trim().toLowerCase();
+                if(!linked)return false;
+                if(!taskPICs(t).some(x=>String(x).trim().toLowerCase()===me))return false;
+                const s0=cleanDateStr(t.start||t.plan||t.actual),e0=cleanDateStr(t.actual||t.plan||t.start);
+                return !!s0&&!!e0&&s0<=dateIso&&dateIso<=e0;
+            });
+        }
+        // Project hours from the Gantt (projects.hours_used). Skipped when the same PIC already
+        // logged a Daily Tracking "Project processing" task for that project/day (no double count).
         function getProjectHoursUsedForPIC(picName,dateIso){
             let total=0;
             projectsList.forEach(p=>{
                 const owners=Array.isArray(p.owners)?p.owners:(p.owner?String(p.owner).split(',').map(x=>x.trim()).filter(Boolean):[]);
                 if(!owners.some(x=>String(x).trim().toLowerCase()===String(picName).trim().toLowerCase()))return;
                 const hours=p.hoursUsed&&typeof p.hoursUsed==='object'?p.hoursUsed:{};
-                // New behavior: a project hour entry is workload only; it is never mirrored to Tasks.
-                if(Object.prototype.hasOwnProperty.call(hours,dateIso)){
-                    total+=Number(hours[dateIso])||0;
-                    total/=Math.max(1,owners.length);
-                    return;
-                }
-                // Backward compatibility for historical Project Processing rows created by older versions.
-                const linkedTasks=dailyTasks.filter(t=>String(t.category||'').trim().toLowerCase()==='project'&&String(t.name||'').trim().toLowerCase()==='project processing'&&(String(t.projectId??'')===String(p.id)||String(t.items||'').trim()===String(p.name||'').trim())&&taskPICs(t).some(x=>String(x).trim().toLowerCase()===String(picName).trim().toLowerCase())&&cleanDateStr(t.start||t.plan||t.actual)===dateIso);
-                if(linkedTasks.length)total+=linkedTasks.reduce((sum,t)=>sum+(Number(t.usageTime)||0),0);
+                if(!Object.prototype.hasOwnProperty.call(hours,dateIso))return;
+                if(hasDailyProjectTaskFor(p,picName,dateIso))return;
+                total+=(Number(hours[dateIso])||0)/Math.max(1,owners.length);
             });
             return total;
         }
@@ -5674,10 +5695,7 @@ function setCalendarView(view) {
                 const pics = taskPICs(t);
                 if (!pics.some(p => String(p).trim().toLowerCase() === String(picName).trim().toLowerCase())) return;
 
-                if (
-                    String(t.category || '').trim().toLowerCase() === 'project' &&
-                    String(t.name || '').trim().toLowerCase() === 'project processing'
-                ) return;
+                // Every Daily Tracking task is workload, including "Project: Project processing".
 
                 const startDate = cleanDateStr(t.start);
                 const endDate = cleanDateStr(t.actual || t.plan);

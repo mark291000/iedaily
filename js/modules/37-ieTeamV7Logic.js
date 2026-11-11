@@ -54,18 +54,19 @@ function mondayOf(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate
 function isoWeek(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y0)/864e5+1)/7);}
 function workdays(s,e){if(!s||!e||s>e)return 0;let n=0;for(const d=new Date(s);d<=e;d.setDate(d.getDate()+1)){const k=d.getDay();if(k&&k!==6)n++;}return n;}
 function weeksOf(y,m){const s=m===''?new Date(y,0,1):new Date(y,+m,1),e=m===''?new Date(y,11,31):new Date(y,+m+1,0),out=[];for(let a=mondayOf(s);a<=e;a.setDate(a.getDate()+7)){const b=new Date(a);b.setDate(a.getDate()+6);out.push({s:new Date(a),e:b});}return out;}
+function ovKey(){return `${ov.year}|${ov.month}|${ov.week}`;}
 function period(){if(ov.week!==''){const w=weeksOf(ov.year,ov.month)[+ov.week];if(w){const e=new Date(w.e);e.setHours(23,59,59);return {s:w.s,e,mode:'week',wd:workdays(w.s,w.e)};}}if(ov.month!==''){const s=new Date(ov.year,+ov.month,1),e=new Date(ov.year,+ov.month+1,0,23,59,59);return {s,e,mode:'month',wd:workdays(s,e)};}const s=new Date(ov.year,0,1),e=new Date(ov.year,11,31,23,59,59);return {s,e,mode:'year',wd:workdays(s,e)};}
 function overlap(a,b,p){const s=jsDate(a),e=jsDate(b)||s;return !!s&&s<=p.e&&e>=p.s;}
 function teamOf(x){return String(x?.team||'').trim()||'Unassigned';}
 async function paged(table,configure){const out=[];for(let from=0;;from+=1000){let q=supabaseClient.from(table).select('*');if(configure)q=configure(q);const r=await q.order('id',{ascending:true}).range(from,from+999);if(r.error)throw r.error;out.push(...(r.data||[]));if(!r.data||r.data.length<1000)break;}return out;}
 async function loadOverallAllTeams(force=false){
- if(!supabaseClient&&typeof initSupabaseClient==='function')initSupabaseClient();if(!supabaseClient)return null;const key=String(ov.year),cached=ov.cache.get(key);if(!force&&cached&&Date.now()-cached.at<300000)return cached.data;
+ if(!supabaseClient&&typeof initSupabaseClient==='function')initSupabaseClient();if(!supabaseClient)return null;const key=ovKey(),cached=ov.cache.get(key);if(!force&&cached&&Date.now()-cached.at<300000)return cached.data;
  if(ov.loading){const runningKey=ov.loadingKey;const running=await ov.loading;if(runningKey===key)return running;return loadOverallAllTeams(force);}
  ov.loadingKey=key;const status=$('ovLoadState');if(status){status.classList.remove('hidden');status.innerHTML='<i class="fa-solid fa-arrows-rotate"></i> Loading all teams…';}
- ov.loading=(async()=>{const start=`${ov.year}-01-01`,end=`${ov.year}-12-31`;const [ur,tr,rr,pr,mr]=await Promise.all([
+ ov.loading=(async()=>{const __p=period(),__d=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,start=__d(__p.s),end=__d(__p.e); /* PERF: only the selected Year/Month/Week */const [ur,tr,rr,pr,mr]=await Promise.all([
    paged(SUPABASE_TABLES.Users),
-   paged(SUPABASE_TABLES.Tasks,q=>q.or(`and(start_date.lte.${end},plan_date.gte.${start}),and(start_date.gte.${start},start_date.lte.${end}),and(plan_date.gte.${start},plan_date.lte.${end}),and(actual_date.gte.${start},actual_date.lte.${end})`)),
-   paged(SUPABASE_TABLES.TimeOff_OT,q=>q.lte('start_date',end)),
+   paged(SUPABASE_TABLES.Tasks,q=>q.or(`and(start_date.lte.${end},plan_date.gte.${start}),and(start_date.gte.${start},start_date.lte.${end}),and(plan_date.gte.${start},plan_date.lte.${end}),and(actual_date.gte.${start},actual_date.lte.${end}),and(actual_date.is.null,start_date.lte.${end})`)),
+   paged(SUPABASE_TABLES.TimeOff_OT,q=>q.lte('start_date',end).or(`end_date.gte.${start},and(end_date.is.null,start_date.gte.${start})`)),
    paged(SUPABASE_TABLES.Projects),
    (async()=>{try{const r=await supabaseClient.from('user_team_roles').select('id,user_id,team,role,is_primary').order('id',{ascending:true});return r.error?[]:(r.data||[]);}catch(_){return [];}})()
   ]);
@@ -78,7 +79,7 @@ async function loadOverallAllTeams(force=false){
      const main=memberships.find(m=>m.is_primary===true)||memberships.find(m=>norm(m.team)===norm(user.team))||(memberships.length?memberships[0]:null);
      const fallbackTeam=String(user.team||'').trim();
      const mainTeam=String(main?.team||fallbackTeam).trim();
-     if(!mainTeam||user.show===false||norm(user.role)==='admin')return [];
+     if(!mainTeam)return []; /* App Admins and hidden (report:false) users are counted in headcount */
      mainByUser.set(norm(user.name||user.username||user.displayName||''),norm(mainTeam));
      return [{...user,team:mainTeam,role:main?.role||user.role,mainTeam}];
    });
@@ -133,8 +134,9 @@ function renderOverallV7(data){
   const p=period(),now=new Date();now.setHours(0,0,0,0);
   const hiddenNames=new Set((data.users||[]).filter(u=>u?.show===false).map(u=>norm(u.name||u.username||u.displayName||'')).filter(Boolean));
   /* Headcount and member visibility use Main team + Show = Yes only. Sub access is management-only. */
-  const allUsers=(data.users||[]).filter(u=>norm(u.status||'Active')==='active'&&norm(u.role)!=='viewer'&&u.show!==false);
-  const workloadUsers=allUsers;
+  const allUsers=(data.users||[]).filter(u=>norm(u.status||'Active')==='active'&&norm(u.role)!=='viewer');
+  /* report:false users (e.g. Anny) count in headcount only - never in workload / capacity */
+  const workloadUsers=allUsers.filter(u=>u.show!==false);
   const tasks=(data.tasks||[]).map(t=>{const rawPics=taskPics(t),pics=rawPics.filter(name=>!hiddenNames.has(norm(name)));return {...t,pics,__hadAssignedPIC:rawPics.length>0};}).filter(t=>!t.__hadAssignedPIC||t.pics.length>0);
   const req=(data.requests||[]).filter(x=>!hiddenNames.has(norm(x?.pic||x?.member||x?.name||''))),projects=data.projects||[];
   const teams=[...new Set([...allUsers,...tasks,...req,...projects].map(teamOf).filter(x=>x!=='Unassigned'))].sort((a,b)=>a.localeCompare(b));tab.style.setProperty('--ov-team-count',String(Math.max(1,teams.length)));
@@ -227,7 +229,7 @@ function bindOverall(){
  const head=$('tab-overall')?.querySelector('.ov-f');if(head&&!$('ovLoadState'))head.insertAdjacentHTML('beforeend','<span id="ovLoadState" class="ov-loading hidden"></span><button type="button" id="ovRefresh" class="ov-btn" title="Refresh all-team data"><i class="fa-solid fa-arrows-rotate"></i></button>');
  /* IE Overall opens on the current reporting week by default. */
  const nowDate=new Date();ov.year=nowDate.getFullYear();ov.month=String(nowDate.getMonth());const currentWeeks=weeksOf(ov.year,ov.month),currentMonday=mondayOf(nowDate).getTime();ov.week=String(Math.max(0,currentWeeks.findIndex(x=>x.s.getTime()===currentMonday)));fillOverallControls();
- $('ovYear')?.addEventListener('change',e=>{ov.year=Number(e.target.value)||new Date().getFullYear();ov.week='';fillOverallControls();openOverall(false);});$('ovMonth')?.addEventListener('change',e=>{ov.month=e.target.value;ov.week='';fillOverallControls();const c=ov.cache.get(String(ov.year));if(c)renderOverallV7(c.data);else openOverall(false);});$('ovWeek')?.addEventListener('change',e=>{ov.week=e.target.value;const c=ov.cache.get(String(ov.year));if(c)renderOverallV7(c.data);});$('ovTeam')?.addEventListener('change',e=>{ov.team=e.target.value;const c=ov.cache.get(String(ov.year));if(c)renderOverallV7(c.data);});$('ovRefresh')?.addEventListener('click',()=>openOverall(true));$('ovNow')?.addEventListener('click',()=>{const d=new Date();ov.year=d.getFullYear();ov.month=String(d.getMonth());const ws=weeksOf(ov.year,ov.month),ms=mondayOf(d).getTime();ov.week=String(Math.max(0,ws.findIndex(x=>x.s.getTime()===ms)));fillOverallControls();openOverall(false);});
+ $('ovYear')?.addEventListener('change',e=>{ov.year=Number(e.target.value)||new Date().getFullYear();ov.week='';fillOverallControls();openOverall(false);});$('ovMonth')?.addEventListener('change',e=>{ov.month=e.target.value;ov.week='';fillOverallControls();const c=ov.cache.get(ovKey());if(c)renderOverallV7(c.data);else openOverall(false);});$('ovWeek')?.addEventListener('change',e=>{ov.week=e.target.value;const c=ov.cache.get(ovKey());if(c)renderOverallV7(c.data);else openOverall(false);});$('ovTeam')?.addEventListener('change',e=>{ov.team=e.target.value;const c=ov.cache.get(ovKey());if(c)renderOverallV7(c.data);else openOverall(false);});$('ovRefresh')?.addEventListener('click',()=>openOverall(true));$('ovNow')?.addEventListener('click',()=>{const d=new Date();ov.year=d.getFullYear();ov.month=String(d.getMonth());const ws=weeksOf(ov.year,ov.month),ms=mondayOf(d).getTime();ov.week=String(Math.max(0,ws.findIndex(x=>x.s.getTime()===ms)));fillOverallControls();openOverall(false);});
 }
 
 /* ---------- Page-level rendering; expensive pages render only after navigation ---------- */

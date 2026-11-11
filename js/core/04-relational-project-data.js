@@ -128,36 +128,67 @@ async function loadRelationalChildrenForProjects(projectRows){
  return {phases,tasks};
 }
 
-async function syncRelationalChildren(projects){
+/* PERF: save only what changed. Runs up to 6 requests in parallel and does not
+   reload every phase/task from the database after each save. */
+const __relPool=async(items,limit,fn)=>{let i=0;const worker=async()=>{while(i<items.length){const k=i++;await fn(items[k],k);}};await Promise.all(Array.from({length:Math.min(limit,items.length)},worker));};
+const __relSig=v=>{try{return JSON.stringify(v);}catch(_){return '#'+Math.random();}};
+function childSigMap(projects){
+ const ph=new Map(),ta=new Map();
+ (projects||[]).forEach(p0=>{
+  if(!p0||!dbId(p0.id))return;
+  let p;try{p=normalizeProjectTree(JSON.parse(JSON.stringify(p0)));}catch(_){return;}
+  p.phases.forEach((x,pi)=>{
+   if(dbId(x.id))ph.set(String(x.id),__relSig(phasePayload(p,x,pi)));
+   (x.tasks||[]).forEach((t,ti)=>{if(dbId(t.id))ta.set(String(t.id),__relSig(taskPayload(p,t,ti,x.id)));});
+  });
+  p.tasks.forEach((t,ti)=>{if(dbId(t.id))ta.set(String(t.id),__relSig(taskPayload(p,t,ti,null)));});
+ });
+ return {ph,ta};
+}
+async function syncRelationalChildren(projects,previousProjects){
  const list=Array.isArray(projects)?projects:[];const keptPh=new Set(),keptTa=new Set();
+ const prev=childSigMap(previousProjects||[]);
+ const phaseJobs=[];
+ for(const p of list){if(!dbId(p.id))continue;normalizeProjectTree(p);p.phases.forEach((ph,pi)=>{ph.sortOrder=pi;phaseJobs.push({p,ph,pi});});}
+ await __relPool(phaseJobs,6,async({p,ph,pi})=>{
+  const payload=phasePayload(p,ph,pi);
+  if(dbId(ph.id)){
+   keptPh.add(String(ph.id));ph.projectId=p.id;
+   if(prev.ph.get(String(ph.id))===__relSig(payload))return;
+   const r=await supabaseClient.from(REL_PHASE_TABLE).update(payload).eq('id',Number(ph.id)).select('id');if(r.error)throw r.error;
+  }else{
+   const r=await supabaseClient.from(REL_PHASE_TABLE).insert(payload).select('id').single();if(r.error)throw r.error;
+   ph.id=r.data.id;ph.projectId=p.id;keptPh.add(String(ph.id));
+  }
+ });
+ const taskJobs=[];
  for(const p of list){
-  if(!dbId(p.id))continue;normalizeProjectTree(p);
-  for(let pi=0;pi<p.phases.length;pi++){
-   const ph=p.phases[pi];ph.sortOrder=pi;
-   const payload=phasePayload(p,ph,pi);let res;
-   if(dbId(ph.id))res=await supabaseClient.from(REL_PHASE_TABLE).update(payload).eq('id',Number(ph.id)).select('*').single();
-   else res=await supabaseClient.from(REL_PHASE_TABLE).insert(payload).select('*').single();
-   if(res.error)throw res.error;ph.id=res.data.id;ph.projectId=p.id;keptPh.add(String(res.data.id));
-   for(let ti=0;ti<ph.tasks.length;ti++){
-    const t=ph.tasks[ti];t.sortOrder=ti;const tp=taskPayload(p,t,ti,ph.id);let tr;
-    if(dbId(t.id))tr=await supabaseClient.from(REL_TASK_TABLE).update(tp).eq('id',Number(t.id)).select('*').single();
-    else tr=await supabaseClient.from(REL_TASK_TABLE).insert(tp).select('*').single();
-    if(tr.error)throw tr.error;t.id=tr.data.id;t.projectId=p.id;t.phaseId=ph.id;keptTa.add(String(tr.data.id));
-   }
-  }
-  for(let ti=0;ti<p.tasks.length;ti++){
-   const t=p.tasks[ti];t.sortOrder=ti;const tp=taskPayload(p,t,ti,null);let tr;
-   if(dbId(t.id))tr=await supabaseClient.from(REL_TASK_TABLE).update(tp).eq('id',Number(t.id)).select('*').single();
-   else tr=await supabaseClient.from(REL_TASK_TABLE).insert(tp).select('*').single();
-   if(tr.error)throw tr.error;t.id=tr.data.id;t.projectId=p.id;t.phaseId=null;keptTa.add(String(tr.data.id));
-  }
+  if(!dbId(p.id))continue;
+  p.phases.forEach(ph=>ph.tasks.forEach((t,ti)=>{t.sortOrder=ti;taskJobs.push({p,t,ti,phaseId:ph.id});}));
+  p.tasks.forEach((t,ti)=>{t.sortOrder=ti;taskJobs.push({p,t,ti,phaseId:null});});
  }
+ await __relPool(taskJobs,6,async({p,t,ti,phaseId})=>{
+  const tp=taskPayload(p,t,ti,phaseId);
+  if(dbId(t.id)){
+   keptTa.add(String(t.id));t.projectId=p.id;t.phaseId=phaseId;
+   if(prev.ta.get(String(t.id))===__relSig(tp))return;
+   const r=await supabaseClient.from(REL_TASK_TABLE).update(tp).eq('id',Number(t.id)).select('id');if(r.error)throw r.error;
+  }else{
+   const r=await supabaseClient.from(REL_TASK_TABLE).insert(tp).select('id').single();if(r.error)throw r.error;
+   t.id=r.data.id;t.projectId=p.id;t.phaseId=phaseId;keptTa.add(String(t.id));
+  }
+ });
  const projectIds=new Set(list.filter(p=>dbId(p.id)).map(p=>String(p.id)));
  const oldTasks=relationalTaskSnapshot.filter(r=>projectIds.has(String(r.project_id))&&!keptTa.has(String(r.id))).map(r=>r.id);
  const oldPhases=relationalPhaseSnapshot.filter(r=>projectIds.has(String(r.project_id))&&!keptPh.has(String(r.id))).map(r=>r.id);
  if(oldTasks.length){const {error}=await supabaseClient.from(REL_TASK_TABLE).delete().in('id',oldTasks);if(error)throw error;}
  if(oldPhases.length){const {error}=await supabaseClient.from(REL_PHASE_TABLE).delete().in('id',oldPhases);if(error)throw error;}
- const fresh=await loadRelationalChildren();projectsList=buildRelationalProjects(list,fresh.phases,fresh.tasks);return projectsList;
+ /* keep the local snapshot in sync instead of re-downloading every phase/task */
+ const keepOther=r=>!projectIds.has(String(r.project_id));
+ relationalPhaseSnapshot=relationalPhaseSnapshot.filter(keepOther).concat(list.flatMap(p=>dbId(p.id)?p.phases.map(ph=>({id:ph.id,project_id:p.id})):[]));
+ relationalTaskSnapshot=relationalTaskSnapshot.filter(keepOther).concat(list.flatMap(p=>dbId(p.id)?[...p.phases.flatMap(ph=>ph.tasks.map(t=>({id:t.id,project_id:p.id}))),...p.tasks.map(t=>({id:t.id,project_id:p.id}))]:[]));
+ list.forEach(p=>{try{syncProjectOverallStatus(p);}catch(_){}});
+ projectsList=list;return projectsList;
 }
 
 /* Always load Project + Phase + Task from Supabase. */
@@ -220,16 +251,21 @@ runSheetSave=async function(sheetName){
  if(sheetName!=='Projects')return window._originalRunSheetSave(sheetName);
  const local=sheetLatestLocal[sheetName];if(!local)return true;sheetLatestLocal[sheetName]=null;sheetSyncInFlight[sheetName]=true;lastLocalSaveAt[sheetName]=Date.now();
  try{
-  const snap=sheetSyncSnapshots.Projects||[];const snapIds=new Map(snap.filter(x=>dbId(x?.id)).map(x=>[String(x.id),x]));const saved=[];
-  for(const row of local){
-   const payload=dbPayloadForSheet('Projects',row);let res;
-   if(dbId(row.id)&&snapIds.has(String(row.id)))res=await supabaseClient.from(SUPABASE_TABLES.Projects).update(payload).eq('id',Number(row.id)).select('*').single();
-   else res=await supabaseClient.from(SUPABASE_TABLES.Projects).insert(payload).select('*').single();
-   if(res.error)throw res.error;const mapped=mapDbProjectToApp(res.data);mapped.phases=row.phases||[];mapped.tasks=row.tasks||[];saved.push(mapped);row.id=res.data.id;
-  }
+  const snap=sheetSyncSnapshots.Projects||[];const snapIds=new Map(snap.filter(x=>dbId(x?.id)).map(x=>[String(x.id),x]));const saved=new Array(local.length);
+  /* PERF: only changed / new projects are written, in parallel */
+  await __relPool(local.map((row,i)=>({row,i})),6,async({row,i})=>{
+   const old=dbId(row.id)?snapIds.get(String(row.id)):null;
+   if(old&&__relSig(row)===__relSig(old)){saved[i]=row;return;}
+   const payload=dbPayloadForSheet('Projects',row);
+   if(old){let same=false;try{same=__relSig(dbPayloadForSheet('Projects',old))===__relSig(payload);}catch(_){}if(same){saved[i]=row;return;}}
+   const res=old
+     ?await supabaseClient.from(SUPABASE_TABLES.Projects).update(payload).eq('id',Number(row.id)).select('*').single()
+     :await supabaseClient.from(SUPABASE_TABLES.Projects).insert(payload).select('*').single();
+   if(res.error)throw res.error;const mapped=mapDbProjectToApp(res.data);mapped.phases=row.phases||[];mapped.tasks=row.tasks||[];saved[i]=mapped;row.id=res.data.id;
+  });
   const pending=pendingRowDeletions.Projects||new Set();const del=snap.filter(x=>dbId(x?.id)&&pending.has(stableRowKey('Projects',x))).map(x=>Number(x.id));
   if(del.length){const {error}=await teamGuard(supabaseClient.from(SUPABASE_TABLES.Projects).delete().in('id',del));if(error)throw error;}
-  projectsList=saved;await syncRelationalChildren(projectsList);sheetSyncSnapshots.Projects=JSON.parse(JSON.stringify(projectsList));lastLocalSaveAt.Projects=Date.now();return true;
+  projectsList=saved;await syncRelationalChildren(projectsList,snap);sheetSyncSnapshots.Projects=JSON.parse(JSON.stringify(projectsList));lastLocalSaveAt.Projects=Date.now();return true;
  }catch(e){console.error('Relational project save error:',e);showAppNotification(`Unable to save Projects / Phases / Tasks. ${e.message||e}`,'Database Error');throw e;}finally{sheetSyncInFlight.Projects=false;}
 };
 

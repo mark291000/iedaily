@@ -6,7 +6,7 @@ const key13=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,' ');
 const yes13=v=>v===undefined||v===null||v===''||v===true||/^(yes|y|true|1)$/i.test(String(v).trim());
 const user13=()=>typeof currentUser!=='undefined'?currentUser:null;
 const projectTeam13=p=>String(p?.team||((W.activeTeamView&&W.activeTeamView!==W.TEAM_ALL)?W.activeTeamView:'')||user13()?.team||'Unassigned').trim()||'Unassigned';
-const owner13=p=>{const a=Array.isArray(p?.owners)&&p.owners.length?p.owners:String(p?.owner||'').split(',');return a.map(x=>String(x).trim()).filter(Boolean).filter(x=>typeof isHiddenMember!=='function'||!isHiddenMember(x)).join(', ')||'Unassigned';};
+const owner13=p=>{const a=Array.isArray(p?.owners)&&p.owners.length?p.owners:String(p?.owner||'').split(',');return a.map(x=>String(x).trim()).filter(Boolean).join(', ')||'Unassigned';}; /* project owner = real owner (members hidden from reports still own their projects) */
 const money13=v=>{const n=Number(String(v??'').replace(/[$,\s]/g,''));return Number.isFinite(n)&&n!==0?'$'+n.toLocaleString(undefined,{maximumFractionDigits:0}):'-';};
 const date13=v=>{try{return (typeof formatDateMMDDYYYY==='function'?formatDateMMDDYYYY(v):String(v||''))||'-';}catch(_){return String(v||'')||'-';}};
 const statusClass13=v=>/complete|done|closed/i.test(v)?'completed':/overdue|delay|risk|stuck|block/i.test(v)?'risk':/working|progress|process/i.test(v)?'working':'';

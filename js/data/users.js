@@ -5,13 +5,15 @@
    - role: 'App Admin' | 'Team Admin' | 'Member'
    - Same member on several rows = one account with several team access.
      The FIRST row of that member is the Main team.
+   - "report": false  -> counted in Overall headcount, but NOT shown in
+     reports / workload / PIC statistics and NOT counted in workload.
    ===================================================================== */
 window.HARDCODED_USER_ROWS = [
   {"member": "Alida", "team": "Routing C&S", "role": "Member", "password": "5419"},
   {"member": "Alyssa", "team": "NPI", "role": "Member", "password": "1231"},
   {"member": "Amie", "team": "BOM UPH", "role": "Member", "password": "5323"},
   {"member": "Anna", "team": "BOM UPH", "role": "Member", "password": "5100"},
-  {"member": "Anny", "team": "BOM C&S", "role": "App Admin", "password": "417"},
+  {"member": "Anny", "team": "BOM C&S", "role": "App Admin", "password": "417", "report": false},
   {"member": "Aren", "team": "R&D", "role": "Member", "password": "8835"},
   {"member": "Asher", "team": "PE", "role": "Member", "password": "9304"},
   {"member": "Baron", "team": "Innovation", "role": "Team Admin", "password": "8273"},
@@ -119,3 +121,4 @@ window.HARDCODED_USER_ROWS = [
   {"member": "Zane", "team": "Cover Drawing", "role": "Member", "password": "8326"},
   {"member": "Ellie", "team": "BOM UPH", "role": "Member", "password": "3326"}
 ];
+(window.__appFiles=window.__appFiles||{})['users']='1.4.1';

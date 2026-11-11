@@ -1,3 +1,4 @@
+(window.__appFiles=window.__appFiles||{})['45-hardcodedUsersV1']='1.4.1';
 (function(){
 'use strict';
 /* =====================================================================
@@ -6,16 +7,20 @@
    - Tables users / user_team_roles / teams are NOT read from / written to
      the database. Tasks, projects, time off... still use Supabase.
    - Only one login type: user + password (Viewer login removed).
-   - App Admin  : team dropdown = all teams, full rights (unchanged).
-   - Team Admin : team dropdown = all teams.
-                  Own teams -> normal rights. Other teams -> view only.
-   - Member     : unchanged (own team; switch between own teams if >1).
+   - App Admin  : team dropdown = all teams, full rights.
+   - Team Admin : team dropdown = all teams. Own teams -> normal rights,
+                  other teams -> view only.
+   - Member     : own team(s) only.
+   - report:false on a user row -> counted in Overall headcount but hidden
+     from reports / workload / PIC statistics (show_in_reports = false).
    ===================================================================== */
-const HARDCODED_USER_ROWS = Array.isArray(window.HARDCODED_USER_ROWS) ? window.HARDCODED_USER_ROWS : []; // data: js/data/users.js
+const HARDCODED_USER_ROWS = Array.isArray(window.HARDCODED_USER_ROWS) ? window.HARDCODED_USER_ROWS : [];
 window.HARDCODED_USER_ROWS = HARDCODED_USER_ROWS;
 const N = v => String(v ?? '').trim().toLowerCase().replace(/\s+/g,' ');
 const ESC = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toRole = r => N(r)==='app admin' ? 'Admin' : (N(r)==='team admin' ? 'Team Admin' : 'Member');
+const HIDDEN_CFG = new Set(((window.APP_CONFIG && window.APP_CONFIG.HIDDEN_FROM_REPORTS) || []).map(x => String(x).trim().toLowerCase()));
+const noReport = r => r && (r.report === false || /^(no|n|false|0)$/i.test(String(r.report ?? '').trim()) || HIDDEN_CFG.has(String(r.member||'').trim().toLowerCase()));
 
 /* ---------- build users / user_team_roles / teams rows ---------- */
 const HC = { users: [], roles: [], teams: [] };
@@ -29,6 +34,7 @@ const HC = { users: [], roles: [], teams: [] };
             team: String(r.team).trim(), status: 'Active', show_in_reports: true, created_at: '', updated_at: '' };
       byName.set(k, u); HC.users.push(u);
     }
+    if(noReport(r)) u.show_in_reports = false;
     if(!HC.roles.some(x => x.user_id === u.id && N(x.team) === N(r.team))){
       HC.roles.push({ id: roleId++, user_id: u.id, team: String(r.team).trim(),
                       role: toRole(r.role)==='Admin' ? 'Team Admin' : toRole(r.role),
@@ -135,7 +141,7 @@ handleLogin = async function(e){
 };
 window.handleLogin = handleLogin;
 
-/* ---------- reversible read-only mode (used when a Team Admin views another team) ---------- */
+/* ---------- reversible read-only mode (Team Admin viewing another team) ---------- */
 const RO_BTN = /create|add task|new task|edit task|delete task|save task|save project|new project|add project|register|approve|reject|submit request|time.?off request|manage user|add phase|add milestone|delete project|edit project/;
 const RO_CLICK = /create|add task|new task|edit task|delete task|save|register|approve|reject|submit request|add phase|add milestone|delete project|edit project/;
 let roGuardInstalled = false;
@@ -233,18 +239,15 @@ window.switchTeamView = async function(value){
   if(!team) return;
   const own = myMemberships(real).find(m => N(m.team) === N(team));
   if(own){
-    if(currentUser.__viewAs){               // leave view mode -> back to the real account
-      clearViewerReadOnlyMode();
-      currentUser = real;
-    }
+    if(currentUser.__viewAs){ clearViewerReadOnlyMode(); currentUser = real; }
     await inheritedSwitch.call(this, own.team);
     try{ initUserSession(); }catch(_){}
   }else{
-    if(!currentUser.__viewAs){              // enter view mode with a read-only clone
+    if(!currentUser.__viewAs){
       currentUser = { id:'readonly-viewer', name:real.name, username:real.name, role:'Viewer', status:'Active',
                       isReadOnly:true, team:String(currentUser.team || ''), __viewAs:real };
     }
-    await inheritedSwitch.call(this, team); // viewer branch: loads the selected team
+    await inheritedSwitch.call(this, team);
     try{ applyViewerReadOnlyMode(); }catch(_){}
     if(!document.getElementById('tab-users')?.classList.contains('hidden')) try{ switchTab('overall'); }catch(_){}
   }
@@ -252,7 +255,6 @@ window.switchTeamView = async function(value){
 };
 try{ switchTeamView = window.switchTeamView; }catch(_){}
 
-/* logout: always leave view mode cleanly */
 const prevLogout = window.logout;
 if(typeof prevLogout === 'function'){
   window.logout = function(){ clearViewerReadOnlyMode(); return prevLogout.apply(this, arguments); };
