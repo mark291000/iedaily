@@ -689,8 +689,13 @@ function setupInlineRequiredValidation(){
             if(autoSyncTimer){clearInterval(autoSyncTimer);autoSyncTimer=null;}
             if(!window._bomVisBound){
                 window._bomVisBound=true;
+                // PERF: only reload everything when the tab was hidden for a while
+                // (realtime keeps data fresh while visible; short Alt+Tab no longer freezes the app).
+                let hiddenAt=0;
                 document.addEventListener('visibilitychange',()=>{
-                    if(!document.hidden&&currentUser) fetchAllDataFromSheet({background:true}).catch(()=>{});
+                    if(document.hidden){hiddenAt=Date.now();return;}
+                    if(currentUser&&hiddenAt&&Date.now()-hiddenAt>=60000) fetchAllDataFromSheet({background:true}).catch(()=>{});
+                    hiddenAt=0;
                 });
             }
         }

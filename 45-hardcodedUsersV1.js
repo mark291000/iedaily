@@ -18,7 +18,8 @@ window.HARDCODED_USER_ROWS = HARDCODED_USER_ROWS;
 const N = v => String(v ?? '').trim().toLowerCase().replace(/\s+/g,' ');
 const ESC = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toRole = r => N(r)==='app admin' ? 'Admin' : (N(r)==='team admin' ? 'Team Admin' : 'Member');
-const noReport = r => r && (r.report === false || /^(no|n|false|0)$/i.test(String(r.report ?? '').trim()));
+const HIDDEN_CFG = new Set(((window.APP_CONFIG && window.APP_CONFIG.HIDDEN_FROM_REPORTS) || []).map(x => String(x).trim().toLowerCase()));
+const noReport = r => r && (r.report === false || /^(no|n|false|0)$/i.test(String(r.report ?? '').trim()) || HIDDEN_CFG.has(String(r.member||'').trim().toLowerCase()));
 
 /* ---------- build users / user_team_roles / teams rows ---------- */
 const HC = { users: [], roles: [], teams: [] };

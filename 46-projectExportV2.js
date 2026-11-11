@@ -1,14 +1,15 @@
 /* =====================================================================
    PROJECT EXPORT V2 - Excel / PDF in the NEW Project Management format
    Columns = the current project table:
-   No. | Team | Project name | Owner | Start | Plan Completed | Actual | Status |
+   Project name | Owner | Start | Plan Completed | Actual | Status |
    Current Stage | %Progress | Archived goal | Saving (if have) | Key Project
    Export follows the current search + column filters (what is on screen).
    ===================================================================== */
 (function(){
 'use strict';
 const W=window;
-const COLS=['No.','Team','Project name','Owner','Start','Plan Completed','Actual','Status','Current Stage','%Progress','Archived goal','Saving','Key Project'];
+/* Same columns (and order) as the Project Management table on screen; Action column is not exported. */
+const COLS=['Project name','Owner','Start','Plan Completed','Actual','Status','Current Stage','%Progress','Archived goal','Saving','Key Project'];
 const HEAD={'Saving':'Saving (if have)'};
 const DATE_COLS=new Set(['Start','Plan Completed','Actual']);
 const STATUS_COLORS={completed:['DCFCE7','166534'],done:['DCFCE7','166534'],working:['DBEAFE','1E40AF'],'working on it':['DBEAFE','1E40AF'],'in progress':['DBEAFE','1E40AF'],overdue:['FEE2E2','991B1B'],stuck:['FEE2E2','991B1B'],'not started':['F1F5F9','475569']};
@@ -17,9 +18,14 @@ const fmtDate=v=>{const s=typeof cleanDateStr==='function'?cleanDateStr(v):Strin
 const money=v=>v===''||v==null||!isFinite(Number(v))?'':'$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0});
 const today=()=>new Date().toISOString().slice(0,10);
 
+/* Rows = projects visible in the table (search + column filters), read from the LIVE projectsList. */
 function rows(){
   let list=[];
-  try{list=W.getVisibleProjectExportRows?.()||getVisibleProjectExportRows()||[];}catch(e){console.error('Project export rows failed',e);}
+  try{list=(typeof getVisibleProjectExportRows==='function'?getVisibleProjectExportRows():W.getVisibleProjectExportRows?.())||[];}catch(e){console.error('Project export rows failed',e);}
+  if(!list.length){ /* fallback: no filter helpers available -> all projects of the live list */
+    const src=typeof projectsList!=='undefined'&&Array.isArray(projectsList)?projectsList:[];
+    list=src.map(p=>({'Project name':p.name||'',Owner:(Array.isArray(p.owners)&&p.owners.length?p.owners.join(', '):p.owner)||'',Start:cleanDateStr(p.startDate)||'','Plan Completed':cleanDateStr(p.dueDate)||'',Actual:cleanDateStr(p.actualDate)||'',Status:p.status||'','Current Stage':p.currentStage||'','%Progress':Number(p.progress)||0,'Archived goal':p.archivedGoal||p.detailedStatus||'',Saving:(p.actualSaving||p.saving||''),'Key Project':p.keyProject===false?'No':'Yes'}));
+  }
   return list.filter(r=>String(r['Project name']||'').trim());
 }
 function teamLabel(){const t=String(W.activeTeamView||'').trim();return t&&t!==W.TEAM_ALL?t:'All teams';}
@@ -41,7 +47,7 @@ function exportExcel(){
   const ws=XLSX.utils.aoa_to_sheet(aoa,{cellDates:true}),wb=XLSX.utils.book_new();
   const HR=3; // header row index (0-based)
   ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:COLS.length-1}},{s:{r:1,c:0},e:{r:1,c:COLS.length-1}}];
-  ws['!cols']=[6,16,34,20,12,14,12,14,26,11,40,14,11].map(w=>({wch:w}));
+  ws['!cols']=[36,22,12,15,12,15,28,11,46,15,11].map(w=>({wch:w}));
   ws['!rows']=[{hpt:24},{hpt:16},{hpt:6},{hpt:30}];
   ws['!autofilter']={ref:`A${HR+1}:${XLSX.utils.encode_col(COLS.length-1)}${aoa.length}`};
   const border={top:{style:'thin',color:{rgb:'D7E1E8'}},bottom:{style:'thin',color:{rgb:'D7E1E8'}},left:{style:'thin',color:{rgb:'D7E1E8'}},right:{style:'thin',color:{rgb:'D7E1E8'}}};
@@ -54,7 +60,7 @@ function exportExcel(){
     COLS.forEach((c,ci)=>{
       let x=cell(rowIdx,ci); if(!x){x=ws[XLSX.utils.encode_cell({r:rowIdx,c:ci})]={t:'s',v:''};}
       const st={font:{name:'Arial',sz:10,color:{rgb:'334E63'},bold:c==='Project name'},fill:{patternType:'solid',fgColor:{rgb:zebra}},alignment:{vertical:'top',horizontal:'left',wrapText:true},border};
-      if(c==='No.'||c==='Key Project'||c==='%Progress'||DATE_COLS.has(c))st.alignment.horizontal='center';
+      if(c==='Key Project'||c==='%Progress'||DATE_COLS.has(c))st.alignment.horizontal='center';
       if(c==='Saving'){st.alignment.horizontal='right';if(x.v!=='' )x.z='$#,##0';}
       if(c==='%Progress')x.z='0%';
       if(DATE_COLS.has(c)&&x.t==='d')x.z='mm/dd/yyyy';
@@ -69,8 +75,8 @@ function exportExcel(){
   ws[XLSX.utils.encode_cell({r:totalRow,c:savingCol-1})]={t:'s',v:'Total saving',s:{font:{name:'Arial',sz:10,bold:true,color:{rgb:'173E6B'}},alignment:{horizontal:'right'}}};
   ws[XLSX.utils.encode_cell({r:totalRow,c:savingCol})]={t:'n',v:total,z:'$#,##0',s:{font:{name:'Arial',sz:10,bold:true,color:{rgb:'173E6B'}},alignment:{horizontal:'right'},border:{top:{style:'medium',color:{rgb:'315C7A'}}}}};
   ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:totalRow,c:COLS.length-1}});
-  ws['!freeze']={xSplit:3,ySplit:HR+1};
-  ws['!views']=[{state:'frozen',xSplit:3,ySplit:HR+1}];
+  ws['!freeze']={xSplit:1,ySplit:HR+1};
+  ws['!views']=[{state:'frozen',xSplit:1,ySplit:HR+1}];
   XLSX.utils.book_append_sheet(wb,ws,'Project Management');
   XLSX.writeFile(wb,`Project_Management_${teamLabel().replace(/[^\w-]+/g,'_')}_${today()}.xlsx`,{cellStyles:true});
 }
@@ -81,7 +87,7 @@ function exportPdf(){
   if(!W.jspdf?.jsPDF){showAppNotification('PDF export library is not available. Please wait a moment and try again.','Export');return;}
   const doc=new W.jspdf.jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight(),M=20,tableW=pageW-M*2;
-  const base=[22,52,110,62,46,52,46,52,84,40,150,52,36], sum=base.reduce((a,b)=>a+b,0), widths=base.map(w=>w*tableW/sum);
+  const base=[120,66,48,56,48,56,96,44,170,56,40], sum=base.reduce((a,b)=>a+b,0), widths=base.map(w=>w*tableW/sum);
   const hex=h=>[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
   const FS=6.6, LH=8.2, PAD=4;
   let y=M, page=1;
@@ -113,7 +119,7 @@ function exportPdf(){
       else if(c==='Key Project'&&r[c]==='Yes'){doc.setTextColor(...hex('B45309'));doc.setFont('helvetica','bold');}
       else{doc.setTextColor(...hex('334E63'));doc.setFont('helvetica',c==='Project name'?'bold':'normal');}
       if(c==='%Progress'){const p=Math.max(0,Math.min(100,Number(r[c])||0));const bw=widths[i]-8;doc.setFillColor(...hex('E2E8F0'));doc.rect(x+4,y+h-PAD-3,bw,2.5,'F');doc.setFillColor(...hex(p>=100?'16A34A':'2563EB'));doc.rect(x+4,y+h-PAD-3,bw*p/100,2.5,'F');}
-      const center=c==='No.'||c==='Status'||c==='Key Project'||c==='%Progress'||DATE_COLS.has(c), right=c==='Saving';
+      const center=c==='Status'||c==='Key Project'||c==='%Progress'||DATE_COLS.has(c), right=c==='Saving';
       doc.setFontSize(FS);
       doc.text(lines,right?x+widths[i]-PAD:center?x+widths[i]/2:x+PAD,y+PAD+LH-2,{align:right?'right':center?'center':'left',lineHeightFactor:LH/FS});
       x+=widths[i];
