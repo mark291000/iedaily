@@ -1,61 +1,38 @@
-# IE Team – Task & Project Tracking
+# IE Team – Task & Project Tracking (v1.4.2)
 
-Static web app (HTML/CSS/JS) + Supabase cho Task / Project / Time Off.
-User & đăng nhập được **hardcode** trong `js/data/users.js` (không dùng database).
+Một file `index.html` duy nhất (HTML/CSS/JS) + Supabase cho Task / Project / Time Off.
+User & đăng nhập hardcode trong `index.html` (`window.HARDCODED_USER_ROWS`).
 
-## Đăng nhập & quyền xem team
-- Chỉ 1 loại đăng nhập: **User + Password**.
-- **App Admin**: chọn mọi team, toàn quyền.
-- **Team Admin**: *My teams* = quyền bình thường; *Other teams* = chỉ xem.
-- **Member**: chỉ team của mình.
-
-## User ẩn khỏi báo cáo
-Thêm tên vào `HIDDEN_FROM_REPORTS` trong `js/config.js`, hoặc thêm `"report": false` vào dòng user trong `js/data/users.js`
-(hoặc cột E = `No` trong Excel). User đó vẫn tính **Headcount** ở Overall
-nhưng không hiện trong báo cáo / workload và không tính workload.
-
-## Cấu trúc
+## Nội dung
 ```
-index.html, css/, js/config.js, js/data/users.js, js/core/, js/modules/, tools/
+index.html            App (một file, chứa toàn bộ CSS + JS)
+version.json          Số phiên bản trên server (app tự tải lại khi có bản mới)
+manifest.json, sw.js  Cho phép "Install app"
+.nojekyll             GitHub Pages phục vụ file nguyên trạng
+tools/excel_to_users.py  Tạo danh sách user từ Excel
 ```
-Thứ tự `<script>` trong `index.html` quan trọng – không đổi thứ tự.
 
-## Deploy GitHub Pages
-Settings → Pages → Source: **Deploy from a branch** → `main` / `(root)`.
+## Deploy / cập nhật trên GitHub Pages
+1. **Giải nén zip trên máy** (GitHub không tự giải nén file .zip).
+2. Repo → **Add file → Upload files** → kéo các FILE bên trong thư mục (không kéo cả thư mục) → **Commit**.
+3. Lần đầu: Settings → Pages → Source: *Deploy from a branch* → `main` / `(root)`.
+4. Đợi 1–2 phút → mở app → **Ctrl+F5**. Cuối sidebar phải hiện **IE Team app v1.4.2**.
 
-## Cập nhật user
-Sửa `js/data/users.js`, hoặc `python tools/excel_to_users.py User_Team_Access.xlsx`.
+## Quyền
+- Đăng nhập: User + Password.
+- App Admin: mọi team, toàn quyền. Team Admin: team của mình sửa được, team khác chỉ xem. Member: team của mình.
+- Ẩn khỏi báo cáo (vẫn tính Headcount): `HIDDEN_FROM_REPORTS` trong `APP_CONFIG` (mặc định `['Anny']`).
 
-## Thêm class Tailwind mới
-`npm install && npm run build:css`
+## Project Management
+- **Status tự tính** (không chọn tay):
+  Actual có ngày → Completed · trước Start → Not Started · quá Plan Completed → Overdue · còn lại → Working.
+- Form Create/Edit chia 4 phần: Project information · Owners · Schedule · Progress & results.
+- **Owner(s)** chọn nhiều người từ danh sách member của Team đang chọn.
 
 ## Changelog
-- **v1.4.0**
-  - Mở app chỉ tải task của **tuần hiện tại** (+ task chưa hoàn thành). Đổi Year/Month/Week hoặc
-    chuyển tuần/tháng/năm ở Weekly Workload -> chỉ tải lại bảng Tasks cho đúng khoảng đó.
-    Xoá hết filter Year/Month/Week = tải toàn bộ.
-  - IE Overall chỉ tải Year/Month/Week đang chọn (trước: cả năm, mọi team).
-  - Category Setup: workload trung bình tính từ toàn bộ dữ liệu trên server.
-  - Ẩn khỏi báo cáo nằm trong file lõi + `js/config.js` (`HIDDEN_FROM_REPORTS`).
-  - Export Daily Tracking / My Tasks: luôn có PIC, cột **Usage Time** (không có "h"), mọi ô định dạng Text.
-  - Sửa lỗi lần đầu mở Team Performance biểu đồ/bảng trống (từ v1.3).
-  - Owner của project hiện đúng tên (kể cả người ẩn khỏi báo cáo).
-  - Sidebar Workload hiện thêm dòng "Project hours (Gantt)".
-  - `js/version-check.js` + `version.json`: báo đỏ nếu file trên server chưa cập nhật, tự tải lại khi có bản mới.
-- **v1.3.0**
-  - Export Project: sửa lỗi file rỗng (module đọc bản sao cũ `window.projectsList`); cột giống hệt bảng trên app.
-  - Ẩn khỏi báo cáo cấu hình trong `js/config.js` → `HIDDEN_FROM_REPORTS` (mặc định `['Anny']`).
-  - Weekly Workload / Team Performance tính workload bằng index (nhanh ~10–30 lần, kết quả giữ nguyên).
-  - Chuyển trang không vẽ lại khi dữ liệu không đổi; quay lại tab trình duyệt không tải lại toàn bộ (trừ khi rời > 60 giây).
-  - Thêm `?v=` vào mọi file JS/CSS để trình duyệt luôn tải bản mới; hiện số phiên bản ở cuối sidebar.
-- **v1.2.3** – Export Daily Tracking / My Tasks lấy từ dữ liệu: luôn có cột PIC + Team, xuất đủ mọi dòng theo filter (không chỉ trang đang hiện).
-- **v1.2.2** – Xuất Excel/PDF trang Project theo format mới (Team, Project name, Owner, Start, Plan Completed, Actual, Status, Current Stage, %Progress, Archived goal, Saving, Key Project), theo search + filter đang áp dụng.
-- **v1.2.1** – Task Daily Tracking "Project: Project processing" luôn được tính workload; giờ Gantt của project chỉ cộng khi PIC chưa log task Project processing cùng ngày (không tính trùng).
-- **v1.2** – Overall đếm đủ App Admin; user `report:false` chỉ tính headcount;
-  lưu Project chỉ ghi phần thay đổi (song song, không tải lại toàn bộ);
-  task Daily Tracking category *Project* được tính vào workload.
-- **v1.1** – Bỏ đăng nhập Viewer; Team Admin xem team khác (view only); sửa giao diện Overall.
-- **v1.0** – Tách project, bỏ Tailwind CDN, giảm lag.
-
-## Khi phát hành bản mới
-Đổi cùng 1 số phiên bản ở: `?v=` trong `index.html`, `APP_VERSION` trong `js/config.js`, `version.json`, và chuỗi `'1.4.0'` trong các file có `__appFiles`.
+- **v1.4.2** – Status project tự tính theo Start/Plan/Actual/hôm nay; form Create/Edit Project mới; Owner(s) chọn từ member.
+- **v1.4.1** – Gộp thành một file index.html.
+- **v1.4.0** – Chỉ tải dữ liệu tuần hiện tại, tải lại theo filter; export Task (PIC, Usage Time, Text); ẩn Anny; kiểm tra phiên bản.
+- **v1.3.0** – Sửa export Project rỗng; tăng tốc Weekly Workload & chuyển trang.
+- **v1.2.x** – Headcount đủ App Admin; task Project processing tính workload; export Project/Task format mới.
+- **v1.1.0** – Bỏ đăng nhập Viewer; Team Admin xem team khác (view only).
