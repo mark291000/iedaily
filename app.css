@@ -1,0 +1,1987 @@
+/* App + patch styles, in original order (loaded AFTER tailwind.css) */
+/* ===== style ===== */
+/* Relational Project / Phase / Task UI */
+#tab-projects .pm-ref-project-table .pm-ref-task-row td{vertical-align:middle!important;height:38px!important;box-sizing:border-box!important}
+#tab-projects .pm-ref-project-table .pm-ref-task-cell{padding:3px 6px!important}
+#tab-projects .pm-ref-project-table .pm-ref-task-cell .pm-ref-input{height:30px!important;line-height:28px!important}
+#tab-projects .pm-ref-project-table .pm-ref-no{vertical-align:middle!important;text-align:center!important}
+#tab-projects .pm-ref-project-table .pm-ref-task-row .pm-ref-drag-handle{flex:0 0 24px!important;width:24px!important;min-width:24px!important}
+#tab-projects .pm-ref-project-table .pm-ref-phase-cell input.pm-phase-entry-input{background:inherit!important}
+
+<style id="projectManagementV15Fixes">
+#tab-projects .pm-reference-title{display:none!important}
+#tab-projects .pm-reference-toolbar{justify-content:flex-start!important}
+#tab-projects .pm-reference-actions{width:100%!important;justify-content:flex-start!important}
+#tab-projects .pm-ref-view-switch{display:flex!important;order:0!important;margin-right:2px!important}
+#tab-projects .pm-ref-project-table-wrap{overflow-x:auto!important;overflow-y:visible!important;max-height:none!important}
+#tab-projects .pm-project-stack{overflow:auto!important}
+#tab-projects .pm-ref-project-table thead th{position:sticky!important;top:0!important;z-index:40!important;text-align:center!important;vertical-align:middle!important}
+#tab-projects .pm-ref-project-table thead th:nth-child(2),#tab-projects .pm-ref-project-table thead th:nth-child(3){text-align:center!important}
+#tab-projects .pm-project-detail-cell{vertical-align:top!important}
+#tab-projects .pm-project-detail-list{white-space:pre-line!important;text-align:left!important;line-height:1.3!important;max-height:60px!important;overflow:auto!important}
+
+/* ===== style ===== */
+#tab-projects .pm-ref-gain-input{text-align:center!important;font-variant-numeric:tabular-nums!important}
+@media(max-width:1250px){
+  #tab-projects .pm-reference-actions{gap:5px!important}
+  #tab-projects .pm-ref-search{width:240px!important;min-width:180px!important}
+  #tab-projects .pm-ref-new-project{min-width:102px!important}
+  #tab-projects .pm-ref-import{min-width:108px!important}
+  #tab-projects .pm-ref-export-data{min-width:92px!important}
+}
+
+/* ===== projectManagementV19Fixes ===== */
+/* V19 project management fixes */
+#tab-projects .pm-ref-number,
+#tab-projects .pm-ref-money,
+#tab-projects .pm-ref-project-table td[data-number],
+#tab-projects .pm-ref-project-table td[data-money]{
+  text-align:right!important;
+  font-variant-numeric:tabular-nums!important;
+}
+#tab-projects .pm-ref-project-table input[type=number]{text-align:right!important;font-variant-numeric:tabular-nums!important;}
+#tab-projects .pm-filter-popup{box-sizing:border-box!important;max-height:min(390px,calc(100vh - 24px))!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}
+#tab-projects .pm-filter-values{display:block!important;flex:1 1 auto!important;min-height:80px!important;height:auto!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;}
+#tab-projects .pm-filter-value{display:flex!important;flex:0 0 auto!important;}
+#tab-projects .pm-ref-view-switch{margin-right:0!important;}
+#tab-projects .pm-ref-expand-btn{margin-left:2px!important;margin-right:auto!important;}
+#tab-projects .pm-reference-actions{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important;}
+#tab-projects .pm-ref-search{width:min(260px,24vw)!important;min-width:150px!important;flex:0 1 260px!important;}
+#tab-projects .pm-ref-search input{min-width:0!important;width:100%!important;}
+#tab-projects .pm-ref-new-project{min-width:106px!important;width:auto!important;}
+#tab-projects .pm-ref-import{min-width:118px!important;width:auto!important;}
+#tab-projects .pm-ref-export-data{min-width:100px!important;width:auto!important;}
+#tab-projects .pm-shared-table-wrap{overflow-x:auto!important;}
+#tab-projects .pm-horizontal-scrollbar{display:none!important;}
+#tab-projects .pm-project-import-overlay{position:fixed;inset:0;background:rgba(15,23,42,.38);backdrop-filter:blur(2px);z-index:2147483647;display:flex;align-items:center;justify-content:center;}
+#tab-projects .pm-project-import-box{width:310px;max-width:calc(100vw - 30px);background:#fff;border:1px solid #d8e3ec;border-radius:14px;padding:18px 20px;box-shadow:0 20px 55px rgba(15,23,42,.25);text-align:center;}
+#tab-projects .pm-project-import-box .wheel-and-hamster{font-size:7px;margin:0 auto 5px;transform:scale(.62);transform-origin:center;}
+#tab-projects .pm-import-progress{height:8px;background:#e8eef4;border-radius:999px;overflow:hidden;margin-top:10px;}
+#tab-projects .pm-import-progress>span{display:block;height:100%;width:0;background:#1976d2;border-radius:999px;transition:width .12s ease;}
+#tab-projects .pm-import-progress-label{font-size:11px;font-weight:800;color:#365b77;margin-top:7px;}
+/* Timeline: one scroll container, month/day header, white hierarchy labels and status/detail bars. */
+#tab-projects #ganttChartContainer{overflow:auto!important;width:100%!important;min-width:0!important;}
+#tab-projects #ganttChartContainer .project-gantt-wrap{width:max-content!important;min-width:100%!important;}
+#tab-projects .pm-gantt-task-date-table{min-width:max-content!important;width:max-content!important;}
+#tab-projects .pm-gantt-task-date-table .label-head{background:#315c7a!important;color:#fff!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-month-head{background:#315c7a!important;color:#fff!important;font-size:10px!important;text-align:center!important;height:24px!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-date-head{background:#647b8b!important;color:#fff!important;height:27px!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-row-title{color:#fff!important;}
+#tab-projects .pm-gantt-task-date-table .label-cell{background:#315c7a!important;color:#fff!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-row-meta{color:#e6f0f7!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar{color:#fff!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar.project-bar.status-completed,
+#tab-projects .pm-gantt-task-date-table .gantt-bar.phase-bar.status-completed,
+#tab-projects .pm-gantt-task-date-table .gantt-bar.task-bar.status-completed{background:#16a34a!important;border-color:#15803d!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar.status-working{background:#2563eb!important;border-color:#1d4ed8!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar.status-overdue{background:#dc2626!important;border-color:#b91c1c!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar.status-stuck{background:#d97706!important;border-color:#b45309!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar.status-not-started{background:#64748b!important;border-color:#475569!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar .gantt-task-bar-text{color:#fff!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar .gantt-task-bar-text b{display:none!important;}
+#tab-projects .pm-gantt-task-date-table .gantt-bar .gantt-task-bar-text span{font-size:8px!important;color:#fff!important;}
+
+/* ===== projectManagementV19TableNumbers ===== */
+#tab-projects .pm-ref-project-table th:nth-child(8),#tab-projects .pm-ref-project-table td:nth-child(8),
+#tab-projects .pm-ref-project-table th:nth-child(9),#tab-projects .pm-ref-project-table td:nth-child(9),
+#tab-projects .pm-ref-project-table th:nth-child(10),#tab-projects .pm-ref-project-table td:nth-child(10){font-variant-numeric:tabular-nums!important;}
+#tab-projects .pm-ref-project-table td:nth-child(8),#tab-projects .pm-ref-project-table td:nth-child(9),#tab-projects .pm-ref-project-table td:nth-child(10){text-align:right!important;}
+#tab-projects .pm-ref-project-table th:nth-child(8) .pm-filter-head{justify-content:center!important;text-align:center!important;}
+
+/* ===== projectManagementV19FilterAndPdfFix ===== */
+#projectHeaderFilterPopup.pm-filter-popup{max-height:min(390px,calc(100vh - 24px))!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;}
+#projectHeaderFilterPopup .pm-filter-values{display:block!important;flex:1 1 auto!important;min-height:70px!important;max-height:250px!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;border:1px solid #d9e3eb!important;border-radius:5px!important;}
+#projectHeaderFilterPopup .pm-filter-value{display:flex!important;align-items:center!important;min-height:22px!important;height:22px!important;box-sizing:border-box!important;}
+
+/* ===== projectManagementV20Fixes ===== */
+/* V20: table hierarchy, numeric alignment, no number spinners */
+#tab-projects .pm-ref-project-head{background:#fff!important;color:#173e6b!important;border-bottom:1px solid #d7e3ec!important;}
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row td{background:#fff!important;border-top:1px solid #d7e3ec!important;border-bottom:1px solid #d7e3ec!important;}
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row:hover td{background:#f8fbfd!important;}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-0 td{background:#f8fbfd!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-1 td{background:#f7fbf8!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-2 td{background:#fffaf3!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-3 td{background:#fbf8fd!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-4 td{background:#fff8fa!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-5 td{background:#f7fcfb!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-6 td{background:#f9faff!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row.phase-task-color-7 td{background:#fffdf7!important}
+#tab-projects .pm-ref-gain-input,.pm-ref-project-table .pm-ref-gain-input{text-align:center!important;font-variant-numeric:tabular-nums!important}
+#tab-projects .pm-ref-project-table td:nth-child(8){text-align:center!important;font-variant-numeric:tabular-nums!important}
+#tab-projects .pm-ref-project-table td:nth-child(9),#tab-projects .pm-ref-project-table td:nth-child(10){text-align:right!important;font-variant-numeric:tabular-nums!important}
+#tab-projects .pm-ref-project-table td:nth-child(4){text-align:center!important}
+#tab-projects .pm-ref-project-table td:nth-child(11){text-align:center!important}
+#tab-projects .pm-ref-detail-badge.on-track{display:inline-flex!important;justify-content:center!important;align-items:center!important}
+#tab-projects input[type=number]::-webkit-outer-spin-button,#tab-projects input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none!important;margin:0!important}
+#tab-projects input[type=number]{-moz-appearance:textfield!important;appearance:textfield!important}
+#tab-projects .pm-ref-money{font-variant-numeric:tabular-nums!important;text-align:right!important}
+/* Project period filter bar */
+#tab-projects .pm-project-period-filters{display:flex!important;align-items:center!important;gap:5px!important;flex:0 0 auto!important}
+#tab-projects .pm-project-period-filters .bom-multi{position:relative!important;flex:0 0 auto!important}
+#tab-projects .pm-project-period-filters .bom-multi-btn{height:32px!important;min-width:68px!important;max-width:100px!important;padding:0 8px!important;border:1px solid #d7e3ec!important;border-radius:7px!important;background:#fff!important;color:#52718a!important;font-size:10px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:4px!important}
+#tab-projects .pm-project-period-filters .bom-multi-menu{position:fixed!important;width:220px!important;max-height:280px!important;overflow-y:auto!important;overflow-x:hidden!important;background:#fff!important;border:1px solid #d7e3ec!important;border-radius:8px!important;box-shadow:0 10px 25px rgba(15,23,42,.16)!important;padding:7px!important}
+#tab-projects .pm-project-period-filters .bom-multi-option{display:flex!important;align-items:center!important;gap:7px!important;padding:4px!important;font-size:10px!important}
+/* Timeline */
+#tab-projects #ganttChartContainer{overflow:auto!important;width:100%!important;min-width:0!important;max-height:calc(100vh - 180px)!important}
+#tab-projects #ganttChartContainer .project-gantt-wrap{width:max-content!important;min-width:100%!important}
+#tab-projects .pm-gantt-task-date-table{table-layout:fixed!important;border-collapse:collapse!important;width:max-content!important;min-width:max-content!important}
+#tab-projects .pm-gantt-task-date-table .gantt-project-col{width:280px!important;min-width:280px!important}
+#tab-projects .pm-gantt-task-date-table .gantt-owner-col{width:95px!important;min-width:95px!important}
+#tab-projects .pm-gantt-task-date-table .gantt-status-col{width:95px!important;min-width:95px!important}
+#tab-projects .pm-gantt-task-date-table .gantt-day-col{width:32px!important;min-width:32px!important}
+#tab-projects .pm-gantt-task-date-table .label-head,#tab-projects .pm-gantt-task-date-table .owner-head,#tab-projects .pm-gantt-task-date-table .status-head{background:#315c7a!important;color:#fff!important;text-align:center!important;vertical-align:middle!important}
+#tab-projects .pm-gantt-task-date-table .gantt-month-head{background:#315c7a!important;color:#fff!important;font-size:10px!important;text-align:center!important;height:24px!important;border:1px solid rgba(255,255,255,.16)!important}
+#tab-projects .pm-gantt-task-date-table .gantt-date-head{background:#647b8b!important;color:#fff!important;font-size:9px!important;text-align:center!important;height:27px!important;border:1px solid rgba(255,255,255,.16)!important}
+#tab-projects .pm-gantt-task-date-table tbody td{height:42px!important;border:1px solid #dce5ec!important;box-sizing:border-box!important}
+#tab-projects .pm-gantt-task-date-table .label-cell{background:#fff!important;color:#173e6b!important;text-align:left!important}
+#tab-projects .pm-gantt-task-date-table .project-row .label-cell{background:#315c7a!important;color:#fff!important}
+#tab-projects .pm-gantt-task-date-table .gantt-owner-cell,#tab-projects .pm-gantt-task-date-table .gantt-status-cell{background:#fff!important;color:#334e63!important;font-size:9px!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#tab-projects .pm-gantt-task-date-table .project-row .gantt-owner-cell,#tab-projects .pm-gantt-task-date-table .project-row .gantt-status-cell{background:#315c7a!important;color:#fff!important;font-weight:700!important}
+#tab-projects .pm-gantt-task-date-table .gantt-row-title{color:inherit!important;font-weight:800!important}
+#tab-projects .pm-gantt-task-date-table .gantt-row-meta{display:none!important}
+#tab-projects .pm-gantt-task-date-table .timeline-span{padding:0!important;background:#fff!important;position:relative!important}
+#tab-projects .pm-gantt-task-date-table .gantt-row-track{position:relative!important;height:41px!important;width:100%!important;overflow:hidden!important;background:#fff!important}
+#tab-projects .pm-gantt-task-date-table .gantt-grid-bg{position:absolute!important;inset:0!important;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100% / var(--gantt-columns) - 1px),#dce5ec calc(100% / var(--gantt-columns) - 1px),#dce5ec calc(100% / var(--gantt-columns)))!important}
+#tab-projects .pm-gantt-task-date-table .gantt-bar{top:11px!important;height:19px!important;border-radius:5px!important;color:#fff!important;overflow:hidden!important;box-shadow:0 1px 2px rgba(15,23,42,.12)!important}
+#tab-projects .pm-gantt-task-date-table .project-bar{background:#4caf76!important;border:1px solid #2f9b60!important}
+#tab-projects .pm-gantt-task-date-table .phase-bar,#tab-projects .pm-gantt-task-date-table .task-bar{background:transparent!important;border:0!important;box-shadow:none!important}
+#tab-projects .pm-gantt-task-date-table .phase-bar.status-completed,#tab-projects .pm-gantt-task-date-table .task-bar.status-completed{background:#4caf76!important;border:1px solid #2f9b60!important}
+#tab-projects .pm-gantt-task-date-table .phase-bar.status-working,#tab-projects .pm-gantt-task-date-table .task-bar.status-working{background:#2563eb!important}
+#tab-projects .pm-gantt-task-date-table .phase-bar.status-overdue,#tab-projects .pm-gantt-task-date-table .task-bar.status-overdue{background:#dc2626!important}
+#tab-projects .pm-gantt-task-date-table .phase-bar.status-not-started,#tab-projects .pm-gantt-task-date-table .task-bar.status-not-started{background:#64748b!important}
+#tab-projects .pm-gantt-task-date-table .gantt-task-bar-text{color:#fff!important;font-size:8px!important;font-weight:700!important;white-space:nowrap!important;padding:0 6px!important;line-height:19px!important}
+#tab-projects .pm-gantt-task-date-table .pm-gantt-toggle{color:inherit!important}
+
+/* ===== projectManagementV23TimelineFixes ===== */
+/* Remove Project period filters; other pages keep their own Year/Month/Week bars. */
+#tab-projects .pm-project-period-filters{display:none!important}
+
+/* Timeline is its own scroll container; headers stay together and never leave a blank split. */
+#tab-projects #ganttChartContainer{position:relative!important;overflow:auto!important;max-height:calc(100vh - 150px)!important;background:#fff!important;scroll-padding-top:54px!important}
+#tab-projects #ganttChartContainer .project-gantt-wrap{padding-top:0!important;margin:0!important;min-width:max-content!important}
+#tab-projects #ganttChartContainer .project-gantt{min-width:max-content!important;width:max-content!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important}
+#tab-projects #ganttChartContainer .project-gantt thead th{position:sticky!important;z-index:40!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:first-child th{top:0!important;height:28px!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{top:28px!important;height:26px!important}
+#tab-projects #ganttChartContainer .project-gantt .label-head{z-index:55!important;top:0!important;background:#315f7f!important;color:#fff!important}
+#tab-projects #ganttChartContainer .project-gantt .label-cell{z-index:20!important;background:#fff!important}
+#tab-projects #ganttChartContainer .project-gantt .label-col{left:0!important}
+#tab-projects #ganttChartContainer .project-gantt .gantt-project-col{width:245px!important;min-width:245px!important}
+#tab-projects #ganttChartContainer .project-gantt .gantt-owner-col{width:100px!important;min-width:100px!important}
+#tab-projects #ganttChartContainer .project-gantt .gantt-status-col{width:105px!important;min-width:105px!important}
+#tab-projects #ganttChartContainer .project-gantt .gantt-day-col{width:42px!important;min-width:42px!important}
+#tab-projects #ganttChartContainer .gantt-row-title{font-size:11px!important}
+#tab-projects #ganttChartContainer .task-label .gantt-row-title{font-size:10px!important}
+#tab-projects #ganttChartContainer .gantt-filter-head{width:100%!important;justify-content:space-between!important;gap:4px!important}
+#tab-projects #ganttChartContainer .gantt-filter-head .gantt-filter-btn{margin-left:auto!important;flex:0 0 auto!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-menu{width:250px!important;max-height:360px!important;border:1px solid #cbd9e5!important;border-radius:6px!important;box-shadow:0 10px 25px rgba(24,55,82,.18)!important;padding:9px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-values{max-height:250px!important;overflow-y:auto!important;overflow-x:hidden!important;border:1px solid #d9e3eb!important;border-radius:5px!important;padding:4px!important}
+
+/* Status colors: completed green, overdue red/pink, working blue, due within 2 days yellow. */
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-completed{background:#22b968!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-overdue{background:#ef6b7b!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-working{background:#2f80ed!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-near-deadline{background:#f2c94c!important;color:#263238!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-project-default{background:#64748b!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-default{background:#94a3b8!important;color:#fff!important}
+#tab-projects #ganttChartContainer .phase-row .gantt-bar{background:#94a3b8!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-task-bar-text{color:inherit!important}
+
+/* Project/phase financial values in the table align with their numeric cells. */
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row .pm-ref-number,
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row .pm-ref-money,
+#tab-projects .pm-shared-project-table .pm-ref-task-row .pm-ref-number,
+#tab-projects .pm-shared-project-table .pm-ref-task-row .pm-ref-money{text-align:right!important;font-variant-numeric:tabular-nums!important}
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row .pm-ref-number .pm-ref-gain-input,
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row .pm-ref-money input,
+#tab-projects .pm-shared-project-table .pm-ref-task-row .pm-ref-number input,
+#tab-projects .pm-shared-project-table .pm-ref-task-row .pm-ref-money input{text-align:right!important}
+
+/* ===== style ===== */
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-completed{background:#22b968!important;border-color:#169b55!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-overdue{background:#ef6b7b!important;border-color:#d95768!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-working{background:#2f80ed!important;border-color:#1f68c8!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar.gantt-status-near-deadline{background:#f2c94c!important;border-color:#d7a900!important;color:#263238!important}
+#tab-projects #ganttChartContainer{position:relative!important;overflow:auto!important;padding:0!important}
+#tab-projects #ganttChartContainer .project-gantt-wrap{margin:0!important;padding:0!important;position:relative!important}
+#tab-projects #ganttChartContainer .project-gantt{border-collapse:separate!important;border-spacing:0!important}
+#tab-projects #ganttChartContainer .project-gantt thead th{position:sticky!important;z-index:120!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:first-child th{top:0!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{top:24px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-menu{width:240px!important;max-height:360px!important;overflow:hidden!important;border:1px solid #d7e3ec!important;border-radius:8px!important;background:#fff!important;box-shadow:0 12px 28px rgba(15,23,42,.18)!important;padding:8px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-menu .gantt-inline-filter-values{max-height:245px!important;overflow-y:auto!important;overflow-x:hidden!important;border:1px solid #e1e8ef!important;border-radius:6px!important;margin-top:6px!important;padding:4px!important}
+#tab-projects .gantt-inline-filter-menu{position:fixed!important}
+#tab-projects .gantt-inline-filter-actions{display:flex!important;justify-content:flex-end!important;gap:6px!important;padding-top:7px!important;background:#fff!important}
+#tab-projects .gantt-inline-filter-actions button{border:1px solid #d7e3ec!important;border-radius:6px!important;padding:5px 10px!important;background:#fff!important;font-size:10px!important}
+#tab-projects .gantt-inline-filter-actions .gantt-filter-apply{background:#1976d2!important;color:#fff!important;border-color:#1976d2!important}
+#tab-projects .gantt-row-title{font-size:12px!important}
+
+/* ===== projectManagementV31TimelineFixes ===== */
+/* V31: authoritative Timeline geometry + Table bottom scrollbar */
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  overflow-x:auto!important;overflow-y:auto!important;scrollbar-width:none!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{height:0!important;}
+#tab-projects #projectTableBottomScroll{
+  display:block!important;height:15px!important;min-height:15px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:auto!important;
+}
+#tab-projects #projectTableBottomScroll>div{height:1px!important;}
+
+#tab-projects #ganttChartContainer{position:relative!important;overflow:auto!important;}
+#tab-projects #ganttChartContainer .project-gantt-wrap{padding:0!important;margin:0!important;position:relative!important;min-width:max-content!important;width:max-content!important;}
+#tab-projects #ganttChartContainer .project-gantt{width:max-content!important;min-width:max-content!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-day-col{width:40px!important;min-width:40px!important;max-width:40px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:first-child{height:28px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2){height:27px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead th{padding:0!important;line-height:1!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:first-child th{top:0!important;height:28px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{top:28px!important;height:27px!important;}
+#tab-projects #ganttChartContainer .project-gantt .label-head,
+#tab-projects #ganttChartContainer .project-gantt .owner-head,
+#tab-projects #ganttChartContainer .project-gantt .status-head{
+  position:sticky!important;top:0!important;z-index:700!important;background:#315c7a!important;color:#fff!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .label-head{left:0!important;width:260px!important;min-width:260px!important;}
+#tab-projects #ganttChartContainer .project-gantt .owner-head{left:260px!important;width:130px!important;min-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt .status-head{left:390px!important;width:130px!important;min-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .label-col{position:sticky!important;left:0!important;z-index:500!important;width:260px!important;min-width:260px!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .gantt-owner-cell{position:sticky!important;left:260px!important;z-index:500!important;width:130px!important;min-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .gantt-status-cell{position:sticky!important;left:390px!important;z-index:500!important;width:130px!important;min-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .timeline-span{padding:0!important;border:0!important;background:#fff!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody td{border-bottom:1px solid #d7e2ea!important;border-right:1px solid #d7e2ea!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-row-track{position:relative!important;height:100%!important;min-height:34px!important;background:transparent!important;}
+#tab-projects #ganttChartContainer .project-row .label-col,
+#tab-projects #ganttChartContainer .project-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .project-row .gantt-status-cell{background:#315c7a!important;color:#fff!important;font-weight:800!important;}
+#tab-projects #ganttChartContainer .project-row .gantt-row-title{color:#fff!important;font-weight:800!important;}
+#tab-projects #ganttChartContainer .phase-row .label-col,
+#tab-projects #ganttChartContainer .phase-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .phase-row .gantt-status-cell{background:#eaf4fb!important;color:#315c7a!important;}
+#tab-projects #ganttChartContainer .task-row .label-col,
+#tab-projects #ganttChartContainer .task-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .task-row .gantt-status-cell{background:#f7fbfe!important;color:#234c6f!important;}
+#tab-projects #ganttChartContainer .gantt-owner-cell,#tab-projects #ganttChartContainer .gantt-status-cell{text-align:center!important;}
+#tab-projects #ganttChartContainer .gantt-day-col{border-left:1px solid #d7e2ea!important;background:#fff!important;}
+#tab-projects #ganttChartContainer .gantt-date-head{border-left:1px solid rgba(255,255,255,.4)!important;}
+#tab-projects #ganttChartContainer .gantt-month-head{border-left:1px solid rgba(255,255,255,.4)!important;}
+#tab-projects #ganttChartContainer .gantt-bar-light{position:absolute!important;top:50%!important;transform:translateY(-50%)!important;height:24px!important;border-radius:5px!important;background:#bfdbfe!important;z-index:1!important;opacity:1!important;}
+#tab-projects #ganttChartContainer .gantt-bar-dark{position:absolute!important;top:50%!important;transform:translateY(-50%)!important;height:24px!important;border-radius:5px!important;z-index:2!important;overflow:hidden!important;}
+#tab-projects #ganttChartContainer .gantt-status-completed{background:#22b968!important;}
+#tab-projects #ganttChartContainer .gantt-status-working{background:#2f80ed!important;}
+#tab-projects #ganttChartContainer .gantt-status-overdue{background:#ef6675!important;}
+#tab-projects #ganttChartContainer .gantt-status-near-deadline{background:#f4c542!important;color:#5f4700!important;}
+#tab-projects #ganttChartContainer .gantt-status-project-default,#tab-projects #ganttChartContainer .gantt-status-default{background:#94a3b8!important;}
+#tab-projects #ganttChartContainer .gantt-task-bar-text{display:block!important;padding:0 7px!important;line-height:24px!important;font-size:8px!important;font-weight:700!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#fff!important;}
+#tab-projects #ganttChartContainer .project-gantt-today-line{position:absolute!important;top:0!important;bottom:0!important;width:2px!important;background:#ef4444!important;z-index:800!important;pointer-events:none!important;}
+
+/* ===== projectManagementV33Fixes ===== */
+/* Table: one real horizontal scroller that moves the actual table. */
+#tab-projects #projectTableView{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectsTableBody{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:visible!important;
+  scrollbar-width:none!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{height:0!important;}
+#tab-projects #projectTableView .pm-shared-project-table{
+  width:max-content!important;
+  min-width:100%!important;
+  table-layout:fixed!important;
+}
+#tab-projects #projectTableBottomScroll{
+  flex:0 0 16px!important;
+  width:100%!important;
+  height:16px!important;
+  min-height:16px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  display:block!important;
+  background:#eef3f7!important;
+  border-top:1px solid #d5e0e8!important;
+  position:relative!important;
+  z-index:100!important;
+}
+#tab-projects #projectTableBottomScroll>div{
+  height:1px!important;
+  min-height:1px!important;
+}
+
+/* Timeline: Project name is blue and bold, readable on the row. */
+#tab-projects #ganttChartContainer .project-gantt tbody tr.project-row .gantt-row-title{
+  color:#1976d2!important;
+  font-weight:900!important;
+  font-size:12px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt tbody tr.project-row .label-cell{
+  color:#1976d2!important;
+}
+
+/* ===== projectManagementV35TableScrollFix ===== */
+/* TABLE V35: the horizontal scrollbar belongs to the actual table wrapper.
+   The old detached #projectTableBottomScroll is disabled so it cannot drift out of sync. */
+#tab-projects #projectTableView{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectTableView #projectsTableBody{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+  scrollbar-width:auto!important;
+  scrollbar-color:#94a3b8 #eef3f7!important;
+  position:relative!important;
+  overscroll-behavior:contain!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{
+  width:10px!important;
+  height:12px!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar-track{
+  background:#eef3f7!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar-thumb{
+  background:#94a3b8!important;
+  border-radius:6px!important;
+  border:2px solid #eef3f7!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar-thumb:hover{
+  background:#64748b!important;
+}
+#tab-projects #projectTableView .pm-shared-project-table{
+  width:max-content!important;
+  min-width:1500px!important;
+  table-layout:fixed!important;
+  transform:none!important;
+}
+/* This is intentionally NOT a second scrollbar. */
+#tab-projects #projectTableBottomScroll{display:none!important;}
+
+/* ===== projectManagementV47ScrollFix ===== */
+/* ================= TABLE VIEW ================= */
+#tab-projects #projectTableView{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectsTableBody{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  scrollbar-width:none!important;
+  position:relative!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{
+  width:0!important;height:0!important;
+}
+#tab-projects #projectTableView .pm-shared-project-table{
+  width:max-content!important;
+  min-width:1500px!important;
+  max-width:none!important;
+  table-layout:fixed!important;
+  transform:none!important;
+}
+#tab-projects #projectTableBottomScroll{
+  display:block!important;
+  flex:0 0 16px!important;
+  width:100%!important;
+  height:16px!important;
+  min-height:16px!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:auto!important;
+  position:relative!important;
+  z-index:9999!important;
+  background:#eef3f7!important;
+  border-top:1px solid #d5e0e8!important;
+  box-sizing:border-box!important;
+}
+#tab-projects #projectTableBottomScroll>div{
+  display:block!important;
+  height:1px!important;
+  min-height:1px!important;
+  width:1500px!important;
+}
+#tab-projects #projectTableBottomScroll::-webkit-scrollbar{height:14px!important;}
+#tab-projects #projectTableBottomScroll::-webkit-scrollbar-track{background:#eef3f7!important;}
+#tab-projects #projectTableBottomScroll::-webkit-scrollbar-thumb{background:#94a3b8!important;border-radius:7px!important;border:2px solid #eef3f7!important;}
+
+/* ================= TIMELINE VIEW ================= */
+#tab-projects #projectGanttView{
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #ganttChartContainer{
+  position:relative!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+  scrollbar-width:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#tab-projects #ganttChartContainer .project-gantt-wrap{
+  width:max-content!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  overflow:visible!important;
+}
+#tab-projects #ganttChartContainer .project-gantt{
+  width:max-content!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  table-layout:fixed!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-day-col{
+  width:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-project-col{width:260px!important;min-width:260px!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-owner-col{width:130px!important;min-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-status-col{width:130px!important;min-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt .timeline-span{width:auto!important;min-width:0!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-row-track{
+  overflow:visible!important;
+  position:relative!important;
+}
+
+/* ===== projectManagementV50SavingFix ===== */
+#tab-projects .pm-ref-money input,
+#tab-projects input.pm-ref-money{font-variant-numeric:tabular-nums;}
+
+/* ===== projectManagementV51SavingPdfFix ===== */
+#tab-projects .pm-ref-money input,
+#tab-projects input.pm-ref-money{
+  min-width:0;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ===== scopeEditUiV1 ===== */
+#tab-bom-cs-scope{position:relative!important}
+#scopeEditToolbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#fff;border:1px solid #dbe6ef;border-radius:10px;margin-bottom:8px;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+#scopeEditToolbar .scope-edit-title{font-size:12px;font-weight:800;color:#244b67;margin-right:auto}
+#scopeEditToolbar button{height:32px;padding:0 10px;border-radius:7px;border:1px solid #cbd9e5;background:#fff;color:#42617a;font-size:10px;font-weight:800;cursor:pointer}
+#scopeEditToolbar button.primary{background:#1678d2;border-color:#1678d2;color:#fff}
+#scopeEditToolbar button.danger{color:#b64747;border-color:#efcaca;background:#fff8f8}
+#scopeEditToolbar button:disabled{opacity:.45;cursor:not-allowed}
+#tab-bom-cs-scope .scope-frame-host{height:calc(100% - 50px)!important}
+
+/* ===== teamScopeV2Css ===== */
+#tab-bom-cs-scope.ts2-on > div:not(#ts2Root),#tab-bom-cs-scope.ts2-on #scopeEditToolbar{display:none!important}
+#ts2Root{display:flex;flex-direction:column;gap:10px;height:100%;min-height:0}
+#ts2Root .ts2-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:#fff;border:1px solid #dbe6ef;border-radius:12px;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+#ts2Root .ts2-title{font-size:13px;font-weight:800;color:#173e6b;display:flex;align-items:center;gap:8px}
+#ts2Root .ts2-team{font-size:10px;font-weight:800;color:#0f766e;background:#ccfbf1;border-radius:999px;padding:3px 9px}
+#ts2Root .ts2-stats{font-size:11px;color:#64748b;margin-right:auto}
+#ts2Root .ts2-btn{height:32px;padding:0 12px;border-radius:8px;border:1px solid #cbd9e5;background:#fff;color:#334e68;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+#ts2Root .ts2-btn:hover{background:#f1f5f9}
+#ts2Root .ts2-btn.primary{background:#1678d2;border-color:#1678d2;color:#fff}
+#ts2Root .ts2-btn.green{background:#059669;border-color:#059669;color:#fff}
+#ts2Root .ts2-btn:focus-visible,#ts2Root .ts2-cell:focus-visible{outline:2px solid #1678d2;outline-offset:1px}
+#ts2Root .ts2-wrap{flex:1;min-height:0;overflow:auto;background:#fff;border:1px solid #dbe6ef;border-radius:12px}
+#ts2Root table{border-collapse:separate;border-spacing:0;font-size:12px;min-width:100%}
+#ts2Root thead th{position:sticky;top:0;z-index:3;background:#0b4f82;color:#fff;font-weight:700;padding:10px 8px;border-right:1px solid #2b6a98;white-space:nowrap}
+#ts2Root thead th.ts2-scope{left:0;z-index:4;min-width:340px;text-align:left;padding-left:14px}
+#ts2Root .ts2-mhead{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:74px}
+#ts2Root .ts2-av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+#ts2Root .ts2-mname{font-size:10.5px;max-width:96px;overflow:hidden;text-overflow:ellipsis}
+#ts2Root .ts2-mcount{font-size:9px;opacity:.8}
+#ts2Root tbody td{border-bottom:1px solid #edf2f7;border-right:1px solid #f1f5f9;padding:0}
+#ts2Root td.ts2-label{position:sticky;left:0;z-index:2;background:inherit;padding:8px 10px}
+#ts2Root tr.ts2-group{background:#eef6fd}
+#ts2Root tr.ts2-group td.ts2-label{font-weight:800;color:#0f2f4f}
+#ts2Root tr.ts2-sub{background:#fff}
+#ts2Root .ts2-lab{display:flex;align-items:center;gap:8px}
+#ts2Root .ts2-badge{min-width:24px;height:24px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:800;padding:0 5px}
+#ts2Root .ts2-subno{min-width:34px;font-size:10px;font-weight:700;color:#64748b;padding-left:30px;box-sizing:content-box}
+#ts2Root .ts2-text{flex:1}
+#ts2Root .ts2-acts{display:flex;gap:2px;opacity:0;transition:opacity .15s}
+#ts2Root tr:hover .ts2-acts,#ts2Root .ts2-acts:focus-within{opacity:1}
+#ts2Root .ts2-acts button{width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:#64748b;cursor:pointer;font-size:11px}
+#ts2Root .ts2-acts button:hover{background:#e2e8f0;color:#1678d2}
+#ts2Root .ts2-acts button.del:hover{background:#fee2e2;color:#dc2626}
+#ts2Root .ts2-cell{width:100%;height:36px;display:grid;place-items:center;border:0;background:transparent;cursor:pointer}
+#ts2Root .ts2-cell[disabled]{cursor:default}
+#ts2Root .ts2-cell:not([disabled]):hover{background:#e0f2fe}
+#ts2Root .ts2-check{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:900}
+#ts2Root .ts2-check.on{background:#16a34a;color:#fff}
+#ts2Root .ts2-check.off{border:1.5px solid #cbd5e1}
+#ts2Root .ts2-cell[disabled] .ts2-check.off{border-color:transparent}
+#ts2Root .ts2-empty{padding:40px;text-align:center;color:#64748b;font-size:13px;line-height:1.6}
+#ts2Root .ts2-hint{font-size:10.5px;color:#64748b;padding:0 4px}
+
+/* ===== multiTeamRolesV1Css ===== */
+#mtrUsers{display:flex;flex-direction:column;gap:12px;min-width:0}
+#mtrUsers .mtr-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+#mtrUsers .mtr-title{font-size:14px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:8px;margin-right:auto}
+#mtrUsers .mtr-in,#mtrUsers .mtr-sel{height:32px;border:1px solid #cbd5e1;border-radius:8px;padding:0 9px;font-size:12px;background:#f8fafc;color:#334155;outline:none;min-width:0}
+#mtrUsers .mtr-in{width:200px}
+#mtrUsers .mtr-in:focus,#mtrUsers .mtr-sel:focus{border-color:#6366f1;background:#fff}
+.mtr-btn{height:32px;padding:0 12px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-size:11.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.mtr-btn:hover{background:#f1f5f9}
+.mtr-btn.indigo{background:#4f46e5;border-color:#4f46e5;color:#fff}.mtr-btn.indigo:hover{background:#4338ca}
+.mtr-btn.blue{background:#2563eb;border-color:#2563eb;color:#fff}.mtr-btn.blue:hover{background:#1d4ed8}
+.mtr-btn.teal{background:#0d9488;border-color:#0d9488;color:#fff}.mtr-btn.teal:hover{background:#0f766e}
+.mtr-btn.green{background:#059669;border-color:#059669;color:#fff}.mtr-btn.green:hover{background:#047857}
+.mtr-btn:focus-visible{outline:2px solid #6366f1;outline-offset:1px}
+#mtrUsers .mtr-seg{display:inline-flex;border:1px solid #cbd5e1;border-radius:8px;overflow:hidden}
+#mtrUsers .mtr-seg button{height:30px;padding:0 12px;font-size:11.5px;font-weight:700;background:#fff;color:#475569;border:0;cursor:pointer}
+#mtrUsers .mtr-seg button.on{background:#1e293b;color:#fff}
+#mtrUsers .mtr-kpis{display:flex;flex-wrap:wrap;gap:8px}
+#mtrUsers .mtr-kpi{background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:4px 12px;display:flex;align-items:center;gap:6px}
+#mtrUsers .mtr-kpi b{font-size:13px;color:#0f172a}
+#mtrUsers .mtr-kpi span{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+#mtrUsers .mtr-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+#mtrUsers .mtr-scroll{overflow:auto;max-height:calc(100vh - 300px)}
+#mtrUsers table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+#mtrUsers thead th{position:sticky;top:0;z-index:2;background:#f1f5f9;color:#475569;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;text-align:left;padding:10px 12px;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+#mtrUsers tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;color:#334155}
+#mtrUsers tbody tr:hover{background:#f8fafc}
+#mtrUsers .mtr-name{display:flex;align-items:center;gap:9px;font-weight:700;color:#0f172a}
+#mtrUsers .mtr-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:800;color:#fff;flex:none}
+.mtr-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:10.5px;font-weight:700;margin:2px 4px 2px 0;white-space:nowrap;border:1px solid transparent}
+.mtr-chip.ta{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.mtr-chip.mb{background:#e0e7ff;color:#3730a3;border-color:#c7d2fe}
+.mtr-chip.vw{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+.mtr-chip.aa{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.mtr-chip .pr{color:#d97706}
+#mtrUsers .mtr-st{border-radius:6px;padding:2px 8px;font-size:10.5px;font-weight:700}
+#mtrUsers .mtr-st.on{background:#d1fae5;color:#065f46}#mtrUsers .mtr-st.off{background:#fee2e2;color:#991b1b}
+#mtrUsers .mtr-pw{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;display:inline-flex;align-items:center;gap:6px}
+#mtrUsers .mtr-icon{width:28px;height:28px;border:0;border-radius:7px;background:transparent;color:#94a3b8;cursor:pointer}
+#mtrUsers .mtr-icon:hover{background:#eef2ff;color:#4f46e5}#mtrUsers .mtr-icon.del:hover{background:#fee2e2;color:#dc2626}
+#mtrUsers .mtr-empty{padding:40px;text-align:center;color:#94a3b8;font-size:12.5px}
+#mtrUsers .mtr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;max-height:calc(100vh - 300px);overflow:auto;padding:2px}
+#mtrUsers .mtr-team{background:#fff;border:1px solid #e2e8f0;border-radius:12px;display:flex;flex-direction:column;min-width:0}
+#mtrUsers .mtr-team-h{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #f1f5f9}
+#mtrUsers .mtr-team-h b{font-size:13px;color:#0f172a;margin-right:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mtrUsers .mtr-team-h small{font-size:10.5px;color:#64748b;font-weight:700}
+#mtrUsers .mtr-team-b{padding:8px 12px 12px}
+#mtrUsers .mtr-grp{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px}
+#mtrUsers .mtr-team-b .mtr-chip{cursor:pointer}
+#mtrUsers .mtr-team-b .mtr-chip:hover{filter:brightness(.95)}
+#mtrUsers .mtr-note{font-size:11px;color:#64748b;padding:0 2px}
+#mtrUserModal .mtr-row{display:grid;grid-template-columns:minmax(180px,1fr) 140px 118px 34px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #e2e8f0}
+#mtrUserModal .mtr-row.head{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;border-bottom:1px solid #e2e8f0}
+#mtrUserModal .mtr-row.locked{opacity:.6}
+#mtrUserModal .mtr-f{width:100%;height:34px;border:1px solid #cbd5e1;border-radius:8px;padding:0 9px;font-size:12px;background:#f8fafc;outline:none}
+#mtrUserModal .mtr-f:focus{border-color:#6366f1;background:#fff}
+#mtrUserModal label.mtr-l{display:block;font-size:11.5px;font-weight:700;color:#334155;margin-bottom:4px}
+#mtrSwitchBox select{width:100%;background:#0f172a;border:1px solid #475569;color:#f1f5f9;font-size:12px;border-radius:8px;padding:7px 8px;outline:none}
+@media (max-width:1100px){#mtrUsers .mtr-in{width:150px}}
+#mtrUsers tbody tr.g-first td{border-top:1px solid #e2e8f0}
+#mtrUsers tbody tr.g-sub td.c-user{border-bottom-color:transparent}
+#mtrUsers tbody tr.g-sub td.c-user *{visibility:hidden}
+#mtrUsers .c-team{font-weight:600;color:#0f172a;white-space:nowrap}
+#mtrUsers .c-team .pr{color:#f59e0b;margin-right:5px}
+#mtrUsers .mtr-rsel{height:28px;border:1px solid transparent;border-radius:7px;padding:0 24px 0 9px;font-size:11.5px;font-weight:700;cursor:pointer;outline:none;appearance:auto}
+#mtrUsers .mtr-rsel:hover,#mtrUsers .mtr-rsel:focus{border-color:#a5b4fc}
+#mtrUsers .mtr-rsel.ta{background:#fef3c7;color:#92400e}#mtrUsers .mtr-rsel.mb{background:#eef2ff;color:#3730a3}#mtrUsers .mtr-rsel.vw{background:#f1f5f9;color:#475569}
+#mtrUsers .mtr-role-ro{display:inline-block;border-radius:7px;padding:4px 10px;font-size:11.5px;font-weight:700}
+#mtrUsers .mtr-role-ro.ta{background:#fef3c7;color:#92400e}#mtrUsers .mtr-role-ro.mb{background:#eef2ff;color:#3730a3}#mtrUsers .mtr-role-ro.vw{background:#f1f5f9;color:#475569}#mtrUsers .mtr-role-ro.aa{background:#fce7f3;color:#9d174d}
+#mtrUsers .mtr-star{border:0;background:transparent;cursor:pointer;color:#cbd5e1;font-size:13px;width:26px;height:26px;border-radius:6px}
+#mtrUsers .mtr-star.on{color:#f59e0b}#mtrUsers .mtr-star:hover{background:#fffbeb;color:#f59e0b}
+#mtrUsers tr.mtr-addrow td{padding:4px 12px 10px}
+#mtrUsers .mtr-link{border:0;background:transparent;color:#6366f1;font-size:11px;font-weight:700;cursor:pointer;padding:3px 6px;border-radius:6px}
+#mtrUsers .mtr-link:hover{background:#eef2ff}
+#mtrUsers .mtr-inline{display:inline-flex;gap:6px;align-items:center}
+#mtrUsers .mtr-inline select{height:28px;border:1px solid #cbd5e1;border-radius:7px;font-size:11.5px;padding:0 8px;background:#fff}
+#mtrUsers .mtr-warn{display:flex;gap:10px;align-items:center;background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600}
+
+/* ===== projectManagementV25Fixes ===== */
+/* Project Management has no Year / Month / Week filters. */
+#tab-projects .pm-project-period-filters{display:none!important}
+/* Consistent numeric alignment across Project / Phase / Task rows. */
+#tab-projects .pm-shared-project-table td:nth-child(4){text-align:center!important}
+#tab-projects .pm-shared-project-table td:nth-child(8){text-align:center!important}
+#tab-projects .pm-shared-project-table td:nth-child(9),
+#tab-projects .pm-shared-project-table td:nth-child(10){text-align:right!important;font-variant-numeric:tabular-nums!important}
+#tab-projects .pm-shared-project-table td:nth-child(4) input,
+#tab-projects .pm-shared-project-table td:nth-child(8) input{text-align:center!important}
+#tab-projects .pm-shared-project-table td:nth-child(9) input,
+#tab-projects .pm-shared-project-table td:nth-child(10) input{text-align:right!important}
+/* Timeline: fixed header without a split/blank gap. */
+#tab-projects #ganttChartContainer{overflow:auto!important;padding:0!important;position:relative!important}
+#tab-projects #ganttChartContainer .project-gantt{margin:0!important;border-collapse:separate!important;border-spacing:0!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:first-child th{top:0!important;height:28px!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{top:28px!important;height:26px!important}
+#tab-projects #ganttChartContainer .project-gantt .label-head{top:0!important}
+#tab-projects #ganttChartContainer .project-gantt .gantt-day-col{width:44px;min-width:44px}
+#tab-projects #ganttChartContainer .gantt-row-track{position:relative!important;height:41px!important;overflow:hidden!important;background:#fff!important}
+#tab-projects #ganttChartContainer .gantt-date-cell{display:block!important;background:#fff!important}
+#tab-projects #ganttChartContainer .project-row .label-cell{background:#315c7a!important;color:#fff!important}
+#tab-projects #ganttChartContainer .project-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .project-row .gantt-status-cell{background:#315c7a!important;color:#fff!important}
+#tab-projects #ganttChartContainer .phase-row .label-cell,
+#tab-projects #ganttChartContainer .task-row .label-cell{background:#fff!important;color:#173e6b!important}
+#tab-projects #ganttChartContainer .phase-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .phase-row .gantt-status-cell,
+#tab-projects #ganttChartContainer .task-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .task-row .gantt-status-cell{background:#fff!important;color:#334e63!important}
+#tab-projects #ganttChartContainer .gantt-row-title{font-size:10px!important}
+#tab-projects #ganttChartContainer .project-row .gantt-row-title{font-size:12px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-menu{position:fixed!important;width:250px!important;max-height:360px!important;overflow:hidden!important;padding:9px!important;background:#fff!important;border:1px solid #cbd9e5!important;border-radius:6px!important;box-shadow:0 10px 25px rgba(24,55,82,.18)!important;z-index:2147483647!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-values{max-height:250px!important;overflow-y:auto!important;overflow-x:hidden!important;border:1px solid #d9e3eb!important;border-radius:5px!important;padding:4px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-option{display:flex!important;align-items:center!important;gap:7px!important;min-height:24px!important;padding:4px 5px!important;font-size:11px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-actions{display:flex!important;justify-content:flex-end!important;gap:7px!important;padding-top:8px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-actions button{padding:6px 11px!important;border:1px solid #cbd9e5!important;border-radius:5px!important;background:#fff!important;color:#42617a!important;font-size:11px!important}
+#tab-projects #ganttChartContainer .gantt-inline-filter-actions .gantt-filter-apply{border-color:#1678d2!important;background:#1678d2!important;color:#fff!important}
+
+/* ===== projectManagementFinalV15Fixes ===== */
+#tab-projects .pm-reference-actions{width:100%!important;justify-content:flex-start!important}
+#tab-projects .pm-ref-view-switch{display:inline-flex!important;margin-right:auto!important}
+#tab-projects .pm-ref-import,#tab-projects .pm-ref-icon-btn,#tab-projects .pm-ref-search,#tab-projects .pm-ref-new-project{flex:0 0 auto}
+#tab-projects .pm-ref-icon-btn span{margin-left:5px;font-size:9px;font-weight:800}
+#tab-projects .pm-shared-table-wrap{overflow:auto!important;max-height:calc(100vh - 180px)!important}
+#tab-projects .pm-shared-project-table thead th{position:sticky!important;top:0!important;z-index:80!important;text-align:center!important;background:#f2f7fb!important}
+#tab-projects .pm-horizontal-scrollbar{position:sticky;bottom:0;z-index:90;width:100%;height:16px;overflow-x:auto;overflow-y:hidden;background:#eef3f7;border-top:1px solid #d7e1e8}
+#tab-projects .pm-horizontal-scrollbar>div{height:1px}
+#tab-projects .pm-filter-popup{width:250px!important;max-height:360px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+#tab-projects .pm-filter-popup-search{position:sticky!important;top:0!important;z-index:5!important;flex:0 0 auto!important;background:#fff!important}
+#tab-projects .pm-filter-values{flex:1 1 auto!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:3px!important}
+#tab-projects .pm-filter-popup-actions{flex:0 0 auto!important;background:#fff!important;position:sticky!important;bottom:0!important;padding-top:7px!important}
+#projectExportOptions{position:fixed;inset:0;background:rgba(15,23,42,.28);z-index:2147483646;display:flex;align-items:center;justify-content:center}
+#projectExportOptions .pm-export-box{width:360px;max-width:calc(100vw - 30px);background:#fff;border:1px solid #d8e3ec;border-radius:14px;padding:20px;box-shadow:0 20px 50px rgba(15,23,42,.22)}
+#projectExportOptions .pm-export-title{font-size:15px;font-weight:900;color:#173e6b;text-align:center}
+#projectExportOptions .pm-export-subtitle{font-size:10px;color:#71869a;text-align:center;margin:6px 0 16px}
+#projectExportOptions .pm-export-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#projectExportOptions .pm-export-actions button{height:70px;border:1px solid #d8e3ec;border-radius:10px;background:#f8fbfe;color:#245b82;font-weight:800;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#projectExportOptions .pm-export-actions button:hover{background:#eef6fc;border-color:#9fc4df}
+#projectExportOptions .pm-export-actions i{font-size:20px}
+#projectExportOptions .pm-export-close{display:block;margin:14px auto 0;border:0;background:transparent;color:#738394;font-size:10px;font-weight:700;cursor:pointer}
+
+/* v22 refinements */
+#tab-projects .pm-shared-project-table .pm-ref-project-row.pm-project-completed td{
+  background:#dff3e5!important;
+  border-bottom-color:#b9dfc6!important;
+}
+#tab-projects .pm-shared-project-table .pm-ref-phase-row td{
+  background:#f5f8fb!important;
+}
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-0 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-1 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-2 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-3 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-4 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-5 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-6 td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row.phase-color-7 td{background:#f5f8fb!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row td{background:#f8fbfd!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row:hover td{background:#f1f7fb!important}
+#tab-projects .pm-shared-project-table .pm-project-owner-cell,
+#tab-projects .pm-shared-project-table .pm-ref-owner-cell,
+#tab-projects .pm-shared-project-table td.pm-owner-value{ text-align:center!important; }
+#tab-projects .pm-shared-project-table .pm-ref-number,
+#tab-projects .pm-shared-project-table .pm-ref-money,
+#tab-projects .pm-shared-project-table .pm-ref-gain-input,
+#tab-projects .pm-shared-project-table .pm-ref-money-input{ text-align:right!important; }
+#tab-projects .pm-shared-project-table .pm-ref-gain-input input,
+#tab-projects .pm-shared-project-table .pm-ref-money input,
+#tab-projects .pm-shared-project-table .pm-ref-money-input input{ text-align:right!important; }
+#tab-projects .pm-shared-project-table .pm-project-owner-cell span{display:block;text-align:center!important}
+#tab-projects .pm-shared-table-wrap{max-height:calc(100vh - 190px)!important;min-height:460px!important;overflow:auto!important}
+#tab-projects .pm-shared-project-table thead th{position:sticky!important;top:0!important;z-index:120!important}
+#tab-projects .pm-shared-project-table .pm-ref-project-row td,
+#tab-projects .pm-shared-project-table .pm-ref-phase-row td,
+#tab-projects .pm-shared-project-table .pm-ref-task-row td{vertical-align:middle!important}
+#tab-projects .pm-shared-project-table .pm-ref-gain-input,
+#tab-projects .pm-shared-project-table .pm-ref-money{ text-align:right!important; }
+
+#tab-projects #projectGanttView{min-height:0!important;overflow:hidden!important}
+#tab-projects #ganttChartContainer{height:calc(100vh - 175px)!important;min-height:480px!important;overflow:auto!important;position:relative!important}
+#tab-projects #ganttChartContainer .project-gantt-wrap{min-width:max-content!important}
+#tab-projects #ganttChartContainer .project-gantt{border-collapse:collapse!important;border-spacing:0!important}
+#tab-projects #ganttChartContainer .project-gantt thead th{
+  position:sticky!important;z-index:150!important;background:#315c7a!important;color:#fff!important;
+  border:1px solid #d8e3eb!important;
+}
+#tab-projects #ganttChartContainer .project-gantt thead tr:first-child th{top:0!important}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{top:31px!important}
+#tab-projects #ganttChartContainer .project-gantt .label-col{position:sticky!important;left:0!important;z-index:170!important}
+#tab-projects #ganttChartContainer .project-gantt .owner-head{position:sticky!important;left:260px!important;z-index:170!important}
+#tab-projects #ganttChartContainer .project-gantt .status-head{position:sticky!important;left:390px!important;z-index:170!important}
+#tab-projects #ganttChartContainer .gantt-project-col{width:260px!important;min-width:260px!important}
+#tab-projects #ganttChartContainer .gantt-owner-col{width:130px!important;min-width:130px!important}
+#tab-projects #ganttChartContainer .gantt-status-col{width:130px!important;min-width:130px!important}
+#tab-projects #ganttChartContainer .gantt-day-col{width:40px!important;min-width:40px!important}
+#tab-projects #ganttChartContainer .gantt-date-cell{display:block!important;height:100%!important;border-left:1px solid #dbe5ec!important;box-sizing:border-box!important}
+#tab-projects #ganttChartContainer .gantt-grid-bg{display:none!important}
+#tab-projects #ganttChartContainer .subordinate-bar{background:#91a4b5!important;border-color:#7f93a5!important;color:#fff!important}
+#tab-projects #ganttChartContainer .project-bar{color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-row-track{position:relative!important;display:grid!important;grid-template-columns:repeat(var(--gantt-columns),40px)!important;min-height:34px!important}
+#tab-projects #ganttChartContainer .gantt-owner-cell,
+#tab-projects #ganttChartContainer .gantt-status-cell{text-align:center!important}
+#tab-projects #ganttChartContainer .gantt-filter-head{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0}
+#tab-projects #ganttChartContainer .gantt-filter-btn{width:20px;height:20px;border:1px solid rgba(255,255,255,.45);border-radius:4px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer}
+#tab-projects #ganttChartContainer .gantt-filter-btn.active{background:#fff;color:#315c7a}
+.gantt-inline-filter-menu{position:fixed;z-index:2147483647;width:270px;max-height:360px;overflow:hidden;background:#fff;border:1px solid #cbd9e5;border-radius:8px;box-shadow:0 12px 32px rgba(24,55,82,.22);padding:10px;font:12px Arial,sans-serif;color:#294b67}
+.gantt-inline-filter-menu input[type=search]{width:100%;height:32px;box-sizing:border-box;border:1px solid #cbd9e5;border-radius:5px;padding:5px 8px;margin:5px 0 7px}
+.gantt-inline-filter-values{max-height:250px;overflow-y:auto;border:1px solid #e0e7ee;border-radius:5px;padding:4px}
+.gantt-inline-filter-option{display:flex;gap:7px;align-items:center;padding:4px 3px}
+.gantt-inline-filter-actions{display:flex;justify-content:flex-end;gap:6px;padding-top:7px}
+.gantt-inline-filter-actions button{padding:5px 9px;border:1px solid #cbd9e5;border-radius:5px;background:#fff}
+.gantt-inline-filter-title{font-weight:700}
+
+/* ===== projectManagementV26Fixes ===== */
+/* Project table owns its vertical scroll so the header stays fixed. */
+#tab-projects #projectTableView{height:calc(100vh - 155px)!important;min-height:420px!important;overflow:hidden!important;}
+#tab-projects #projectTableView .pm-shared-table-wrap{height:100%!important;max-height:none!important;min-height:0!important;overflow:auto!important;position:relative!important;}
+#tab-projects #projectTableView .pm-shared-project-table thead th{position:sticky!important;top:0!important;z-index:300!important;background:#f2f7fb!important;}
+#tab-projects #projectTableView .pm-shared-project-table .pm-ref-owner-cell,
+#tab-projects #projectTableView .pm-shared-project-table .pm-project-owner-cell,
+#tab-projects #projectTableView .pm-shared-project-table td.pm-owner-value{ text-align:center!important;}
+#tab-projects #projectTableView .pm-shared-project-table .pm-ref-owner-cell input,
+#tab-projects #projectTableView .pm-shared-project-table .pm-ref-owner-cell select{ text-align:center!important; margin-left:auto!important; margin-right:auto!important;}
+/* Do not draw a day-by-day grid inside the timeline bar track. */
+#tab-projects #ganttChartContainer .timeline-span{border-left:0!important;border-right:0!important;}
+#tab-projects #ganttChartContainer .gantt-row-track{background:transparent!important;border:0!important;}
+#tab-projects #ganttChartContainer .gantt-date-cell{display:none!important;}
+/* Keep Timeline header compact and remove the old year/day summary. */
+#tab-projects #projectGanttRangeLabel{display:none!important;}
+
+/* ===== projectManagementV27TimelineFixes ===== */
+/* Timeline uses one exact column system for sticky labels and the date axis. */
+#tab-projects{gap:0!important;}
+#tab-projects .pm-reference-toolbar{margin-bottom:0!important;}
+#tab-projects #projectGanttView,#tab-projects #projectTableView{margin-top:0!important;padding-top:0!important;}
+#tab-projects #projectGanttView .pm-gantt-toolbar{display:none!important;height:0!important;min-height:0!important;padding:0!important;margin:0!important;}
+#tab-projects #ganttChartContainer{height:calc(100vh - 118px)!important;min-height:480px!important;margin-top:0!important;padding-top:0!important;overflow:auto!important;scroll-padding-top:0!important;}
+#tab-projects #ganttChartContainer .project-gantt-wrap{margin-top:0!important;padding-top:0!important;}
+#tab-projects #ganttChartContainer .project-gantt{table-layout:fixed!important;width:max-content!important;border-collapse:separate!important;border-spacing:0!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-project-col{width:260px!important;min-width:260px!important;max-width:260px!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-owner-col{width:130px!important;min-width:130px!important;max-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-status-col{width:130px!important;min-width:130px!important;max-width:130px!important;}
+#tab-projects #ganttChartContainer .project-gantt .gantt-day-col{width:40px!important;min-width:40px!important;max-width:40px!important;}
+/* Header and first three columns are independently sticky in both axes. */
+#tab-projects #ganttChartContainer .project-gantt thead th{top:0!important;height:28px!important;box-sizing:border-box!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{top:28px!important;height:27px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead .label-col{position:sticky!important;left:0!important;top:0!important;z-index:500!important;background:#315c7a!important;}
+#tab-projects #ganttChartContainer .project-gantt thead .owner-head{position:sticky!important;left:260px!important;top:0!important;z-index:500!important;background:#315c7a!important;}
+#tab-projects #ganttChartContainer .project-gantt thead .status-head{position:sticky!important;left:390px!important;top:0!important;z-index:500!important;background:#315c7a!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .label-col{position:sticky!important;left:0!important;z-index:250!important;background:#fff!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .gantt-owner-cell{position:sticky!important;left:260px!important;z-index:250!important;background:#fff!important;}
+#tab-projects #ganttChartContainer .project-gantt tbody .gantt-status-cell{position:sticky!important;left:390px!important;z-index:250!important;background:#fff!important;}
+/* No vertical grid is drawn through the bar area. */
+#tab-projects #ganttChartContainer .timeline-span{border:0!important;background:#fff!important;padding:0!important;}
+#tab-projects #ganttChartContainer .gantt-row-track{background:transparent!important;border:0!important;display:block!important;position:relative!important;min-height:34px!important;}
+#tab-projects #ganttChartContainer .gantt-day-col{border-left:1px solid #dbe5ec!important;}
+#tab-projects #ganttChartContainer .gantt-date-head{border-left:1px solid rgba(255,255,255,.45)!important;}
+#tab-projects #ganttChartContainer .gantt-month-head{border-left:1px solid rgba(255,255,255,.45)!important;}
+#tab-projects #ganttChartContainer .project-row .label-col,
+#tab-projects #ganttChartContainer .project-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .project-row .gantt-status-cell{background:#315c7a!important;color:#fff!important;font-weight:700!important;}
+#tab-projects #ganttChartContainer .phase-row .label-col,
+#tab-projects #ganttChartContainer .task-row .label-col{background:#fff!important;}
+#tab-projects #ganttChartContainer .gantt-filter-head{width:100%!important;justify-content:space-between!important;gap:4px!important;}
+#tab-projects #ganttChartContainer .gantt-filter-btn{margin-left:auto!important;flex:0 0 auto!important;}
+
+/* ===== projectManagementV28Fixes ===== */
+/* Table: keep a visible horizontal scrollbar at the bottom of the project view. */
+#tab-projects #projectTableView{display:flex!important;flex-direction:column!important;min-height:0!important;}
+#tab-projects #projectTableView .pm-project-stack{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;}
+#tab-projects #projectTableView .pm-shared-table-wrap{overflow:auto!important;max-height:none!important;height:100%!important;min-height:0!important;}
+#tab-projects #projectTableBottomScroll{display:block!important;flex:0 0 15px!important;height:15px!important;min-height:15px!important;overflow-x:auto!important;overflow-y:hidden!important;background:#eef3f7!important;border-top:1px solid #d5e0e8!important;position:relative!important;z-index:400!important;}
+#tab-projects #projectTableBottomScroll>div{height:1px!important;min-width:100%!important;}
+
+/* No transition/animation when switching Table <-> Timeline. */
+#tab-projects .pm-transition,#tab-projects .pm-panel,#tab-projects .project-view-panel{transition:none!important;animation:none!important;}
+#tab-projects .pm-active,#tab-projects .pm-leaving{transition:none!important;animation:none!important;}
+
+/* Timeline: one compact header with no blank gap between month/day rows. */
+#tab-projects #ganttChartContainer .project-gantt thead tr{height:28px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2){height:27px!important;}
+#tab-projects #ganttChartContainer .project-gantt thead th{padding-top:0!important;padding-bottom:0!important;line-height:1!important;border-bottom:0!important;}
+#tab-projects #ganttChartContainer .project-gantt thead tr:nth-child(2) th{border-top:0!important;}
+
+/* Timeline row colors match the table hierarchy. */
+#tab-projects #ganttChartContainer .project-row .label-col,
+#tab-projects #ganttChartContainer .project-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .project-row .gantt-status-cell{background:#315c7a!important;color:#fff!important;}
+#tab-projects #ganttChartContainer .phase-row .label-col,
+#tab-projects #ganttChartContainer .phase-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .phase-row .gantt-status-cell{background:#eaf4fb!important;color:#315c7a!important;}
+#tab-projects #ganttChartContainer .task-row .label-col,
+#tab-projects #ganttChartContainer .task-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .task-row .gantt-status-cell{background:#f7fbfe!important;color:#234c6f!important;}
+#tab-projects #ganttChartContainer .project-row .gantt-row-title{color:#fff!important;font-weight:700!important;}
+#tab-projects #ganttChartContainer .phase-row .gantt-row-title,#tab-projects #ganttChartContainer .task-row .gantt-row-title{color:#234c6f!important;}
+#tab-projects #ganttChartContainer .gantt-owner-cell,#tab-projects #ganttChartContainer .gantt-status-cell{text-align:center!important;}
+
+/* ===== projectManagementV29Fixes ===== */
+/* Keep the two Project views mutually exclusive. The shared .hidden utility must win over legacy display:flex rules. */
+#tab-projects #projectTableView.hidden,
+#tab-projects #projectGanttView.hidden{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+#tab-projects #projectTableView:not(.hidden),
+#tab-projects #projectGanttView:not(.hidden){visibility:visible!important;pointer-events:auto!important;}
+
+/* Table: use the dedicated bottom scrollbar only; prevent a second horizontal scrollbar inside the table body. */
+#tab-projects #projectTableView .pm-shared-table-wrap{overflow-x:hidden!important;overflow-y:auto!important;}
+#tab-projects #projectTableBottomScroll{display:block!important;overflow-x:auto!important;overflow-y:hidden!important;}
+
+/* Timeline must never inherit or display the Table stack. */
+#tab-projects #projectGanttView #projectsTableBody,
+#tab-projects #projectGanttView #projectTableBottomScroll{display:none!important;}
+
+/* ===== projectManagementV30Fixes ===== */
+/* Table bottom scrollbar must actually move the table horizontally. */
+#tab-projects #projectTableView .pm-shared-table-wrap{overflow-x:auto!important;overflow-y:auto!important;scrollbar-width:none!important;}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{height:0!important;}
+#tab-projects #projectTableBottomScroll{display:block!important;overflow-x:auto!important;overflow-y:hidden!important;}
+#tab-projects #projectTableBottomScroll>div{height:1px!important;}
+/* Timeline project identity column: blue background + bold white text. */
+#tab-projects #ganttChartContainer .project-row .label-col,
+#tab-projects #ganttChartContainer .project-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .project-row .gantt-status-cell{background:#315c7a!important;color:#fff!important;font-weight:700!important;}
+#tab-projects #ganttChartContainer .project-row .gantt-row-title{color:#fff!important;font-weight:800!important;}
+/* Two-level bars: light Start->Plan, dark Start->Actual/Today. */
+#tab-projects #ganttChartContainer .gantt-bar-light{position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;background:#bfdbfe!important;opacity:1!important;z-index:1;}
+#tab-projects #ganttChartContainer .gantt-bar-dark{position:absolute;top:50%;transform:translateY(-50%);height:24px;border-radius:5px;z-index:2;color:#fff;}
+#tab-projects #ganttChartContainer .gantt-status-completed{background:#22b968!important;}
+#tab-projects #ganttChartContainer .gantt-status-working{background:#2f80ed!important;}
+#tab-projects #ganttChartContainer .gantt-status-overdue{background:#ef6675!important;}
+#tab-projects #ganttChartContainer .gantt-status-near-deadline{background:#f4c542!important;color:#5f4700!important;}
+#tab-projects #ganttChartContainer .gantt-status-project-default,
+#tab-projects #ganttChartContainer .gantt-status-default{background:#94a3b8!important;}
+#tab-projects #ganttChartContainer .gantt-task-bar-text{position:relative;z-index:3;display:block;padding:0 7px;line-height:24px;font-size:8px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#tab-projects #ganttChartContainer .project-gantt-today-line{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:20;pointer-events:none;box-shadow:0 0 0 1px rgba(239,68,68,.12);}
+
+/* ===== projectManagementV34Fixes ===== */
+/* TABLE: bottom scrollbar controls the actual table, even when the inner wrapper cannot expose its native scrollbar. */
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  width:100%!important;max-width:none!important;min-width:0!important;
+  overflow-x:auto!important;overflow-y:visible!important;
+  scrollbar-width:none!important;position:relative!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+#tab-projects #projectViewTableBtn{position:relative;z-index:20;}
+#tab-projects #projectTableView .pm-shared-project-table{
+  width:max-content!important;min-width:1500px!important;table-layout:fixed!important;
+}
+#tab-projects #projectTableBottomScroll{
+  display:block!important;flex:0 0 16px!important;width:100%!important;height:16px!important;
+  min-height:16px!important;overflow-x:auto!important;overflow-y:hidden!important;
+  scrollbar-width:auto!important;position:relative!important;z-index:900!important;
+}
+#tab-projects #projectTableBottomScroll>div{height:1px!important;min-height:1px!important;}
+
+/* TIMELINE: faint dotted calendar grid across every task/phase/project track. */
+#tab-projects #ganttChartContainer .gantt-row-track{
+  position:relative!important;overflow:hidden!important;
+  background-color:#fff!important;
+}
+#tab-projects #ganttChartContainer .gantt-row-track::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(to right,transparent 0,transparent 39px,rgba(148,163,184,.22) 39px,rgba(148,163,184,.22) 40px),
+    repeating-linear-gradient(to bottom,transparent 0,transparent 16px,rgba(148,163,184,.16) 16px,rgba(148,163,184,.16) 17px);
+}
+#tab-projects #ganttChartContainer .gantt-bar-light,
+#tab-projects #ganttChartContainer .gantt-bar-dark{z-index:3!important;}
+#tab-projects #ganttChartContainer .gantt-task-bar-text{position:relative!important;z-index:4!important;}
+
+/* Project identity remains blue/bold. */
+#tab-projects #ganttChartContainer .project-row .gantt-row-title{
+  color:#1976d2!important;font-weight:900!important;font-size:12px!important;
+}
+
+/* Today marker: red, thin, and exactly as tall as the rendered Timeline table. */
+#tab-projects #ganttChartContainer .project-gantt-today-line{
+  position:absolute!important;top:0!important;bottom:auto!important;width:2px!important;
+  background:#ef4444!important;z-index:1000!important;pointer-events:none!important;
+}
+
+/* ===== projectManagementV36Fixes ===== */
+/* === V36: Project Management table horizontal scrolling === */
+#tab-projects #projectTableView{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectTableView #projectsTableBody{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+  scrollbar-width:none!important;
+  position:relative!important;
+  overscroll-behavior:contain!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{
+  width:0!important;height:0!important;
+}
+#tab-projects #projectTableView .pm-shared-project-table{
+  width:max-content!important;
+  min-width:1500px!important;
+  max-width:none!important;
+  table-layout:fixed!important;
+  transform:none!important;
+}
+#tab-projects #projectTableBottomScroll{
+  display:block!important;
+  flex:0 0 14px!important;
+  width:100%!important;
+  height:14px!important;
+  min-height:14px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:auto!important;
+  position:relative!important;
+  z-index:900!important;
+  background:#eef3f7!important;
+  border-top:1px solid #d5e0e8!important;
+}
+#tab-projects #projectTableBottomScroll>div{
+  height:1px!important;
+  min-height:1px!important;
+}
+
+/* === V36: Timeline day grid === */
+#tab-projects #ganttChartContainer .project-gantt{
+  --pm-day-width:40px;
+}
+#tab-projects #ganttChartContainer .gantt-row-track{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+#tab-projects #ganttChartContainer .gantt-row-track::before{
+  content:"";
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  pointer-events:none!important;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(var(--pm-day-width) - 1px),
+      rgba(148,163,184,.24) calc(var(--pm-day-width) - 1px),
+      rgba(148,163,184,.24) var(--pm-day-width)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 16px,
+      rgba(148,163,184,.16) 16px,
+      rgba(148,163,184,.16) 17px
+    );
+}
+#tab-projects #ganttChartContainer .gantt-bar-light,
+#tab-projects #ganttChartContainer .gantt-bar-dark{
+  z-index:3!important;
+}
+
+/* === V36: Timeline today marker follows the exact date coordinate === */
+#tab-projects #ganttChartContainer .project-gantt-today-line{
+  position:absolute!important;
+  top:0!important;
+  bottom:auto!important;
+  width:2px!important;
+  background:#ef4444!important;
+  z-index:1000!important;
+  pointer-events:none!important;
+}
+
+/* ===== projectManagementV37Fixes ===== */
+/* V37: use the real date-column boundaries as the single source of truth. */
+#tab-projects #ganttChartContainer .gantt-row-track{
+  --pm-grid-day-width:40px!important;
+  background-image:
+    repeating-linear-gradient(to right,
+      transparent 0,
+      transparent calc(var(--pm-grid-day-width) - 1px),
+      rgba(100,116,139,.18) calc(var(--pm-grid-day-width) - 1px),
+      rgba(100,116,139,.18) var(--pm-grid-day-width)
+    ),
+    repeating-linear-gradient(to bottom,
+      transparent 0,
+      transparent 33px,
+      rgba(100,116,139,.13) 33px,
+      rgba(100,116,139,.13) 34px
+    )!important;
+}
+#tab-projects #ganttChartContainer .gantt-row-track::before{display:none!important;}
+#tab-projects #ganttChartContainer .gantt-row-track::after{display:none!important;}
+#tab-projects #ganttChartContainer .gantt-bar-light,
+#tab-projects #ganttChartContainer .gantt-bar-dark{
+  box-sizing:border-box!important;
+}
+#tab-projects #ganttChartContainer .project-gantt-today-line{
+  width:2px!important;
+  background:#ef4444!important;
+  box-shadow:0 0 0 1px rgba(239,68,68,.10)!important;
+  z-index:1200!important;
+}
+/* Keep the bottom scrollbar visually independent while it controls the table wrapper. */
+#tab-projects #projectTableView .pm-shared-table-wrap{scrollbar-width:none!important;}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{width:0!important;height:0!important;}
+
+/* ===== projectManagementV38AuthoritativeFixes ===== */
+/* V42: legacy fixed-width Timeline CSS disabled. */
+
+/* ===== projectManagementV39ExpandFixes ===== */
+/* V39: authoritative expand/collapse controls for both Project Table and Timeline. */
+#tab-projects .pm-project-name-button,
+#tab-projects .pm-phase-toggle,
+#tab-projects .pm-gantt-toggle,
+#tab-projects #projectExpandCollapseBtn{cursor:pointer!important;pointer-events:auto!important;}
+#tab-projects .pm-phase-toggle.is-collapsed i{transform:rotate(-90deg)!important;}
+
+/* ===== projectManagementV42TimelineAndTableFixes ===== */
+#tab-projects #ganttChartContainer{width:100%!important;max-width:100%!important;min-width:0!important;overflow:hidden!important;}
+#tab-projects #ganttChartContainer .project-gantt-wrap{width:100%!important;min-width:0!important;max-width:100%!important;padding:0!important;overflow:hidden!important;}
+#tab-projects #ganttChartContainer .project-gantt{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;}
+#tab-projects #ganttChartContainer .gantt-project-col{width:30%!important;min-width:0!important;max-width:none!important;}
+#tab-projects #ganttChartContainer .gantt-owner-col{width:10%!important;min-width:0!important;max-width:none!important;}
+#tab-projects #ganttChartContainer .gantt-status-col{width:10%!important;min-width:0!important;max-width:none!important;}
+#tab-projects #ganttChartContainer .gantt-day-col{min-width:0!important;max-width:none!important;}
+#tab-projects #ganttChartContainer .gantt-owner-cell,#tab-projects #ganttChartContainer .gantt-status-cell{position:relative!important;left:auto!important;width:auto!important;min-width:0!important;max-width:none!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;padding:4px 6px!important;text-align:center!important;}
+#tab-projects #ganttChartContainer .label-cell,#tab-projects #ganttChartContainer .label-head{position:relative!important;left:auto!important;min-width:0!important;}
+#tab-projects #ganttChartContainer .gantt-filter-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:3px!important;min-width:0!important;white-space:nowrap!important;overflow:hidden!important;}
+#tab-projects #ganttChartContainer .gantt-filter-head>span{overflow:hidden!important;text-overflow:ellipsis!important;}
+#tab-projects #ganttChartContainer .gantt-row-title{display:inline-block!important;max-width:calc(100% - 28px)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;vertical-align:middle!important;}
+#tab-projects #ganttChartContainer .gantt-row-track{width:100%!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;}
+#tab-projects #ganttChartContainer .gantt-bar-light,#tab-projects #ganttChartContainer .gantt-bar-dark{box-sizing:border-box!important;max-width:100%!important;}
+#tab-projects #ganttChartContainer .gantt-month-head,#tab-projects #ganttChartContainer .gantt-date-head{min-width:0!important;padding:2px 1px!important;overflow:hidden!important;white-space:nowrap!important;}
+#tab-projects #ganttChartContainer .project-gantt-today-line{pointer-events:none!important;}
+#tab-projects #projectTableView .pm-shared-table-wrap{scroll-behavior:auto!important;}
+
+/* ===== projectManagementV43TimelinePhaseActualFixes ===== */
+/* V43: phase Actual Completion + stable Timeline grid/scroll/text contrast. */
+#tab-projects #ganttChartContainer{
+  position:relative!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:100%!important;
+  max-height:100%!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  scrollbar-gutter:stable;
+}
+#tab-projects #ganttChartContainer .project-gantt-wrap{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+#tab-projects #ganttChartContainer .project-gantt{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  table-layout:fixed!important;
+}
+#tab-projects #ganttChartContainer .gantt-row-track{
+  position:relative!important;
+  overflow:visible!important;
+  border-bottom:1px dotted rgba(100,116,139,.24)!important;
+  box-sizing:border-box!important;
+  background:none!important;
+}
+#tab-projects #ganttChartContainer .gantt-grid-vline{
+  position:absolute!important;
+  top:0!important;
+  bottom:0!important;
+  width:0!important;
+  border-left:1px dotted rgba(100,116,139,.24)!important;
+  pointer-events:none!important;
+  z-index:1!important;
+}
+#tab-projects #ganttChartContainer .gantt-bar-light,
+#tab-projects #ganttChartContainer .gantt-bar-dark{
+  z-index:5!important;
+}
+#tab-projects #ganttChartContainer .project-gantt-today-line{z-index:20!important;pointer-events:none!important}
+/* Owner / Status values must remain readable on the white phase/task rows. */
+#tab-projects #ganttChartContainer .phase-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .phase-row .gantt-status-cell,
+#tab-projects #ganttChartContainer .task-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .task-row .gantt-status-cell{
+  color:#315d82!important;
+  background:#fff!important;
+  font-weight:700!important;
+}
+#tab-projects #ganttChartContainer .project-row .gantt-owner-cell,
+#tab-projects #ganttChartContainer .project-row .gantt-status-cell{
+  color:#173e6b!important;
+  background:#e7f4ff!important;
+  font-weight:800!important;
+}
+
+/* ===== projectManagementV44TimelineGridScrollHeaderFixes ===== */
+/* V44: Timeline-only final layout fixes. */
+#tab-projects #projectGanttView{
+  overflow:visible!important;
+  min-height:0!important;
+}
+#tab-projects #ganttChartContainer{
+  position:relative!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:calc(100vh - 255px)!important;
+  min-height:220px!important;
+  max-height:calc(100vh - 255px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#tab-projects #ganttChartContainer .project-gantt-wrap{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  overflow:visible!important;
+}
+#tab-projects #ganttChartContainer .project-gantt{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  table-layout:fixed!important;
+  border-collapse:separate!important;
+  border-spacing:0!important;
+}
+/* Header labels: centered in all three identity columns. */
+#tab-projects #ganttChartContainer .project-gantt .label-head,
+#tab-projects #ganttChartContainer .project-gantt .owner-head,
+#tab-projects #ganttChartContainer .project-gantt .status-head{
+  text-align:center!important;
+  vertical-align:middle!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .label-head .gantt-filter-head,
+#tab-projects #ganttChartContainer .project-gantt .owner-head .gantt-filter-head,
+#tab-projects #ganttChartContainer .project-gantt .status-head .gantt-filter-head{
+  justify-content:center!important;
+  text-align:center!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .label-head .gantt-filter-btn,
+#tab-projects #ganttChartContainer .project-gantt .owner-head .gantt-filter-btn,
+#tab-projects #ganttChartContainer .project-gantt .status-head .gantt-filter-btn{
+  margin-left:4px!important;
+}
+/* Preserve the dotted horizontal task separators. */
+#tab-projects #ganttChartContainer .gantt-row-track{
+  border-bottom:1px dotted rgba(100,116,139,.24)!important;
+}
+#tab-projects #ganttChartContainer .gantt-grid-vline{
+  top:0!important;
+  bottom:0!important;
+  border-left:1px dotted rgba(100,116,139,.28)!important;
+}
+
+/* ===== projectManagementV45TimelineViewportAndBarFixes ===== */
+/* V45: use the real rendered date-header geometry for every Timeline bar.
+   Also reclaim the unused lower viewport for both Project views. */
+#tab-projects #ganttChartContainer{
+  height:calc(100vh - 125px)!important;
+  max-height:calc(100vh - 125px)!important;
+  min-height:320px!important;
+}
+#tab-projects #projectGanttView{
+  height:calc(100vh - 125px)!important;
+  min-height:0!important;
+}
+#tab-projects #projectTableView{
+  height:calc(100vh - 125px)!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+#tab-projects #projectTableView .pm-project-stack{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+}
+
+/* ===== projectManagementV49NativeHorizontalScrollFix ===== */
+/* V49: stop fighting the browser scrollbar.  Both views use their real scroll
+   containers; no fake scrollbar is required. */
+#tab-projects #projectTableView,
+#tab-projects #projectGanttView{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+
+/* TABLE VIEW */
+#tab-projects #projectTableView{
+  height:calc(100vh - 155px)!important;
+  max-height:calc(100vh - 155px)!important;
+  min-height:420px!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+#tab-projects #projectTableView #projectsTableBody{
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  padding:0!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+  scrollbar-width:auto!important;
+  scrollbar-color:#71859a #e8eef3!important;
+  -webkit-overflow-scrolling:touch!important;
+  box-sizing:border-box!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar{
+  width:12px!important;
+  height:14px!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar-track{
+  background:#e8eef3!important;
+}
+#tab-projects #projectTableView .pm-shared-table-wrap::-webkit-scrollbar-thumb{
+  background:#71859a!important;
+  border:2px solid #e8eef3!important;
+  border-radius:7px!important;
+}
+#tab-projects #projectTableView .pm-shared-project-table{
+  width:1800px!important;
+  min-width:1800px!important;
+  max-width:none!important;
+  table-layout:fixed!important;
+  margin:0!important;
+  transform:none!important;
+}
+/* The old fake scrollbar is intentionally hidden; the visible scrollbar is
+   the actual scrollbar of .pm-shared-table-wrap. */
+#tab-projects #projectTableBottomScroll{
+  display:none!important;
+}
+
+/* TIMELINE VIEW */
+#tab-projects #projectGanttView{
+  height:calc(100vh - 155px)!important;
+  max-height:calc(100vh - 155px)!important;
+  min-height:420px!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+#tab-projects #projectGanttView .pm-gantt-toolbar{
+  flex:0 0 auto!important;
+}
+#tab-projects #ganttChartContainer{
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  height:auto!important;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+  scrollbar-width:auto!important;
+  scrollbar-color:#71859a #e8eef3!important;
+  -webkit-overflow-scrolling:touch!important;
+  box-sizing:border-box!important;
+}
+#tab-projects #ganttChartContainer::-webkit-scrollbar{
+  width:12px!important;
+  height:14px!important;
+}
+#tab-projects #ganttChartContainer::-webkit-scrollbar-track{
+  background:#e8eef3!important;
+}
+#tab-projects #ganttChartContainer::-webkit-scrollbar-thumb{
+  background:#71859a!important;
+  border:2px solid #e8eef3!important;
+  border-radius:7px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt-wrap{
+  width:max-content!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  overflow:visible!important;
+  padding:0!important;
+  margin:0!important;
+}
+#tab-projects #ganttChartContainer .project-gantt{
+  width:max-content!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  table-layout:fixed!important;
+  overflow:visible!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-project-col{
+  width:260px!important;
+  min-width:260px!important;
+  max-width:260px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-owner-col{
+  width:130px!important;
+  min-width:130px!important;
+  max-width:130px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-status-col{
+  width:130px!important;
+  min-width:130px!important;
+  max-width:130px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-day-col{
+  width:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+}
+#tab-projects #ganttChartContainer .project-gantt .gantt-row-track{
+  overflow:visible!important;
+}
+
+/* ===== projectManagementV51Fixes ===== */
+/* Task Owner must be centered in Project Management table. */
+#tab-projects .pm-ref-project-table td:nth-child(4),
+#tab-projects .pm-shared-project-table td:nth-child(4),
+#tab-projects .pm-ref-project-table .pm-owner-picker,
+#tab-projects .pm-ref-project-table .pm-owner-picker-btn,
+#tab-projects .pm-shared-project-table .pm-owner-picker,
+#tab-projects .pm-shared-project-table .pm-owner-picker-btn{
+  text-align:center!important;
+  justify-content:center!important;
+}
+#tab-projects .pm-ref-project-table td:nth-child(4) > *,
+#tab-projects .pm-shared-project-table td:nth-child(4) > *{
+  text-align:center!important;
+}
+
+/* ===== patchV4Style ===== */
+.pv4-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .pv4-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;font-size:12px;font-weight:700;color:#fff;border:0;cursor:pointer}
+  .pv4-btn:focus-visible{outline:2px solid #6366f1;outline-offset:2px}
+  .pv4-imp{background:#2563eb}.pv4-imp:hover{background:#1d4ed8}
+  .pv4-exp{background:#059669}.pv4-exp:hover{background:#047857}
+  .pv4-more td{padding:10px!important;text-align:center;background:#f8fafc}
+  .pv4-more button{font-size:12px;font-weight:700;color:#4f46e5;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:6px 14px;cursor:pointer}
+
+/* ===== patchV6Style ===== */
+/* Users page */
+#mtrUsers .mtr-tchips{display:flex;flex-wrap:wrap;gap:4px}
+#mtrUsers .mtr-tchip{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;border:1px solid transparent}
+#mtrUsers .mtr-tchip.mb{background:#eef2ff;color:#3730a3;border-color:#e0e7ff}
+#mtrUsers .mtr-tchip.ta{background:#fef3c7;color:#92400e;border-color:#fde68a}
+#mtrUsers .mtr-tchip.vw{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+#mtrUsers .mtr-tchip em{font-style:normal;font-size:9px;font-weight:800;opacity:.75;text-transform:uppercase}
+#mtrUsers .mtr-allteams{font-size:11.5px;font-weight:700;color:#64748b}
+#mtrUsers .mtr-warn{display:none!important}
+/* Overall scorecard */
+#tab-overall td.num,#tab-overall th.num{text-align:center!important;font-variant-numeric:tabular-nums}
+/* Project timeline */
+#tab-projects #ganttChartContainer .pv6-today-col{position:absolute;top:0;background:rgba(239,68,68,.13);border-left:2px solid #ef4444;border-right:1px solid rgba(239,68,68,.45);z-index:5;pointer-events:none}
+#tab-projects #ganttChartContainer th.pv6-today-head{background:#ef4444!important;color:#fff!important;font-weight:800!important}
+#tab-projects #ganttChartContainer .gantt-status-cell .pv6-st{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:800;white-space:nowrap}
+.pv6-st.st-completed{background:#dcfce7;color:#15803d}
+.pv6-st.st-working{background:#dbeafe;color:#1d4ed8}
+.pv6-st.st-overdue{background:#fee2e2;color:#b91c1c}
+.pv6-st.st-near{background:#fef3c7;color:#a16207}
+.pv6-st.st-stuck{background:#ffedd5;color:#c2410c}
+.pv6-st.st-not{background:#f1f5f9;color:#475569}
+/* bar colours per status (dark = done part, light = remaining plan) */
+#tab-projects #ganttChartContainer .gantt-bar-dark.pv6-c-completed{background:#16a34a!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar-dark.pv6-c-working{background:#2563eb!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar-dark.pv6-c-overdue{background:#dc2626!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar-dark.pv6-c-near{background:#eab308!important;color:#422006!important}
+#tab-projects #ganttChartContainer .gantt-bar-dark.pv6-c-stuck{background:#ea580c!important;color:#fff!important}
+#tab-projects #ganttChartContainer .gantt-bar-dark.pv6-c-not{background:#64748b!important;color:#fff!important}
+
+/* ===== ieTeamV7Design ===== */
+:root{--v7-ink:#10233f;--v7-muted:#64748b;--v7-line:#dce6f0;--v7-surface:#fff;--v7-bg:#f4f7fb;--v7-primary:#4f46e5;--v7-cyan:#0891b2;--v7-success:#059669;--v7-warning:#d97706;--v7-danger:#dc2626;--v7-radius:16px;--v7-shadow:0 10px 30px rgba(15,35,65,.07)}
+html,body{background:var(--v7-bg)!important;color:var(--v7-ink)}
+body{font-feature-settings:"cv02","cv03","cv04","cv11";letter-spacing:-.005em}
+#contentArea{background:radial-gradient(circle at 92% 0,rgba(79,70,229,.06),transparent 28%),var(--v7-bg)!important;padding:20px!important}
+aside{background:linear-gradient(180deg,#0b1324 0%,#101c35 100%)!important;border-right:1px solid rgba(148,163,184,.13)}
+.nav-item{border:1px solid transparent!important;border-radius:11px!important;min-height:40px;transition:background .18s ease,color .18s ease,transform .18s ease!important}
+.nav-item:hover{transform:translateX(2px);background:rgba(255,255,255,.07)!important}
+.nav-item.bg-indigo-600,.nav-item.active{background:linear-gradient(135deg,#5b5ce2,#3b82f6)!important;box-shadow:0 8px 22px rgba(59,130,246,.22);border-color:rgba(255,255,255,.13)!important}
+.tab-content>.bom-page-filter,.tab-content>.bg-white,.pm-reference-toolbar,.pm-panel{border-color:var(--v7-line)!important;border-radius:var(--v7-radius)!important;box-shadow:var(--v7-shadow)!important}
+.bom-page-filter{position:sticky;top:-1px;z-index:55;background:rgba(255,255,255,.92)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.bom-action-btn{border-radius:10px!important;min-height:34px!important;font-weight:700!important}
+.tab-content table thead{background:#f7f9fc!important}.tab-content table th{color:#52657c!important;letter-spacing:.045em}.tab-content table tbody tr{transition:background .14s ease}.tab-content table tbody tr:hover{background:#f8fbff!important}
+input,select,textarea{accent-color:var(--v7-primary)}
+
+/* Overall bento dashboard */
+#tab-overall{height:auto!important;min-height:calc(100vh - 40px)!important;gap:12px!important}
+#tab-overall .ov-head{background:linear-gradient(118deg,#111c36,#293a8f 58%,#087d91)!important;border-radius:18px!important;padding:15px 18px!important;box-shadow:0 14px 36px rgba(30,58,138,.19)}
+#tab-overall .ov-head h2{font-size:20px!important;letter-spacing:-.025em}#tab-overall .ov-head small{font-size:11px!important}
+#tab-overall .ov-sel{height:34px!important;border-radius:10px!important;background:rgba(255,255,255,.13)!important}#tab-overall .ov-btn{height:34px!important;border-radius:10px!important}
+#tab-overall .ov-kpis{gap:10px!important}#tab-overall .ov-k{border:1px solid var(--v7-line)!important;border-left:1px solid var(--v7-line)!important;border-top:3px solid var(--c)!important;border-radius:14px!important;padding:10px 12px!important;box-shadow:0 6px 20px rgba(15,35,65,.045)}
+#tab-overall .ov-c{border-color:var(--v7-line)!important;border-radius:16px!important;padding:12px 14px!important;box-shadow:0 8px 26px rgba(15,35,65,.055)}
+#tab-overall .ov-t{font-size:12.5px!important;color:#1c3554}#tab-overall .ov-scroll{scrollbar-width:thin}
+.ov-loading{display:flex;align-items:center;gap:8px;font-size:11px;color:#e0f2fe;background:rgba(255,255,255,.12);padding:7px 10px;border-radius:10px}.ov-loading i{animation:v7spin 1s linear infinite}@keyframes v7spin{to{transform:rotate(360deg)}}
+.ov-error{padding:18px;color:#b91c1c;background:#fff1f2;border:1px solid #fecdd3;border-radius:12px;font-size:12px}
+
+/* To Do */
+.todo-page{display:flex;flex-direction:column;gap:14px}.todo-page.hidden{display:none!important}
+.todo-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;border-radius:20px;background:linear-gradient(120deg,#172554,#3730a3 62%,#0e7490);color:#fff;box-shadow:0 16px 36px rgba(49,46,129,.18)}
+.todo-eyebrow,.pm-modern-eyebrow{font-size:10px;font-weight:800;letter-spacing:.16em;color:#a5f3fc;margin-bottom:5px}.todo-hero h2,.pm-modern-head h2{font-size:25px;font-weight:850;letter-spacing:-.035em;line-height:1.1}.todo-hero p{margin-top:5px;color:#dbeafe;font-size:12px}.todo-create{height:38px;padding:0 15px;border-radius:11px;background:#fff;color:#3730a3;font-size:12px;font-weight:800;box-shadow:0 6px 18px rgba(15,23,42,.14)}
+.todo-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.todo-kpi{position:relative;text-align:left;padding:14px 16px;background:#fff;border:1px solid var(--v7-line);border-radius:16px;box-shadow:0 7px 22px rgba(15,35,65,.05);transition:.18s ease}.todo-kpi[data-todo-filter]{cursor:pointer}.todo-kpi[data-todo-filter]:hover{transform:translateY(-2px);border-color:#a5b4fc}.todo-kpi.is-active{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1),0 8px 24px rgba(15,35,65,.06)}.todo-kpi span{display:block;color:#64748b;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.todo-kpi strong{display:block;margin:4px 0 1px;font-size:25px;color:#172554;letter-spacing:-.04em}.todo-kpi small{color:#94a3b8;font-size:10px}.todo-kpi:nth-child(2) strong{color:#dc2626}.todo-kpi:nth-child(3) strong{color:#d97706}
+.todo-panel{min-height:0;background:#fff;border:1px solid var(--v7-line);border-radius:18px;box-shadow:var(--v7-shadow);overflow:hidden}.todo-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid #e8eef5}.todo-title{display:flex;align-items:baseline;gap:9px}.todo-title h3{font-size:13px;font-weight:850;color:#193452}.todo-title span{font-size:10px;color:#94a3b8}.todo-search{width:min(340px,42vw);height:36px;display:flex;align-items:center;gap:8px;padding:0 11px;border:1px solid #d8e3ee;border-radius:11px;background:#f8fafc;color:#94a3b8}.todo-search:focus-within{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,.1)}.todo-search input{width:100%;outline:0;background:transparent;font-size:11px;color:#334155}.todo-table-wrap{max-height:calc(100vh - 335px);overflow:auto}.todo-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}.todo-table th{position:sticky;top:0;z-index:2;padding:10px 12px;text-align:left;background:#f8fafc;border-bottom:1px solid #e2e8f0;text-transform:uppercase;font-size:9px;white-space:nowrap}.todo-table td{padding:10px 12px;border-bottom:1px solid #edf2f7;vertical-align:middle}.todo-task-name{font-weight:800;color:#1e3a5f}.todo-detail{max-width:360px;white-space:normal;color:#64748b}.todo-owner{white-space:nowrap}.todo-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:850;white-space:nowrap}.todo-pill.overdue{background:#fee2e2;color:#b91c1c}.todo-pill.today{background:#fef3c7;color:#b45309}.todo-delay{font-variant-numeric:tabular-nums;font-weight:800}.todo-open{width:29px;height:29px;border-radius:9px;background:#eef2ff;color:#4f46e5}.todo-empty td{text-align:center!important;padding:42px 20px!important;color:#94a3b8}.todo-empty i{display:block;font-size:26px;color:#cbd5e1;margin-bottom:8px}
+
+/* Modern Project workspace */
+#tab-projects{gap:12px!important}.pm-modern-head{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:18px 20px;border-radius:19px;background:linear-gradient(115deg,#f8fbff,#eef2ff 55%,#ecfeff);border:1px solid #dce6f3;box-shadow:0 9px 28px rgba(15,35,65,.06)}.pm-modern-head .pm-modern-eyebrow{color:#4f46e5}.pm-modern-head h2{color:#172554}.pm-modern-head p{font-size:11px;color:#64748b;margin-top:4px}.pm-modern-kpis{display:grid;grid-template-columns:repeat(5,minmax(78px,1fr));gap:8px}.pm-modern-kpis>div{min-width:78px;padding:9px 11px;background:rgba(255,255,255,.8);border:1px solid #dce6f3;border-radius:12px}.pm-modern-kpis span{display:block;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#64748b}.pm-modern-kpis strong{display:block;font-size:18px;color:#1e3a8a;margin-top:2px}.pm-modern-kpis>div:nth-child(3) strong{color:#dc2626}.pm-modern-kpis>div:nth-child(4) strong{color:#059669}
+#tab-projects .pm-reference-toolbar{padding:10px!important;background:rgba(255,255,255,.94)!important;backdrop-filter:blur(12px);position:sticky;top:-1px;z-index:80}
+#tab-projects .pm-reference-actions{gap:8px!important}#tab-projects .pm-ref-search{min-width:280px!important;border-radius:11px!important;background:#f8fafc!important;border-color:#dbe5ef!important}#tab-projects .pm-ref-new-project,#tab-projects .pm-ref-import,#tab-projects .pm-ref-icon-btn,#tab-projects .project-view-switch{border-radius:10px!important}
+#tab-projects .pm-reference-table-panel,#tab-projects #projectGanttView{background:#fff!important;border:1px solid var(--v7-line)!important;border-radius:16px!important;box-shadow:var(--v7-shadow)!important;overflow:hidden!important}
+#tab-projects #projectsTableBody{max-height:calc(100vh - 255px)!important;overflow:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable}
+#tab-projects .pm-shared-table-wrap{max-width:100%!important;overflow:auto!important;max-height:none!important;scrollbar-gutter:stable both-edges}
+#tab-projects .pm-shared-project-table{min-width:1540px!important;width:max-content!important;table-layout:fixed!important}#tab-projects .pm-shared-project-table thead th{top:0!important;z-index:45!important;background:#f6f9fc!important;box-shadow:inset 0 -1px #dce6f0}
+#tab-projects .pm-ref-project-row td{background:#eef5ff!important}#tab-projects .pm-ref-phase-row td{background:#f8fbff!important}#tab-projects .pm-ref-task-row td{background:#fff!important}
+#tab-projects .pm-project-name-button{font-size:11px!important;color:#173e6b!important}#tab-projects .pm-ref-input{border-radius:8px!important;border-color:transparent!important}#tab-projects .pm-ref-input:hover,#tab-projects .pm-ref-input:focus{border-color:#a5b4fc!important;background:#fff!important}
+#tab-projects #ganttChartContainer{max-width:100%!important;max-height:calc(100vh - 255px)!important;overflow:auto!important;scrollbar-gutter:stable;background:#fff!important}.project-gantt{width:max-content!important;max-width:none!important}.project-gantt thead th{position:sticky!important;top:0!important;z-index:35!important}
+#projectTableBottomScroll{height:13px!important;background:#f8fafc!important;border-top:1px solid #e2e8f0!important}
+
+@media(max-width:1180px){.pm-modern-head{align-items:flex-start;flex-direction:column}.pm-modern-kpis{width:100%}.todo-kpis{grid-template-columns:repeat(2,1fr)}#tab-overall .ov-kpis{grid-template-columns:repeat(4,1fr)!important}}
+@media(max-width:760px){#contentArea{padding:12px!important}.todo-hero{align-items:flex-start;flex-direction:column}.todo-kpis{grid-template-columns:1fr 1fr}.todo-search{width:100%}.todo-toolbar{align-items:stretch;flex-direction:column}.pm-modern-kpis{grid-template-columns:repeat(2,1fr)}#tab-overall .ov-kpis{grid-template-columns:repeat(2,1fr)!important}}
+
+/* ===== ieTeamV8AuthoritativeStyle ===== */
+/* V8 navigation: only the selected entry has a persistent highlight. */
+.nav-item{background:transparent!important;box-shadow:none!important}
+.nav-item:hover{background:rgba(148,163,184,.09)!important;transform:translateX(1px)!important}
+.nav-item.active,.nav-item.bg-indigo-600{background:linear-gradient(135deg,#4f46e5,#3b82f6)!important;color:#fff!important;box-shadow:0 8px 20px rgba(59,130,246,.24)!important}
+
+/* V8 Overall visualizations use bounded DOM/SVG-free bars, avoiding Chart.js recursive render failures. */
+#tab-overall .ov-cv{overflow:hidden!important}
+#tab-overall [data-overall-chart]{height:100%;min-height:0;overflow:auto;padding:3px 1px 1px}
+.ov-viz-empty{height:100%;display:grid;place-items:center;color:#94a3b8;font-size:11px}
+.ov-hbar-list,.ov-series-list{display:flex;flex-direction:column;gap:7px;min-height:100%;justify-content:center}
+.ov-hbar-row{display:grid;grid-template-columns:minmax(68px,1fr) minmax(80px,2.4fr) 48px;gap:8px;align-items:center;font-size:9px}
+.ov-hbar-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#52677d;font-weight:700}
+.ov-hbar-row>div{height:9px;border-radius:999px;background:#edf2f7;overflow:hidden}
+.ov-hbar-row>div>i{display:block;height:100%;border-radius:999px;min-width:0}
+.ov-hbar-row>b{text-align:right;color:#253d57;font-variant-numeric:tabular-nums}
+.ov-series-legend{display:flex;justify-content:flex-end;gap:12px;margin:1px 0 7px;font-size:9px;color:#64748b}
+.ov-series-legend span{display:flex;align-items:center;gap:4px}.ov-series-legend i{width:8px;height:8px;border-radius:2px}
+.ov-series-row{display:grid;grid-template-columns:35px minmax(90px,1fr) 64px;gap:7px;align-items:center;font-size:8.5px;color:#64748b}
+.ov-series-row>div{display:grid;grid-template-columns:1fr 1fr;gap:4px}.ov-series-row em{height:7px;background:#edf2f7;border-radius:999px;overflow:hidden}.ov-series-row em i{display:block;height:100%;border-radius:999px}
+.ov-series-row>b{text-align:right;color:#334155;font-variant-numeric:tabular-nums;font-size:8px}
+.ov-donut-wrap{height:100%;display:flex;align-items:center;justify-content:center;gap:18px}.ov-donut{width:min(120px,46%);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative}.ov-donut:after{content:"";position:absolute;inset:23%;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #edf2f7}.ov-donut span{position:relative;z-index:1;text-align:center}.ov-donut b{display:block;color:#1e3a5f;font-size:17px}.ov-donut small{display:block;color:#94a3b8;font-size:8px}.ov-donut-legend{min-width:98px;display:flex;flex-direction:column;gap:7px}.ov-donut-legend>div{display:grid;grid-template-columns:8px 1fr auto;gap:6px;align-items:center;font-size:9px;color:#64748b}.ov-donut-legend i{width:8px;height:8px;border-radius:50%}.ov-donut-legend b{color:#334155}
+
+/* V8 Project table: one clean portfolio grid with readable hierarchy and stable scrolling. */
+#tab-projects{height:calc(100vh - 28px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:10px!important}
+#tab-projects.hidden{display:none!important}
+#tab-projects .pm-modern-head{flex:0 0 auto!important;padding:14px 18px!important;border-radius:16px!important;background:linear-gradient(120deg,#f8fbff,#eef4ff 58%,#ecfeff)!important}
+#tab-projects .pm-reference-toolbar{flex:0 0 auto!important;position:relative!important;top:auto!important;margin:0!important;padding:8px 10px!important;border-radius:12px!important;background:#fff!important}
+#tab-projects .pm-reference-actions{width:100%!important;display:flex!important;align-items:center!important;gap:8px!important;flex-wrap:wrap!important}
+#tab-projects .pm-ref-toolbar-spacer{flex:1 1 30px!important}
+#tab-projects .pm-ref-search{min-width:220px!important;flex:0 1 340px!important}
+#tab-projects #projectTableView,#tab-projects #projectGanttView{flex:1 1 auto!important;min-height:0!important;margin:0!important;border:1px solid #d8e4ef!important;border-radius:14px!important;background:#fff!important;box-shadow:0 10px 26px rgba(30,64,175,.07)!important;overflow:hidden!important}
+#tab-projects #projectTableView{display:flex!important;flex-direction:column!important}
+#tab-projects #projectTableView.hidden,#tab-projects #projectGanttView.hidden{display:none!important}
+#tab-projects #projectsTableBody{flex:1 1 auto!important;min-height:0!important;padding:0!important;overflow:hidden!important;background:#f5f8fb!important}
+#tab-projects .pm-shared-table-wrap{height:100%!important;max-height:none!important;overflow:auto!important;scrollbar-width:thin!important;background:#fff!important}
+#tab-projects .pm-shared-project-table{width:max-content!important;min-width:1810px!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important;font-size:11px!important;color:#334e63!important}
+#tab-projects .pm-shared-project-table col.w-no{width:48px!important;min-width:48px!important}
+#tab-projects .pm-shared-project-table col.w-phase{width:210px!important;min-width:210px!important}
+#tab-projects .pm-shared-project-table col.w-task{width:270px!important;min-width:270px!important}
+#tab-projects .pm-shared-project-table col.w-owner{width:145px!important;min-width:145px!important}
+#tab-projects .pm-shared-project-table col.w-detail{width:220px!important;min-width:220px!important}
+#tab-projects .pm-shared-project-table col.w-overall{width:120px!important;min-width:120px!important}
+#tab-projects .pm-shared-project-table col.w-date{width:115px!important;min-width:115px!important}
+#tab-projects .pm-shared-project-table col.w-gain{width:120px!important;min-width:120px!important}
+#tab-projects .pm-shared-project-table col.w-saving{width:145px!important;min-width:145px!important}
+#tab-projects .pm-shared-project-table col.w-note{width:220px!important;min-width:220px!important}
+#tab-projects .pm-shared-project-table thead th{position:sticky!important;top:0!important;z-index:60!important;height:44px!important;padding:7px 8px!important;background:linear-gradient(180deg,#294e70,#1f405f)!important;color:#f8fafc!important;border:0!important;border-right:1px solid rgba(255,255,255,.15)!important;border-bottom:1px solid #173550!important;font-size:9px!important;font-weight:850!important;letter-spacing:.025em!important;text-align:center!important;box-shadow:none!important}
+#tab-projects .pm-shared-project-table thead th:nth-child(2),#tab-projects .pm-shared-project-table thead th:nth-child(3){text-align:left!important}
+#tab-projects .pm-shared-project-table td{height:42px!important;padding:5px 8px!important;border:0!important;border-right:1px solid #e2eaf1!important;border-bottom:1px solid #dde6ee!important;background:#fff!important;vertical-align:middle!important;font-size:10.5px!important}
+#tab-projects .pm-shared-project-table tbody tr:hover td{background:#f4f8ff!important}
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row td{height:50px!important;background:#eef5ff!important;border-top:2px solid #b9cfe3!important;border-bottom:1px solid #cbdbe9!important;color:#173e63!important;font-weight:700!important}
+#tab-projects .pm-shared-project-table .pm-ref-project-data-row td:first-child{box-shadow:inset 4px 0 #3b82f6!important}
+#tab-projects .pm-shared-project-table .pm-ref-phase-row td{height:44px!important;background:#f4f8fc!important;color:#315d7d!important;font-weight:750!important;border-top:1px solid #c9d8e5!important}
+#tab-projects .pm-shared-project-table .pm-ref-phase-row .pm-ref-phase-cell{box-shadow:inset 3px 0 #7ba6c7!important}
+#tab-projects .pm-shared-project-table .pm-ref-task-row td{height:43px!important;background:#fff!important;color:#486176!important}
+#tab-projects .pm-project-name-button{font-size:12px!important;color:#155fa0!important;font-weight:850!important}
+#tab-projects .pm-project-inline-detail{margin-top:3px!important;color:#71869a!important;font-weight:500!important;font-size:9.5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:420px!important}
+#tab-projects .pm-ref-input,#tab-projects .pm-project-direct-edit{height:32px!important;min-height:32px!important;padding:5px 7px!important;border:1px solid transparent!important;border-radius:7px!important;font-size:10.5px!important;color:#36566f!important}
+#tab-projects .pm-ref-input:hover,#tab-projects .pm-ref-input:focus{background:#fff!important;border-color:#86b7dc!important;box-shadow:0 0 0 3px rgba(59,130,246,.09)!important}
+#tab-projects .pm-ref-detail-badge,#tab-projects .pm-ref-overall-badge{min-width:90px!important;min-height:25px!important;border-radius:999px!important;font-size:9px!important;font-weight:800!important}
+#tab-projects #projectTableBottomScroll{flex:0 0 15px!important;height:15px!important;background:#eef3f7!important;border-top:1px solid #d9e3eb!important;overflow-x:auto!important;overflow-y:hidden!important}
+
+/* V8 timeline: dedicated scalable day/week/month axis and fixed information columns. */
+#tab-projects #projectGanttView{display:flex!important;flex-direction:column!important}
+#tab-projects #ganttChartContainer{flex:1 1 auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:auto!important;background:#f7fafc!important;scrollbar-gutter:stable!important}
+.v8-gantt{width:max-content;min-width:100%;font-size:10px;color:#334e63;--c1:270px;--c2:140px;--c3:120px}
+.v8-gantt-row{display:grid;min-height:42px;border-bottom:1px solid #dde6ee;background:#fff}
+.v8-gantt-cell{display:flex;align-items:center;min-width:0;padding:7px 9px;border-right:1px solid #dde6ee;background:inherit;box-sizing:border-box}
+.v8-gantt-head{position:sticky;top:0;z-index:500;min-height:54px;background:#234d70;color:#fff;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.035em}
+.v8-gantt-head .v8-gantt-cell{background:#234d70;border-right-color:rgba(255,255,255,.17)}
+.v8-gantt-sticky{position:sticky;z-index:120}.v8-gantt-head .v8-gantt-sticky{z-index:560}
+.v8-gantt-c1{left:0}.v8-gantt-c2{left:var(--c1)}.v8-gantt-c3{left:calc(var(--c1) + var(--c2))}
+.v8-gantt-project{background:#edf5ff;font-weight:800;color:#174b76}.v8-gantt-project .v8-gantt-cell:first-child{box-shadow:inset 4px 0 #3b82f6}
+.v8-gantt-phase{background:#f3f7fb;font-weight:750;color:#315d7d}.v8-gantt-task{background:#fff;color:#526a7e}
+.v8-gantt-project:hover,.v8-gantt-phase:hover,.v8-gantt-task:hover{background:#eef6ff}
+.v8-gantt-name{gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v8-gantt-name i{width:14px;text-align:center;color:#6b8eaa}.v8-gantt-phase .v8-gantt-name{padding-left:22px}.v8-gantt-task .v8-gantt-name{padding-left:46px;font-weight:650}
+.v8-gantt-owner{justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v8-gantt-status{justify-content:center}.v8-status{display:inline-flex;align-items:center;justify-content:center;min-width:82px;padding:5px 8px;border-radius:999px;font-size:8.5px;font-weight:850;white-space:nowrap}.v8-status.completed{background:#dcfce7;color:#15803d}.v8-status.overdue,.v8-status.stuck,.v8-status.at-risk{background:#fee2e2;color:#b91c1c}.v8-status.working,.v8-status.in-progress{background:#dbeafe;color:#1d4ed8}.v8-status.watch,.v8-status.near-deadline{background:#fef3c7;color:#b45309}.v8-status.not-started,.v8-status.on-track{background:#e8eef4;color:#52677d}
+.v8-axis,.v8-track{position:relative;height:100%;min-height:42px;overflow:hidden;background-color:#fff;background-image:repeating-linear-gradient(90deg,transparent 0,transparent calc(var(--unit) - 1px),#e6edf3 calc(var(--unit) - 1px),#e6edf3 var(--unit))}
+.v8-axis{display:flex;min-height:54px;background-color:#2f5d80;background-image:none}
+.v8-axis-unit{height:54px;flex:0 0 var(--unit);display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid rgba(255,255,255,.18);color:#fff;text-transform:none;letter-spacing:0;line-height:1.2}.v8-axis-unit b{font-size:9px}.v8-axis-unit small{font-size:7.5px;color:#d8e8f5}.v8-axis-unit.weekend{background:rgba(15,23,42,.13)}
+.v8-plan-bar{position:absolute;top:10px;height:22px;border-radius:7px;background:#9fb1c1;box-shadow:0 2px 5px rgba(30,64,95,.14);min-width:4px;overflow:hidden;color:#fff;white-space:nowrap;text-overflow:ellipsis;padding:0 7px;line-height:22px;font-size:8px;font-weight:750;box-sizing:border-box}.v8-gantt-project .v8-plan-bar{background:#3b82f6}.v8-gantt-phase .v8-plan-bar{background:#6f9fc3}.v8-gantt-task .v8-plan-bar{background:#7b8fa1}.v8-plan-bar.completed{background:#22a865}.v8-plan-bar.overdue,.v8-plan-bar.stuck,.v8-plan-bar.at-risk{background:#e35d6a}.v8-plan-bar.working,.v8-plan-bar.in-progress{background:#2f80ed}.v8-plan-bar.watch,.v8-plan-bar.near-deadline{background:#e6ad24;color:#493600}
+.v8-actual-marker{position:absolute;top:6px;width:9px;height:9px;border:2px solid #fff;background:#10b981;transform:translateX(-50%) rotate(45deg);box-shadow:0 0 0 1px #059669;z-index:4}.v8-today{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:5;pointer-events:none}.v8-axis .v8-today:before{content:"TODAY";position:absolute;top:2px;left:4px;padding:2px 4px;border-radius:4px;background:#ef4444;color:#fff;font-size:7px;font-weight:900;letter-spacing:.05em}
+.v8-gantt-empty{height:100%;min-height:320px;display:grid;place-items:center;color:#94a3b8;font-size:12px;background:#fff}
+@media(max-width:1000px){.v8-gantt{--c1:230px;--c2:115px;--c3:105px}.pm-modern-kpis{grid-template-columns:repeat(3,1fr)!important}}
+
+
+/* V9 IE Overall: seven KPIs, true overtime columns, and three tracking columns. */
+#tab-overall .ov-kpis{grid-template-columns:repeat(7,minmax(0,1fr))!important}
+.ov-column-summary{height:20px;text-align:right;color:#64748b;font-size:9px;padding-right:3px}.ov-column-summary b{color:#b45309;font-size:11px}
+.ov-column-scroll{height:calc(100% - 20px);overflow-x:auto;overflow-y:hidden;padding:0 2px 2px}
+.ov-column-chart{height:100%;min-width:max(100%,calc(var(--columns) * 48px));display:grid;grid-template-columns:repeat(var(--columns),minmax(38px,1fr));gap:7px;align-items:stretch}
+.ov-column-item{height:100%;display:grid;grid-template-rows:17px minmax(74px,1fr) 24px;align-items:end;text-align:center;min-width:0}
+.ov-column-item>b{font-size:8.5px;color:#7c4a03;font-variant-numeric:tabular-nums;align-self:center}
+.ov-column-item>div{height:100%;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid #cbd5e1;background:repeating-linear-gradient(to top,#f8fafc 0,#f8fafc 24%,#eef2f7 25%)}
+.ov-column-item i{display:block;width:min(28px,68%);min-height:0;border-radius:6px 6px 0 0;box-shadow:0 3px 10px rgba(234,88,12,.18)}
+.ov-column-item>span{align-self:start;padding-top:4px;font-size:8px;line-height:1.15;color:#52677d;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tab-overall .ov-risk-card #ovRisks{overflow-x:auto!important;overflow-y:hidden!important}
+.ov-risk-columns{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:9px;min-width:570px;height:100%;padding:1px}
+.ov-risk-column{display:flex;flex-direction:column;min-width:0;border:1px solid #dfe7ef;border-radius:10px;background:#f8fafc;overflow:hidden}
+.ov-risk-column>header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;font-size:10px;font-weight:850;color:#334155;background:#eef3f8;border-bottom:1px solid #dfe7ef}
+.ov-risk-column>header b{display:grid;place-items:center;min-width:20px;height:20px;border-radius:999px;background:#fff;color:#475569;font-size:9px}
+.ov-risk-column.danger>header{background:#fff1f2;color:#b91c1c}.ov-risk-column.warning>header{background:#fffbeb;color:#b45309}.ov-risk-column.info>header{background:#eff6ff;color:#1d4ed8}
+.ov-risk-list{flex:1;min-height:0;overflow:auto;padding:7px;display:flex;flex-direction:column;gap:6px}
+.ov-risk-item{padding:7px 8px;border:1px solid #e2e8f0;border-left:3px solid #94a3b8;border-radius:8px;background:#fff;font-size:9px;line-height:1.35;color:#52677d}
+.danger .ov-risk-item{border-left-color:#ef4444}.warning .ov-risk-item{border-left-color:#f59e0b}.info .ov-risk-item{border-left-color:#3b82f6}
+.ov-risk-item strong{display:block;margin-bottom:3px;color:#1e293b;font-size:10px;white-space:normal;overflow-wrap:anywhere}.ov-risk-item div{white-space:normal}.ov-risk-item small{display:block;margin-top:4px;color:#7c8da0;font-size:8.5px}
+.ov-risk-empty{height:100%;min-height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#94a3b8;font-size:9px;text-align:center}.ov-risk-empty i{font-size:16px;color:#22c55e}
+#tab-todo.todo-table-only{height:calc(100vh - 32px)!important;min-height:0!important;padding:0!important}
+#tab-todo.todo-table-only .todo-panel{height:100%;min-height:0;margin:0!important}
+#tab-todo.todo-table-only .todo-table-wrap{height:100%;max-height:none!important}
+/* V12 IE Overall project portfolio. */
+#tab-overall .ov-project-card{min-height:300px;max-height:430px;flex:0 0 auto!important}
+#tab-overall .ov-project-scroll{flex:1;min-height:0;margin-top:7px;overflow:auto;border:1px solid #e2e8f0;border-radius:10px;scrollbar-width:thin}
+#tab-overall .ov-project-table{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;font-size:10px}
+#tab-overall .ov-project-table th{position:sticky;top:0;z-index:4;height:38px;padding:7px 9px;background:#244b6d;color:#f8fafc;border-right:1px solid rgba(255,255,255,.14);text-align:left;font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+#tab-overall .ov-project-table th:nth-child(1){min-width:110px}#tab-overall .ov-project-table th:nth-child(2){min-width:190px}#tab-overall .ov-project-table th:nth-child(3){min-width:240px}#tab-overall .ov-project-table th:nth-child(4){min-width:145px}#tab-overall .ov-project-table th:nth-child(n+5):nth-child(-n+7){min-width:105px}#tab-overall .ov-project-table th:nth-child(8){min-width:105px}#tab-overall .ov-project-table th:nth-child(9){min-width:140px}#tab-overall .ov-project-table th:nth-child(10){min-width:145px}#tab-overall .ov-project-table th:nth-child(11){min-width:120px}#tab-overall .ov-project-table th:nth-child(12){min-width:125px}
+#tab-overall .ov-project-table td{height:42px;padding:7px 9px;border-right:1px solid #edf2f7;border-bottom:1px solid #e7edf3;background:#fff;color:#52677d;vertical-align:middle;white-space:nowrap}
+#tab-overall .ov-project-table tbody tr:nth-child(even) td{background:#f8fbfd}#tab-overall .ov-project-table tbody tr:hover td{background:#eef6ff}
+#tab-overall .ov-project-table td:first-child,#tab-overall .ov-project-table th:first-child{position:sticky;left:0;z-index:3}#tab-overall .ov-project-table th:first-child{z-index:6}#tab-overall .ov-project-table td:first-child{background:#f8fbfd;color:#254d70}
+#tab-overall .ov-project-table td:nth-child(2) strong{display:block;max-width:210px;overflow:hidden;text-overflow:ellipsis;color:#173e63}
+#tab-overall .ov-project-description{max-width:280px;overflow:hidden;text-overflow:ellipsis}
+.ov-project-status{display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:4px 8px;border-radius:999px;font-size:8.5px;font-weight:850;background:#eef2f7;color:#52677d}.ov-project-status.completed{background:#dcfce7;color:#15803d}.ov-project-status.risk{background:#fee2e2;color:#b91c1c}.ov-project-status.working{background:#dbeafe;color:#1d4ed8}
+.ov-progress-cell{display:flex;align-items:center;justify-content:flex-end;gap:7px}.ov-progress-track{width:82px;height:8px;border-radius:999px;background:#e6edf4;overflow:hidden}.ov-progress-track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#3b82f6,#14b8a6)}.ov-progress-cell b{min-width:34px;color:#254d70;font-variant-numeric:tabular-nums}.ov-project-empty{text-align:center!important;color:#94a3b8!important;padding:30px!important}
+@media(max-width:1280px){#tab-overall .ov-kpis{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:900px){#tab-overall .ov-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ov-risk-columns{grid-template-columns:repeat(3,minmax(220px,1fr));min-width:690px}#tab-overall .ov-project-card{min-height:340px}}
+
+/* ===== ieTeamV13Style ===== */
+/* V13 — simplified portfolio workspace */
+#tab-projects{background:linear-gradient(180deg,#f4f8ff 0,#eef4fb 100%)!important}
+#tab-projects .pm-modern-head{background:linear-gradient(135deg,#0b4fa3 0%,#1269c7 58%,#1d8bd8 100%)!important;border:0!important;color:#fff!important;box-shadow:0 14px 34px rgba(15,79,156,.18)!important}
+#tab-projects .pm-modern-head h2,#tab-projects .pm-modern-head p,#tab-projects .pm-modern-eyebrow{color:#fff!important}
+#tab-projects .pm-modern-kpis>div{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.24)!important;backdrop-filter:blur(8px)}
+#tab-projects .pm-modern-kpis span,#tab-projects .pm-modern-kpis strong{color:#fff!important}
+#tab-projects .project-view-switch,#tab-projects #projectExpandCollapseBtn,#tab-projects #projectGanttView,#tab-projects #projectTableBottomScroll{display:none!important}
+#tab-projects .pm-reference-toolbar{border-radius:14px!important;margin:12px 14px 0!important;width:calc(100% - 28px)!important;border:1px solid #d6e4f2!important;box-shadow:0 8px 24px rgba(25,76,128,.08)!important}
+#tab-projects #projectTableView{margin:10px 14px 16px!important;border:1px solid #cfe0ef!important;border-radius:14px!important;box-shadow:0 12px 32px rgba(25,76,128,.09)!important;background:#fff!important;overflow:hidden!important}
+#tab-projects .v13-project-scroll{overflow:auto;max-height:calc(100vh - 235px);background:#fff}
+#tab-projects .v13-project-table{width:100%;min-width:1540px;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:10px}
+#tab-projects .v13-project-table thead th{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#1269c7,#0b56ad)!important;color:#fff!important;border-right:1px solid rgba(255,255,255,.18)!important;border-bottom:0!important;padding:10px 8px!important;text-transform:uppercase;font-size:8px!important;letter-spacing:.065em;white-space:nowrap}
+#tab-projects .v13-project-table tbody td{padding:7px 8px;border-right:1px solid #e7eef5;border-bottom:1px solid #e5edf5;color:#27445f;vertical-align:middle;background:#fff}
+#tab-projects .v13-project-table tbody tr:nth-child(even) td{background:#f8fbff}
+#tab-projects .v13-project-table tbody tr:hover td{background:#edf6ff!important}
+#tab-projects .v13-project-table th:nth-child(1),#tab-projects .v13-project-table td:nth-child(1){width:105px}
+#tab-projects .v13-project-table th:nth-child(2),#tab-projects .v13-project-table td:nth-child(2){width:165px}
+#tab-projects .v13-project-table th:nth-child(3),#tab-projects .v13-project-table td:nth-child(3){width:210px}
+#tab-projects .v13-project-table th:nth-child(4),#tab-projects .v13-project-table td:nth-child(4){width:135px}
+#tab-projects .v13-project-table th:nth-child(5),#tab-projects .v13-project-table td:nth-child(5),#tab-projects .v13-project-table th:nth-child(6),#tab-projects .v13-project-table td:nth-child(6),#tab-projects .v13-project-table th:nth-child(7),#tab-projects .v13-project-table td:nth-child(7){width:94px}
+#tab-projects .v13-project-table th:nth-child(8),#tab-projects .v13-project-table td:nth-child(8){width:105px}
+#tab-projects .v13-project-table th:nth-child(9),#tab-projects .v13-project-table td:nth-child(9){width:180px}
+#tab-projects .v13-project-table th:nth-child(10),#tab-projects .v13-project-table td:nth-child(10){width:90px}
+#tab-projects .v13-project-table th:nth-child(11),#tab-projects .v13-project-table td:nth-child(11){width:210px}
+#tab-projects .v13-project-table th:nth-child(12),#tab-projects .v13-project-table td:nth-child(12){width:110px}
+#tab-projects .v13-project-table th:nth-child(13),#tab-projects .v13-project-table td:nth-child(13){width:92px}
+#tab-projects .v13-project-table th:nth-child(14),#tab-projects .v13-project-table td:nth-child(14){width:72px}
+.v13-filter-head{display:flex;align-items:center;justify-content:space-between;gap:5px}.v13-filter-head button{width:20px;height:20px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.4);border-radius:5px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer}.v13-filter-head button.active{background:#fff;color:#0b56ad}
+.v13-project-title{font-weight:900;color:#123e69}.v13-project-desc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#5f7488}.v13-team-pill{display:inline-flex;padding:3px 7px;border-radius:999px;background:#e0efff;color:#0b56ad;font-weight:800}.v13-status{display:inline-flex;padding:3px 7px;border-radius:999px;background:#e8eef5;color:#425b72;font-weight:800}.v13-status.completed{background:#dcfce7;color:#166534}.v13-status.risk{background:#fee2e2;color:#b91c1c}.v13-status.working{background:#dbeafe;color:#1d4ed8}
+.v13-inline-input,.v13-inline-select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #d5e2ee;border-radius:7px;background:#fff;padding:5px 7px;color:#24455f;font:600 10px/1.25 Arial,sans-serif;outline:none}.v13-inline-input:focus,.v13-inline-select:focus{border-color:#2383d7;box-shadow:0 0 0 2px rgba(35,131,215,.12)}.v13-inline-text{min-height:31px;resize:vertical}.v13-progress-input{max-width:68px;text-align:center}.v13-actions{display:flex;justify-content:center;gap:6px}.v13-actions button{width:27px;height:27px;border-radius:7px;border:1px solid #cad9e7;background:#fff;color:#2c6fa8;cursor:pointer}.v13-actions button.danger{color:#dc2626}.v13-empty{padding:42px!important;text-align:center;color:#8193a5!important}
+#v13HeaderFilterPopup{position:fixed;z-index:2147483647;width:270px;max-height:min(410px,calc(100vh - 20px));display:flex;flex-direction:column;box-sizing:border-box;padding:10px;background:#fff;border:1px solid #c9d8e6;border-radius:10px;box-shadow:0 18px 42px rgba(15,56,96,.24);font:12px/1.35 Arial,sans-serif;color:#27445f}#v13HeaderFilterPopup .title{font-weight:900;color:#174f7d;margin-bottom:8px}#v13HeaderFilterPopup input[type=search]{height:34px;border:1px solid #ccdbe7;border-radius:7px;padding:6px 9px;margin-bottom:7px;outline:none}#v13HeaderFilterPopup .values{min-height:56px;max-height:250px;overflow:auto;border:1px solid #e0e8ef;border-radius:7px;padding:4px}#v13HeaderFilterPopup label{display:flex;align-items:center;gap:7px;min-height:26px;padding:3px 5px;border-radius:5px}#v13HeaderFilterPopup label:hover{background:#eef6ff}#v13HeaderFilterPopup .actions{display:flex;justify-content:flex-end;gap:7px;padding-top:9px}#v13HeaderFilterPopup .actions button{border:1px solid #cbd9e5;border-radius:7px;background:#fff;padding:6px 11px;color:#375b78;cursor:pointer}#v13HeaderFilterPopup .actions button.apply{background:#1269c7;border-color:#1269c7;color:#fff}
+/* IE Overall project portfolio */
+#tab-overall .ov-project-table thead th{background:linear-gradient(180deg,#1269c7,#0b56ad)!important;color:#fff!important;border-color:rgba(255,255,255,.18)!important}
+#tab-overall .ov-project-table thead .v13-filter-head button{width:18px;height:18px}
+#tab-overall .ov-project-table tbody tr.v13-filter-hidden{display:none!important}
+/* Simplified project modal */
+#projectModal #projectModalBox{max-width:980px!important}#projectModal .v13-form-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}#projectModal .v13-field{grid-column:span 4}#projectModal .v13-field.span-6{grid-column:span 6}#projectModal .v13-field.span-8{grid-column:span 8}#projectModal .v13-field.span-12{grid-column:span 12}#projectModal .v13-field label{display:block;font-size:11px;font-weight:800;color:#3e5870;margin-bottom:5px}#projectModal .v13-field input,#projectModal .v13-field select,#projectModal .v13-field textarea{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #d6e2ed;border-radius:10px;background:#f8fbfe;color:#24445f;font-size:12px;outline:none}#projectModal .v13-field textarea{resize:vertical}#projectModal .v13-field input:focus,#projectModal .v13-field select:focus,#projectModal .v13-field textarea:focus{border-color:#1976cf;box-shadow:0 0 0 3px rgba(25,118,207,.1);background:#fff}@media(max-width:800px){#projectModal .v13-field,#projectModal .v13-field.span-6,#projectModal .v13-field.span-8{grid-column:span 12}}
+/* Time off follows the shared filters */
+#tab-timeoff-ot .v13-filter-note{font-size:10px;color:#64748b;font-weight:700}#tab-timeoff-ot #saturdayMatrixHeader th{background:#eaf3fb;color:#174f7d}
+
+/* ===== ieTeamV14Style ===== */
+/* V14 — show the complete all-team dashboard without inner scrolling. */
+#tab-overall{height:auto!important;overflow:visible!important}
+#tab-overall .ov-charts{flex:none!important;min-height:0!important;align-items:stretch}
+#tab-overall .ov-charts>.ov-c{height:auto!important;min-height:calc(76px + var(--ov-team-count, 12) * 25px)!important}
+#tab-overall .ov-cv{flex:none!important;min-height:calc(38px + var(--ov-team-count, 12) * 25px)!important;height:auto!important;overflow:visible!important}
+#tab-overall [data-overall-chart]{height:auto!important;min-height:0!important;overflow:visible!important;padding:7px 1px 3px!important}
+#tab-overall .ov-hbar-list,#tab-overall .ov-series-list{min-height:0!important;height:auto!important;justify-content:flex-start!important;gap:8px!important}
+#tab-overall .ov-hbar-row{min-height:17px}
+#tab-overall .ov-bottom{flex:none!important;min-height:0!important;align-items:start}
+#tab-overall .ov-bottom>.ov-c{height:auto!important;min-height:0!important}
+#tab-overall .ov-bottom .ov-scroll{flex:none!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important}
+#tab-overall .ov-bottom table{table-layout:auto}
+#tab-overall .ov-bottom th{position:static!important}
+#tab-overall .ov-risk-card #ovRisks{overflow:visible!important;width:100%!important}
+#tab-overall .ov-risk-columns{grid-template-columns:repeat(3,minmax(0,1fr))!important;min-width:0!important;width:100%!important;height:auto!important;align-items:start}
+#tab-overall .ov-risk-column{height:auto!important;overflow:visible!important}
+#tab-overall .ov-risk-list{overflow:visible!important;min-height:0!important;height:auto!important}
+
+/* Project Portfolio: Team + Project name remain visible; description is secondary text. */
+#tab-overall .ov-project-card{max-height:none!important}
+#tab-overall .ov-project-scroll{overflow-x:auto!important;overflow-y:visible!important}
+#tab-overall .ov-project-table th:nth-child(1){min-width:110px;width:110px}
+#tab-overall .ov-project-table th:nth-child(2){min-width:270px;width:270px}
+#tab-overall .ov-project-table th:nth-child(3){min-width:145px}
+#tab-overall .ov-project-table th:nth-child(n+4):nth-child(-n+6){min-width:105px}
+#tab-overall .ov-project-table th:nth-child(7){min-width:105px}
+#tab-overall .ov-project-table th:nth-child(8){min-width:150px}
+#tab-overall .ov-project-table th:nth-child(9){min-width:145px}
+#tab-overall .ov-project-table th:nth-child(10){min-width:180px}
+#tab-overall .ov-project-table th:nth-child(11){min-width:125px}
+#tab-overall .ov-project-table th:nth-child(1),#tab-overall .ov-project-table td:nth-child(1){position:sticky!important;left:0!important;z-index:5!important}
+#tab-overall .ov-project-table th:nth-child(2),#tab-overall .ov-project-table td:nth-child(2){position:sticky!important;left:110px!important;z-index:5!important;box-shadow:7px 0 10px -10px rgba(20,61,96,.8)}
+#tab-overall .ov-project-table th:nth-child(1),#tab-overall .ov-project-table th:nth-child(2){z-index:9!important}
+#tab-overall .ov-project-table tbody td:nth-child(1),#tab-overall .ov-project-table tbody td:nth-child(2){background:#fff!important}
+#tab-overall .ov-project-table tbody tr:nth-child(even) td:nth-child(1),#tab-overall .ov-project-table tbody tr:nth-child(even) td:nth-child(2){background:#f8fbfd!important}
+#tab-overall .ov-project-table tbody tr:hover td:nth-child(1),#tab-overall .ov-project-table tbody tr:hover td:nth-child(2){background:#eef6ff!important}
+#tab-overall .ov-project-name-cell strong{display:block;max-width:245px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#173e63;font-size:10.5px}
+#tab-overall .ov-project-name-cell small{display:block;max-width:245px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#7a8da0;font-size:8.5px;font-weight:500;text-transform:none;letter-spacing:0}
+
+/* Project Management uses the same merged Project name cell and automatic progress. */
+#tab-projects .v13-project-table{min-width:1425px!important}
+#tab-projects .v13-project-table th:nth-child(1),#tab-projects .v13-project-table td:nth-child(1){width:105px;position:sticky;left:0;z-index:7}
+#tab-projects .v13-project-table th:nth-child(2),#tab-projects .v13-project-table td:nth-child(2){width:245px;position:sticky;left:105px;z-index:7;box-shadow:7px 0 10px -10px rgba(20,61,96,.8)}
+#tab-projects .v13-project-table thead th:nth-child(1),#tab-projects .v13-project-table thead th:nth-child(2){z-index:12}
+#tab-projects .v13-project-table tbody td:nth-child(1),#tab-projects .v13-project-table tbody td:nth-child(2){background:#fff}
+#tab-projects .v13-project-table tbody tr:nth-child(even) td:nth-child(1),#tab-projects .v13-project-table tbody tr:nth-child(even) td:nth-child(2){background:#f8fbff}
+#tab-projects .v13-project-table tbody tr:hover td:nth-child(1),#tab-projects .v13-project-table tbody tr:hover td:nth-child(2){background:#edf6ff!important}
+#tab-projects .v13-project-table th:nth-child(3),#tab-projects .v13-project-table td:nth-child(3){width:135px}
+#tab-projects .v13-project-table th:nth-child(4),#tab-projects .v13-project-table td:nth-child(4),#tab-projects .v13-project-table th:nth-child(5),#tab-projects .v13-project-table td:nth-child(5),#tab-projects .v13-project-table th:nth-child(6),#tab-projects .v13-project-table td:nth-child(6){width:94px}
+#tab-projects .v13-project-table th:nth-child(7),#tab-projects .v13-project-table td:nth-child(7){width:105px}
+#tab-projects .v13-project-table th:nth-child(8),#tab-projects .v13-project-table td:nth-child(8){width:180px}
+#tab-projects .v13-project-table th:nth-child(9),#tab-projects .v13-project-table td:nth-child(9){width:105px}
+#tab-projects .v13-project-table th:nth-child(10),#tab-projects .v13-project-table td:nth-child(10){width:210px}
+#tab-projects .v13-project-table th:nth-child(11),#tab-projects .v13-project-table td:nth-child(11){width:110px}
+#tab-projects .v13-project-table th:nth-child(12),#tab-projects .v13-project-table td:nth-child(12){width:92px}
+#tab-projects .v13-project-table th:nth-child(13),#tab-projects .v13-project-table td:nth-child(13){width:72px}
+#tab-projects .v13-project-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tab-projects .v13-project-desc{display:block;margin-top:3px;font-size:8.5px;font-weight:500;color:#7a8da0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v14-auto-progress{display:flex;align-items:center;gap:7px;min-width:92px}.v14-auto-progress-track{flex:1;height:7px;border-radius:999px;background:#e4edf5;overflow:hidden}.v14-auto-progress-track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#2f80ed,#17a58a)}.v14-auto-progress b{min-width:34px;text-align:right;color:#174f7d;font-variant-numeric:tabular-nums}
+#projectProgress[readonly]{background:#edf6ff!important;color:#0b5ea8!important;font-weight:900!important;cursor:not-allowed}
+@media(max-width:1150px){#tab-overall .ov-risk-columns{grid-template-columns:1fr!important}#tab-overall .ov-bottom{grid-template-columns:1fr!important}}
+
+/* ===== ieTeamV15Style ===== */
+/* V15 — keep Key risks & decisions exactly as tall as Team scorecard & action. */
+#tab-overall .ov-bottom{align-items:start!important}
+#tab-overall .ov-bottom>.ov-risk-card{
+  height:var(--ov-scorecard-height,360px)!important;
+  min-height:0!important;
+  max-height:var(--ov-scorecard-height,360px)!important;
+  overflow:hidden!important;
+}
+#tab-overall .ov-risk-card #ovRisks{
+  flex:1 1 auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+#tab-overall .ov-risk-columns{
+  height:100%!important;
+  min-height:0!important;
+  align-items:stretch!important;
+  overflow:hidden!important;
+}
+#tab-overall .ov-risk-column{
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+#tab-overall .ov-risk-list{
+  flex:1 1 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#b8c7d6 transparent;
+}
+#tab-overall .ov-risk-list::-webkit-scrollbar{width:6px}
+#tab-overall .ov-risk-list::-webkit-scrollbar-track{background:transparent}
+#tab-overall .ov-risk-list::-webkit-scrollbar-thumb{background:#b8c7d6;border-radius:999px}
+@media(max-width:1150px){
+  #tab-overall .ov-risk-card #ovRisks{overflow-x:auto!important;overflow-y:hidden!important}
+  #tab-overall .ov-risk-columns{grid-template-columns:repeat(3,minmax(180px,1fr))!important;min-width:570px!important}
+}
+
+/* ===== ieTeamV16ProjectStyle ===== */
+/* Each project table owns its scroll area and keeps its header visible. */
+#tab-overall .ov-project-card{max-height:none!important}
+#tab-overall .ov-project-scroll,
+#tab-projects .v13-project-scroll{
+  min-height:0!important;
+  max-height:var(--v16-project-viewport,none)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable both-edges;
+  scrollbar-width:thin;
+  scrollbar-color:#9fb3c8 #edf3f8;
+  position:relative;
+}
+#tab-overall .ov-project-scroll::-webkit-scrollbar,
+#tab-projects .v13-project-scroll::-webkit-scrollbar{width:9px;height:9px}
+#tab-overall .ov-project-scroll::-webkit-scrollbar-track,
+#tab-projects .v13-project-scroll::-webkit-scrollbar-track{background:#edf3f8}
+#tab-overall .ov-project-scroll::-webkit-scrollbar-thumb,
+#tab-projects .v13-project-scroll::-webkit-scrollbar-thumb{background:#9fb3c8;border:2px solid #edf3f8;border-radius:999px}
+#tab-overall .ov-project-table thead th,
+#tab-projects .v13-project-table thead th{
+  position:sticky!important;
+  top:0!important;
+  z-index:10!important;
+  box-shadow:inset 0 -1px rgba(255,255,255,.25),0 2px 5px rgba(15,56,96,.12);
+}
+#tab-overall .ov-project-table thead th:nth-child(1),
+#tab-overall .ov-project-table thead th:nth-child(2),
+#tab-projects .v13-project-table thead th:nth-child(1),
+#tab-projects .v13-project-table thead th:nth-child(2){z-index:14!important}
+
+/* ===== ieTeamV19AuthoritativeFixes ===== */
+/* V19 authoritative layout: replaces scattered last-mile overrides with one bounded layer. */
+/* Shared filter bars stay above every table/chart while the page scrolls. */
+.tab-content > .bom-page-filter,
+#tab-projects .pm-reference-toolbar[data-bom-filter-bar="1"]{
+  position:sticky!important;top:0!important;z-index:5000!important;
+  isolation:isolate;background:#fff!important;
+  box-shadow:0 8px 18px -14px rgba(15,23,42,.8),0 1px 0 #dbe6f0!important;
+}
+.tab-content > .bom-page-filter::before,
+#tab-projects .pm-reference-toolbar[data-bom-filter-bar="1"]::before{
+  content:"";position:absolute;inset:0;z-index:-1;background:inherit;border-radius:inherit;pointer-events:none;
+}
+.tab-content table thead{z-index:20}
+
+/* PIC x Status headers: all status labels remain white on colored backgrounds. */
+#dashTablePicStatus thead th,#dashTablePicStatus thead th *{color:#fff!important}
+
+/* Daily Tracking always occupies its full card and keeps readable column widths. */
+#tab-daily-tracking > .bg-white{width:100%!important;min-width:0!important}
+#tab-daily-tracking > .bg-white > .overflow-x-auto{width:100%!important;max-width:100%!important;overflow-x:auto!important}
+#table-daily-tracking{width:max(100%,1500px)!important;min-width:1500px!important;table-layout:fixed!important}
+#table-daily-tracking th:nth-child(1){width:120px}#table-daily-tracking th:nth-child(2){width:190px}
+#table-daily-tracking th:nth-child(3){width:240px}#table-daily-tracking th:nth-child(4){width:155px}
+#table-daily-tracking th:nth-child(5){width:90px}#table-daily-tracking th:nth-child(6){width:130px}
+#table-daily-tracking th:nth-child(7),#table-daily-tracking th:nth-child(8),#table-daily-tracking th:nth-child(9){width:105px}
+#table-daily-tracking th:nth-child(10){width:85px}#table-daily-tracking th:nth-child(11){width:110px}
+#table-daily-tracking th:nth-child(12){width:110px}#table-daily-tracking th:nth-child(13){width:70px}
+#table-daily-tracking th,#table-daily-tracking td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Project health: larger doughnut with a horizontal legend below it. */
+#tab-overall [data-overall-chart="ovC4"]{overflow:visible!important}
+#tab-overall [data-overall-chart="ovC4"] .ov-donut-wrap{height:100%;min-height:190px;flex-direction:column!important;gap:10px!important;justify-content:center!important}
+#tab-overall [data-overall-chart="ovC4"] .ov-donut{width:min(172px,72%)!important;flex:0 0 auto}
+#tab-overall [data-overall-chart="ovC4"] .ov-donut-legend{width:100%;min-width:0!important;display:flex!important;flex-direction:row!important;justify-content:center;align-items:center;gap:8px 14px!important;flex-wrap:wrap}
+#tab-overall [data-overall-chart="ovC4"] .ov-donut-legend>div{display:grid;grid-template-columns:8px auto auto;gap:5px;width:auto;white-space:nowrap}
+
+/* Saturday Matrix period controls and table remain readable. */
+#saturdayMatrixYear,#saturdayMatrixMonth{height:31px}
+#timeoffMatrixScroll{isolation:isolate}
+
+/* Keep the Project Management horizontal scrollbar inside the visible viewport. */
+#tab-projects #projectTableView{min-width:0!important;max-width:calc(100% - 28px)!important}
+#tab-projects #projectsTableBody{min-width:0!important;max-width:100%!important}
+#tab-projects .v13-project-scroll{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  max-height:calc(100vh - 235px)!important;
+  max-height:min(var(--v16-project-viewport,760px),calc(100vh - 235px))!important;
+  overflow-x:scroll!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable both-edges;
+  scrollbar-width:auto!important;
+  scrollbar-color:#7395b4 #e8f0f7;
+  -webkit-overflow-scrolling:touch;
+}
+#tab-projects .v13-project-scroll::-webkit-scrollbar{width:12px!important;height:12px!important}
+#tab-projects .v13-project-scroll::-webkit-scrollbar-track{background:#e8f0f7!important;border-radius:999px}
+#tab-projects .v13-project-scroll::-webkit-scrollbar-thumb{background:#7395b4!important;border:2px solid #e8f0f7!important;border-radius:999px}
+#tab-projects .v13-project-scroll::-webkit-scrollbar-thumb:hover{background:#527998!important}
+#tab-projects .v13-project-table{min-width:1425px!important;width:max(100%,1425px)!important}
+@media(max-width:900px){#tab-projects .v13-project-scroll{max-height:calc(100vh - 270px)!important}}
+/* Reduce expensive visual effects in the dense project workspace. */
+#tab-projects .v13-project-scroll{contain:layout style;will-change:scroll-position}
+#tab-projects .pm-ref-input,#tab-projects button{transition-duration:.08s!important}
+
+/* ===== ieTeamV20AuthoritativeFixes ===== */
+/* The sticky shared filter owns the full content width and paints an opaque top gutter. */
+#contentArea{--v20-content-gutter:24px}
+.tab-content>.bom-page-filter{
+  position:sticky!important;
+  top:0!important;
+  z-index:12000!important;
+  isolation:isolate!important;
+  box-sizing:border-box!important;
+  width:calc(100% + (2 * var(--v20-content-gutter)))!important;
+  max-width:none!important;
+  margin:0 calc(-1 * var(--v20-content-gutter))!important;
+  padding-left:var(--v20-content-gutter)!important;
+  padding-right:var(--v20-content-gutter)!important;
+  background:#fff!important;
+  background-image:none!important;
+  border-color:#dbe6f0!important;
+  border-radius:0 0 12px 12px!important;
+  box-shadow:0 8px 18px -14px rgba(15,23,42,.8),0 1px 0 #dbe6f0!important;
+}
+.tab-content>.bom-page-filter::before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:calc(-1 * var(--v20-content-gutter))!important;
+  height:calc(var(--v20-content-gutter) + 1px)!important;
+  background:#f1f5f9!important;
+  pointer-events:none!important;
+  z-index:0!important;
+}
+.tab-content>.bom-page-filter>*{position:relative;z-index:1}
+body.report-exporting .tab-content>.bom-page-filter{
+  position:static!important;width:100%!important;margin:0!important;padding-left:12px!important;padding-right:12px!important;border-radius:12px!important;
+}
+body.report-exporting .tab-content>.bom-page-filter::before{display:none!important}
+@media(max-width:1024px){#contentArea{--v20-content-gutter:10px}}
+@media(max-width:640px){#contentArea{--v20-content-gutter:8px}}
+
+/* Project Management: Project name is the first and only frozen column; Team is intentionally absent. */
+#tab-projects .v13-project-table{min-width:1320px!important;width:max(100%,1320px)!important}
+#tab-projects .v13-project-table th:nth-child(1),
+#tab-projects .v13-project-table td:nth-child(1){width:270px!important;position:sticky!important;left:0!important;z-index:8!important;box-shadow:7px 0 10px -10px rgba(20,61,96,.8)}
+#tab-projects .v13-project-table thead th:nth-child(1){z-index:15!important}
+#tab-projects .v13-project-table th:nth-child(2),#tab-projects .v13-project-table td:nth-child(2){width:135px!important;position:static!important;left:auto!important;z-index:auto!important;box-shadow:none!important}
+#tab-projects .v13-project-table th:nth-child(3),#tab-projects .v13-project-table td:nth-child(3),
+#tab-projects .v13-project-table th:nth-child(4),#tab-projects .v13-project-table td:nth-child(4),
+#tab-projects .v13-project-table th:nth-child(5),#tab-projects .v13-project-table td:nth-child(5){width:94px!important}
+#tab-projects .v13-project-table th:nth-child(6),#tab-projects .v13-project-table td:nth-child(6){width:105px!important}
+#tab-projects .v13-project-table th:nth-child(7),#tab-projects .v13-project-table td:nth-child(7){width:180px!important}
+#tab-projects .v13-project-table th:nth-child(8),#tab-projects .v13-project-table td:nth-child(8){width:105px!important}
+#tab-projects .v13-project-table th:nth-child(9),#tab-projects .v13-project-table td:nth-child(9){width:210px!important}
+#tab-projects .v13-project-table th:nth-child(10),#tab-projects .v13-project-table td:nth-child(10){width:110px!important}
+#tab-projects .v13-project-table th:nth-child(11),#tab-projects .v13-project-table td:nth-child(11){width:92px!important}
+#tab-projects .v13-project-table th:nth-child(12),#tab-projects .v13-project-table td:nth-child(12){width:72px!important}
+#tab-projects .v13-project-table tbody tr[data-project-id]{cursor:pointer}
+#tab-projects .v13-project-table tbody tr.v20-project-expanded td{
+  height:auto!important;min-height:70px!important;padding-top:11px!important;padding-bottom:11px!important;vertical-align:top!important;
+}
+#tab-projects .v13-project-table tbody tr.v20-project-expanded .v13-project-title,
+#tab-projects .v13-project-table tbody tr.v20-project-expanded .v13-project-desc{
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;word-break:break-word!important;
+}
+#tab-projects .v13-project-table tbody tr.v20-project-expanded .v13-project-desc{margin-top:6px!important;line-height:1.45!important;font-size:9.5px!important}
+#mtrSwitchBox.v20-viewer-team-picker{display:block!important}
+#mtrSwitchBox.v20-viewer-team-picker select{cursor:pointer}
+
+/* ===== ieTeamV21AuthoritativeFixes ===== */
+#mtrUsers .mtr-membership{display:inline-flex;align-items:center;justify-content:center;min-width:52px;margin:2px 4px 2px 0;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:850;white-space:nowrap;border:1px solid transparent}
+#mtrUsers .mtr-membership.main,#mtrUserModal .mtr-membership.main{background:#dcfce7;color:#166534;border-color:#86efac}
+#mtrUsers .mtr-membership.sub,#mtrUserModal .mtr-membership.sub{background:#f1f5f9;color:#64748b;border-color:#cbd5e1}
+#mtrUserModal .mtr-membership{display:inline-flex;align-items:center;justify-content:center;min-height:28px;border-radius:8px;font-size:11px;font-weight:800;border:1px solid transparent}
+
+/* One authoritative table geometry prevents sticky headers from overlapping or being cut. */
+#tab-projects .v13-project-scroll{position:relative!important;isolation:isolate!important;overflow:auto!important;scrollbar-gutter:stable both-edges!important}
+#tab-projects .v13-project-table{width:1320px!important;min-width:1320px!important;max-width:none!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important}
+#tab-projects .v13-project-table col.v21-project{width:270px}#tab-projects .v13-project-table col.v21-owner{width:135px}
+#tab-projects .v13-project-table col.v21-date{width:94px}#tab-projects .v13-project-table col.v21-status{width:105px}
+#tab-projects .v13-project-table col.v21-stage{width:180px}#tab-projects .v13-project-table col.v21-progress{width:105px}
+#tab-projects .v13-project-table col.v21-goal{width:210px}#tab-projects .v13-project-table col.v21-saving{width:110px}
+#tab-projects .v13-project-table col.v21-key{width:92px}#tab-projects .v13-project-table col.v21-action{width:72px}
+#tab-projects .v13-project-table thead{position:relative!important;z-index:40!important}
+#tab-projects .v13-project-table thead tr{height:46px!important}
+#tab-projects .v13-project-table thead th{position:sticky!important;top:0!important;z-index:42!important;height:46px!important;min-height:46px!important;box-sizing:border-box!important;overflow:visible!important;vertical-align:middle!important;background:linear-gradient(180deg,#1269c7 0%,#0b56ad 100%)!important;color:#fff!important;border-right:1px solid rgba(255,255,255,.22)!important;border-bottom:1px solid #08498f!important;box-shadow:0 2px 5px rgba(15,56,96,.16)!important;padding:7px 8px!important;white-space:normal!important}
+#tab-projects .v13-project-table thead th:first-child{position:sticky!important;left:0!important;z-index:50!important;width:270px!important;min-width:270px!important;max-width:270px!important}
+#tab-projects .v13-project-table tbody td:first-child{position:sticky!important;left:0!important;z-index:8!important;width:270px!important;min-width:270px!important;max-width:270px!important}
+#tab-projects .v13-project-table thead th:nth-child(n+2){position:sticky!important;top:0!important;left:auto!important;z-index:42!important}
+#tab-projects .v13-project-table tbody td:nth-child(n+2){position:static!important;left:auto!important;z-index:auto!important;box-shadow:none!important}
+#tab-projects .v13-project-table .v13-filter-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;width:100%!important;min-width:0!important;min-height:28px!important}
+#tab-projects .v13-project-table .v13-filter-head>span{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:normal!important;line-height:1.2!important;color:#fff!important}
+#tab-projects .v13-project-table .v13-filter-head>button{flex:0 0 20px!important}
+#tab-projects .v13-project-table thead th:last-child{text-align:center!important}
+
+/* ===== hardcodedUsersV1Style ===== */
+/* User data is maintained in code: hide database write actions on the Users page. */
+#mtrUsers [onclick*="mtrOpenUser"],#mtrImportBtn,#mtrTemplateBtn,#mtrUsers [onclick*="openTeamModal"],
+#mtrUsers .mtr-icon.del,#mtrUsers .mtr-icon[onclick*="mtrOpenUser"]{display:none!important}
+#mtrUsers button.mtr-show{pointer-events:none!important;cursor:default!important}
+/* Single login type: user + password only. */
+#accessSwitch,#viewerTeamBox,#viewerHint{display:none!important}
+#memberCredentials.viewer-hidden{display:block!important}
