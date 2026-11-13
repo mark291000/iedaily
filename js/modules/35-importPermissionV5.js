@@ -3,10 +3,14 @@
   function isAppAdmin(){ try { return typeof window.isAdminSession === 'function' ? !!window.isAdminSession() : currentUser?.role === 'Admin'; } catch(_) { return false; } }
   function isTeamAdmin(){ return !!currentUser && !currentUser.isReadOnly && currentUser.role === 'Team Admin'; }
   function canImport(){ return !!currentUser && !currentUser.isReadOnly && (isAppAdmin() || isTeamAdmin()); }
+  /* Task import (Daily Tracking / My Tasks) is open to every signed-in, non-viewer user incl. Member.
+     Project / Capacity / Time Off / User import stay App Admin + Team Admin (or App Admin only). */
+  function canImportTask(){ return !!currentUser && !currentUser.isReadOnly; }
   window.canImportData = canImport;
+  window.canImportTasks = canImportTask;
   const DENY_MSG = 'Only App Admin and Team Admin can import data.';
   const deny = () => { try { showAppNotification(DENY_MSG, 'Permission denied'); } catch(_) { alert(DENY_MSG); } };
-  const IMPORT_INPUTS = { dailyTaskImportInput:canImport, myTaskImportInput:canImport, projectImportInput:canImport, capacityImportInput:canImport, ts2File:canImport, pv4TimeoffFile:canImport, mtrImportInput:isAppAdmin };
+  const IMPORT_INPUTS = { dailyTaskImportInput:canImportTask, myTaskImportInput:canImportTask, projectImportInput:canImport, capacityImportInput:canImport, ts2File:canImport, pv4TimeoffFile:canImport, mtrImportInput:isAppAdmin };
   const allowedFor = id => (IMPORT_INPUTS[id] || canImport)();
   document.addEventListener('click', e => {
     const el = e.target;
@@ -25,9 +29,12 @@
     w.__importGuard = true; window[name] = w;
     try { (0, eval)(`${name} = window.${name};`); } catch(_){}
   }
-  function guardAll(){ guard('handleTaskImport', canImport); guard('handleProjectImport', canImport); guard('handleCapacityImport', canImport); guard('handleUserImport', isAppAdmin); }
-  const BUTTON_SELECTORS = ['[onclick*="dailyTaskImportInput"]','[onclick*="myTaskImportInput"]','[onclick*="projectImportInput"]','[onclick*="capacityImportInput"]','#pv4TimeoffImport','#ts2Root [data-act="import"]','#ts2Root [data-act="template"]'].join(',');
+  function guardAll(){ guard('handleTaskImport', canImportTask); guard('handleProjectImport', canImport); guard('handleCapacityImport', canImport); guard('handleUserImport', isAppAdmin); }
+  const TASK_BUTTON_SELECTORS = ['[onclick*="dailyTaskImportInput"]','[onclick*="myTaskImportInput"]'].join(',');
+  const BUTTON_SELECTORS = ['[onclick*="projectImportInput"]','[onclick*="capacityImportInput"]','#pv4TimeoffImport','#ts2Root [data-act="import"]','#ts2Root [data-act="template"]'].join(',');
   function syncButtons(){
+    const okTask = canImportTask();
+    document.querySelectorAll(TASK_BUTTON_SELECTORS).forEach(b => { b.classList.toggle('hidden', !okTask); b.setAttribute('aria-hidden', okTask ? 'false' : 'true'); });
     const ok = canImport();
     document.querySelectorAll(BUTTON_SELECTORS).forEach(b => { b.classList.toggle('hidden', !ok); b.setAttribute('aria-hidden', ok ? 'false' : 'true'); });
     const ub = document.getElementById('mtrImportBtn'); if (ub && !isAppAdmin()) ub.classList.add('hidden');

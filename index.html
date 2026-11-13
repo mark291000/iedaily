@@ -7107,7 +7107,7 @@ body.report-exporting .tab-content>.bom-page-filter::before{display:none!importa
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
         </div>
-        <div id="appVersionLabel" class="px-3 pb-2 text-[10px] text-slate-500 text-center">IE Team app v1.4.2</div>
+        <div id="appVersionLabel" class="px-3 pb-2 text-[10px] text-slate-500 text-center">IE Team app v1.4.3</div>
     </aside>
 
     <!-- MAIN CONTAINER -->
@@ -7889,13 +7889,13 @@ window.APP_CONFIG = {
   REALTIME_DEBOUNCE_MS: 1200,
   /* Counted in Overall headcount, but hidden from reports / workload and not counted in workload */
   HIDDEN_FROM_REPORTS: ['Anny'],
-  APP_VERSION: '1.4.2'
+  APP_VERSION: '1.4.3'
 };
-(window.__appFiles=window.__appFiles||{})['config']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['config']='1.4.3';
 
 </script>
 <script data-src="js/core/02-app-core.js">
-(window.__appFiles=window.__appFiles||{})['02-app-core']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['02-app-core']='1.4.3';
         const SUPABASE_URL = window.APP_CONFIG.SUPABASE_URL;
         const SUPABASE_PUBLISHABLE_KEY = window.APP_CONFIG.SUPABASE_PUBLISHABLE_KEY;
         let supabaseClient = null;
@@ -14752,7 +14752,7 @@ function setCalendarView(view) {
 
 </script>
 <script data-src="js/core/02b-state-bridge.js">
-(window.__appFiles=window.__appFiles||{})['02b-state-bridge']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['02b-state-bridge']='1.4.3';
 /* STATE BRIDGE
    App state lives in top-level `let` variables (js/core/02-app-core.js), which are NOT
    properties of window. Several modules read window.projectsList / window.users ...
@@ -14770,7 +14770,7 @@ function setCalendarView(view) {
 
 </script>
 <script data-src="js/core/02c-perf-index.js">
-(window.__appFiles=window.__appFiles||{})['02c-perf-index']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['02c-perf-index']='1.4.3';
 /* =====================================================================
    PERF INDEX - fast workload calculation
    The old functions scanned EVERY task (and re-normalised every PIC name
@@ -14926,7 +14926,7 @@ window.__invalidateWorkloadIndex=()=>{tickCache=null;};
    ===================================================================== */
 (function(){
 'use strict';
-(window.__appFiles=window.__appFiles||{})['02d-data-window']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['02d-data-window']='1.4.3';
 const W=window;
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -19620,10 +19620,14 @@ if(typeof old==='function'){
   function isAppAdmin(){ try { return typeof window.isAdminSession === 'function' ? !!window.isAdminSession() : currentUser?.role === 'Admin'; } catch(_) { return false; } }
   function isTeamAdmin(){ return !!currentUser && !currentUser.isReadOnly && currentUser.role === 'Team Admin'; }
   function canImport(){ return !!currentUser && !currentUser.isReadOnly && (isAppAdmin() || isTeamAdmin()); }
+  /* Task import (Daily Tracking / My Tasks) is open to every signed-in, non-viewer user incl. Member.
+     Project / Capacity / Time Off / User import stay App Admin + Team Admin (or App Admin only). */
+  function canImportTask(){ return !!currentUser && !currentUser.isReadOnly; }
   window.canImportData = canImport;
+  window.canImportTasks = canImportTask;
   const DENY_MSG = 'Only App Admin and Team Admin can import data.';
   const deny = () => { try { showAppNotification(DENY_MSG, 'Permission denied'); } catch(_) { alert(DENY_MSG); } };
-  const IMPORT_INPUTS = { dailyTaskImportInput:canImport, myTaskImportInput:canImport, projectImportInput:canImport, capacityImportInput:canImport, ts2File:canImport, pv4TimeoffFile:canImport, mtrImportInput:isAppAdmin };
+  const IMPORT_INPUTS = { dailyTaskImportInput:canImportTask, myTaskImportInput:canImportTask, projectImportInput:canImport, capacityImportInput:canImport, ts2File:canImport, pv4TimeoffFile:canImport, mtrImportInput:isAppAdmin };
   const allowedFor = id => (IMPORT_INPUTS[id] || canImport)();
   document.addEventListener('click', e => {
     const el = e.target;
@@ -19642,9 +19646,12 @@ if(typeof old==='function'){
     w.__importGuard = true; window[name] = w;
     try { (0, eval)(`${name} = window.${name};`); } catch(_){}
   }
-  function guardAll(){ guard('handleTaskImport', canImport); guard('handleProjectImport', canImport); guard('handleCapacityImport', canImport); guard('handleUserImport', isAppAdmin); }
-  const BUTTON_SELECTORS = ['[onclick*="dailyTaskImportInput"]','[onclick*="myTaskImportInput"]','[onclick*="projectImportInput"]','[onclick*="capacityImportInput"]','#pv4TimeoffImport','#ts2Root [data-act="import"]','#ts2Root [data-act="template"]'].join(',');
+  function guardAll(){ guard('handleTaskImport', canImportTask); guard('handleProjectImport', canImport); guard('handleCapacityImport', canImport); guard('handleUserImport', isAppAdmin); }
+  const TASK_BUTTON_SELECTORS = ['[onclick*="dailyTaskImportInput"]','[onclick*="myTaskImportInput"]'].join(',');
+  const BUTTON_SELECTORS = ['[onclick*="projectImportInput"]','[onclick*="capacityImportInput"]','#pv4TimeoffImport','#ts2Root [data-act="import"]','#ts2Root [data-act="template"]'].join(',');
   function syncButtons(){
+    const okTask = canImportTask();
+    document.querySelectorAll(TASK_BUTTON_SELECTORS).forEach(b => { b.classList.toggle('hidden', !okTask); b.setAttribute('aria-hidden', okTask ? 'false' : 'true'); });
     const ok = canImport();
     document.querySelectorAll(BUTTON_SELECTORS).forEach(b => { b.classList.toggle('hidden', !ok); b.setAttribute('aria-hidden', ok ? 'false' : 'true'); });
     const ub = document.getElementById('mtrImportBtn'); if (ub && !isAppAdmin()) ub.classList.add('hidden');
@@ -20871,11 +20878,11 @@ window.HARDCODED_USER_ROWS = [
   {"member": "Zane", "team": "Cover Drawing", "role": "Member", "password": "8326"},
   {"member": "Ellie", "team": "BOM UPH", "role": "Member", "password": "3326"}
 ];
-(window.__appFiles=window.__appFiles||{})['users']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['users']='1.4.3';
 
 </script>
 <script data-src="js/modules/45-hardcodedUsersV1.js">
-(window.__appFiles=window.__appFiles||{})['45-hardcodedUsersV1']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['45-hardcodedUsersV1']='1.4.3';
 (function(){
 'use strict';
 /* =====================================================================
@@ -21147,7 +21154,7 @@ document.getElementById('mtrUserForm')?.addEventListener('submit', e => { e.prev
 
 </script>
 <script data-src="js/modules/46-projectExportV2.js">
-(window.__appFiles=window.__appFiles||{})['46-projectExportV2']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['46-projectExportV2']='1.4.3';
 /* =====================================================================
    PROJECT EXPORT V2 - Excel / PDF in the NEW Project Management format
    Columns = the current project table:
@@ -21305,7 +21312,7 @@ try{exportProjectExcel=exportExcel;exportProjectPdf=exportPdf;openProjectExportO
 <script data-src="js/modules/47-taskExportV2.js">
 /* =====================================================================
    TASK EXPORT V2 - Daily Tracking / My Tasks
-   Columns: always PIC; 'Usage Time' without 'h'; every cell formatted as Text.
+   Columns: always PIC; 'Usage Time' without 'h'; no 'Created By'; every cell formatted as Text.
    Old export copied the HTML table, so:
    - My Tasks has no PIC column on screen -> no PIC in the file
    - Daily Tracking showed "-" for PICs hidden from reports / other teams
@@ -21316,10 +21323,10 @@ try{exportProjectExcel=exportExcel;exportProjectPdf=exportPdf;openProjectExportO
    ===================================================================== */
 (function(){
 'use strict';
-(window.__appFiles=window.__appFiles||{})['47-taskExportV2']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['47-taskExportV2']='1.4.3';
 const W=window;
-const COLS=['Category','Task Name','Detail','Scope','Priority','PIC','Team','Start','Plan','Actual','Usage Time','Discipline','Status','Created By'];
-const WIDTH=[18,28,40,16,10,24,14,12,12,12,10,12,12,16];
+const COLS=['Category','Task Name','Detail','Scope','Priority','PIC','Team','Start','Plan','Actual','Usage Time','Discipline','Status'];
+const WIDTH=[18,28,40,16,10,24,14,12,12,12,10,12,12];
 const N=v=>String(v??'').trim().toLowerCase();
 const fmt=v=>{const s=typeof cleanDateStr==='function'?cleanDateStr(v):String(v||'');if(!s)return '';const [y,m,d]=s.split('-');return y&&m&&d?`${m}/${d}/${y}`:s;};
 /* Usage Time as plain text number: 0.5 -> "0.5", 4 -> "4" (no "h") */
@@ -21355,7 +21362,7 @@ function exportTasks(tab){
   if(!list.length){showAppNotification('No task data to export.','Export');return;}
   const body=list.map(t=>{try{calculateTaskMetadata(t);}catch(_){}
     return [t.category||'',t.name||'',t.items||'',t.scope||(typeof getDailyTaskScope==='function'?getDailyTaskScope(t):'')||'',t.priority||'',pics(t).join(', '),t.team||'',
-            fmt(t.start||t.startDate),fmt(t.plan||t.planDate),fmt(t.actual||t.actualDate),usageText(t.usageTime),t.discipline||'',t.status||'',t.createdBy||''].map(v=>String(v??''));});
+            fmt(t.start||t.startDate),fmt(t.plan||t.planDate),fmt(t.actual||t.actualDate),usageText(t.usageTime),t.discipline||'',t.status||''].map(v=>String(v??''));});
   const ws=XLSX.utils.aoa_to_sheet([COLS,...body]);
   ws['!cols']=WIDTH.map(w=>({wch:w}));
   ws['!autofilter']={ref:`A1:${XLSX.utils.encode_col(COLS.length-1)}${body.length+1}`};
@@ -21384,7 +21391,7 @@ W.exportCurrentPageData=next;try{exportCurrentPageData=next;}catch(_){}
 
 </script>
 <script data-src="js/modules/48-renderSkip.js">
-(window.__appFiles=window.__appFiles||{})['48-renderSkip']='1.4.2';
+(window.__appFiles=window.__appFiles||{})['48-renderSkip']='1.4.3';
 /* =====================================================================
    RENDER SKIP - faster page switching
    switchTab() re-built Team Performance charts, Weekly Workload and
@@ -21538,7 +21545,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
 'use strict';
 const W=window;
-(W.__appFiles=W.__appFiles||{})['project-form-v2']='1.4.2';
+(W.__appFiles=W.__appFiles||{})['project-form-v2']='1.4.3';
 const N=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,' ');
 const ESC=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');

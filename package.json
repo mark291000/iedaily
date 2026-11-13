@@ -1,6 +1,6 @@
 {
   "name": "ie-team-app",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "private": true,
   "description": "IE Team Task & Project Tracking (static web app + Supabase)",
   "scripts": {

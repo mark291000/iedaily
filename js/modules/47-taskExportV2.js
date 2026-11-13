@@ -1,6 +1,6 @@
 /* =====================================================================
    TASK EXPORT V2 - Daily Tracking / My Tasks
-   Columns: always PIC; 'Usage Time' without 'h'; every cell formatted as Text.
+   Columns: always PIC; 'Usage Time' without 'h'; no 'Created By'; every cell formatted as Text.
    Old export copied the HTML table, so:
    - My Tasks has no PIC column on screen -> no PIC in the file
    - Daily Tracking showed "-" for PICs hidden from reports / other teams
@@ -13,8 +13,8 @@
 'use strict';
 (window.__appFiles=window.__appFiles||{})['47-taskExportV2']='1.4.1';
 const W=window;
-const COLS=['Category','Task Name','Detail','Scope','Priority','PIC','Team','Start','Plan','Actual','Usage Time','Discipline','Status','Created By'];
-const WIDTH=[18,28,40,16,10,24,14,12,12,12,10,12,12,16];
+const COLS=['Category','Task Name','Detail','Scope','Priority','PIC','Team','Start','Plan','Actual','Usage Time','Discipline','Status'];
+const WIDTH=[18,28,40,16,10,24,14,12,12,12,10,12,12];
 const N=v=>String(v??'').trim().toLowerCase();
 const fmt=v=>{const s=typeof cleanDateStr==='function'?cleanDateStr(v):String(v||'');if(!s)return '';const [y,m,d]=s.split('-');return y&&m&&d?`${m}/${d}/${y}`:s;};
 /* Usage Time as plain text number: 0.5 -> "0.5", 4 -> "4" (no "h") */
@@ -50,7 +50,7 @@ function exportTasks(tab){
   if(!list.length){showAppNotification('No task data to export.','Export');return;}
   const body=list.map(t=>{try{calculateTaskMetadata(t);}catch(_){}
     return [t.category||'',t.name||'',t.items||'',t.scope||(typeof getDailyTaskScope==='function'?getDailyTaskScope(t):'')||'',t.priority||'',pics(t).join(', '),t.team||'',
-            fmt(t.start||t.startDate),fmt(t.plan||t.planDate),fmt(t.actual||t.actualDate),usageText(t.usageTime),t.discipline||'',t.status||'',t.createdBy||''].map(v=>String(v??''));});
+            fmt(t.start||t.startDate),fmt(t.plan||t.planDate),fmt(t.actual||t.actualDate),usageText(t.usageTime),t.discipline||'',t.status||''].map(v=>String(v??''));});
   const ws=XLSX.utils.aoa_to_sheet([COLS,...body]);
   ws['!cols']=WIDTH.map(w=>({wch:w}));
   ws['!autofilter']={ref:`A1:${XLSX.utils.encode_col(COLS.length-1)}${body.length+1}`};
