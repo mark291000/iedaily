@@ -7881,13 +7881,18 @@ body.report-exporting .tab-content>.bom-page-filter::before{display:none!importa
     
 
 </script>
-    <script src="js/config.js"></script>
-<script>
-/* Fallback nếu js/config.js không tải được: dùng kết nối trực tiếp tới Supabase. */
-if(!window.APP_CONFIG){
-  window.APP_CONFIG={SUPABASE_URL:"https://mctutyvzloefyhpgokbe.supabase.co",SUPABASE_PUBLISHABLE_KEY:"sb_publishable_xqm86DxfEkJaXB8WUurYnA_kAT37Z1_",REALTIME_DEBOUNCE_MS:1200,HIDDEN_FROM_REPORTS:['Anny'],APP_VERSION:'1.4.4'};
-  (window.__appFiles=window.__appFiles||{})['config']='1.4.4';
-}
+    <script data-src="js/config.js">
+/* App configuration. The publishable key is safe for the browser; protect data with Supabase RLS. */
+window.APP_CONFIG = {
+  SUPABASE_URL: "https://mctutyvzloefyhpgokbe.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_xqm86DxfEkJaXB8WUurYnA_kAT37Z1_",
+  REALTIME_DEBOUNCE_MS: 1200,
+  /* Counted in Overall headcount, but hidden from reports / workload and not counted in workload */
+  HIDDEN_FROM_REPORTS: ['Anny'],
+  APP_VERSION: '1.4.4'
+};
+(window.__appFiles=window.__appFiles||{})['config']='1.4.4';
+
 </script>
 <script data-src="js/core/02-app-core.js">
 (window.__appFiles=window.__appFiles||{})['02-app-core']='1.4.4';
