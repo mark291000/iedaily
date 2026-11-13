@@ -29,6 +29,21 @@ function rows(){
   }
   return list.filter(r=>String(r['Project name']||'').trim());
 }
+/* Summary statistics shown above the table (PDF cards / Excel block) */
+function stats(data){
+  const cnt=k=>data.filter(r=>String(r.Status||'').trim().toLowerCase()===k).length;
+  const avg=data.length?Math.round(data.reduce((a,r)=>a+(Number(r['%Progress'])||0),0)/data.length):0;
+  return [
+    {label:'Total projects',value:String(data.length),num:data.length,fg:'315C7A',bg:'E8F0F6'},
+    {label:'Working',value:String(cnt('working')),num:cnt('working'),fg:'1E40AF',bg:'DBEAFE'},
+    {label:'Completed',value:String(cnt('completed')),num:cnt('completed'),fg:'166534',bg:'DCFCE7'},
+    {label:'Overdue',value:String(cnt('overdue')),num:cnt('overdue'),fg:'991B1B',bg:'FEE2E2'},
+    {label:'Not Started',value:String(cnt('not started')),num:cnt('not started'),fg:'475569',bg:'F1F5F9'},
+    {label:'Key Projects',value:String(data.filter(r=>r['Key Project']==='Yes').length),num:data.filter(r=>r['Key Project']==='Yes').length,fg:'B45309',bg:'FEF3C7'},
+    {label:'Avg. %Progress',value:avg+'%',num:avg/100,fmt:'0%',fg:'2563EB',bg:'DBEAFE'},
+    {label:'Total saving',value:money(data.reduce((a,r)=>a+(Number(r.Saving)||0),0))||'$0',num:data.reduce((a,r)=>a+(Number(r.Saving)||0),0),fmt:'$#,##0',fg:'0F766E',bg:'CCFBF1'}
+  ];
+}
 function teamLabel(){const t=String(W.activeTeamView||'').trim();return t&&t!==W.TEAM_ALL?t:'All teams';}
 
 /* ---------------- Excel ---------------- */
@@ -44,17 +59,24 @@ function exportExcel(){
     if(DATE_COLS.has(c))return v?new Date(v+'T00:00:00'):'';
     return v;
   }));
-  const aoa=[title,sub,[],header,...body];
+  const ST=stats(data);
+  const aoa=[title,sub,[],ST.map(x=>x.label),ST.map(x=>x.num),[],header,...body];
   const ws=XLSX.utils.aoa_to_sheet(aoa,{cellDates:true}),wb=XLSX.utils.book_new();
-  const HR=3; // header row index (0-based)
+  const HR=6; // header row index (0-based): title, sub, gap, stat labels, stat values, gap, header
   ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:COLS.length-1}},{s:{r:1,c:0},e:{r:1,c:COLS.length-1}}];
   ws['!cols']=[36,22,12,15,12,15,28,11,46,15,11].map(w=>({wch:w}));
-  ws['!rows']=[{hpt:24},{hpt:16},{hpt:6},{hpt:30}];
+  ws['!rows']=[{hpt:24},{hpt:16},{hpt:6},{hpt:16},{hpt:26},{hpt:8},{hpt:30}];
   ws['!autofilter']={ref:`A${HR+1}:${XLSX.utils.encode_col(COLS.length-1)}${aoa.length}`};
   const border={top:{style:'thin',color:{rgb:'D7E1E8'}},bottom:{style:'thin',color:{rgb:'D7E1E8'}},left:{style:'thin',color:{rgb:'D7E1E8'}},right:{style:'thin',color:{rgb:'D7E1E8'}}};
   const cell=(r,c)=>ws[XLSX.utils.encode_cell({r,c})];
   const t=cell(0,0); if(t)t.s={font:{name:'Arial',sz:14,bold:true,color:{rgb:'173E6B'}}};
   const s=cell(1,0); if(s)s.s={font:{name:'Arial',sz:9,italic:true,color:{rgb:'64748B'}}};
+  ST.forEach((x,ci)=>{
+    const l=cell(3,ci),v=cell(4,ci);
+    const bd={top:{style:'thin',color:{rgb:x.fg}},bottom:{style:'thin',color:{rgb:x.fg}},left:{style:'thin',color:{rgb:x.fg}},right:{style:'thin',color:{rgb:x.fg}}};
+    if(l)l.s={font:{name:'Arial',sz:8,bold:true,color:{rgb:x.fg}},fill:{patternType:'solid',fgColor:{rgb:x.bg}},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:bd};
+    if(v){v.s={font:{name:'Arial',sz:14,bold:true,color:{rgb:x.fg}},fill:{patternType:'solid',fgColor:{rgb:x.bg}},alignment:{horizontal:'center',vertical:'center'},border:bd};if(x.fmt)v.z=x.fmt;}
+  });
   COLS.forEach((_,ci)=>{const h=cell(HR,ci);if(h)h.s={font:{name:'Arial',sz:10,bold:true,color:{rgb:'FFFFFF'}},fill:{patternType:'solid',fgColor:{rgb:'315C7A'}},alignment:{horizontal:'center',vertical:'center',wrapText:true},border};});
   data.forEach((r,ri)=>{
     const rowIdx=HR+1+ri, zebra=ri%2?'F8FBFD':'FFFFFF';
@@ -88,7 +110,7 @@ function exportPdf(){
   if(!W.jspdf?.jsPDF){showAppNotification('PDF export library is not available. Please wait a moment and try again.','Export');return;}
   const doc=new W.jspdf.jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight(),M=20,tableW=pageW-M*2;
-  const base=[120,66,48,56,48,56,96,44,170,56,40], sum=base.reduce((a,b)=>a+b,0), widths=base.map(w=>w*tableW/sum);
+  const base=[120,66,48,56,48,56,96,64,150,56,40], sum=base.reduce((a,b)=>a+b,0), widths=base.map(w=>w*tableW/sum);
   const hex=h=>[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
   const FS=6.6, LH=8.2, PAD=4;
   let y=M, page=1;
@@ -100,8 +122,18 @@ function exportPdf(){
     y+=h;
   };
   doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(...hex('173E6B'));doc.text(`Project Management - ${teamLabel()}`,M,y+10);
-  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...hex('64748B'));doc.text(`${data.length} project(s) · Total saving ${money(data.reduce((a,r)=>a+(Number(r.Saving)||0),0))||'$0'}`,M,y+24);
-  y+=34;header();
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...hex('64748B'));doc.text(`${data.length} project(s)`,M,y+24);
+  y+=34;
+  /* statistic cards */
+  {const ST=stats(data),gap=6,cw=(tableW-gap*(ST.length-1))/ST.length,ch=34;
+   ST.forEach((x,i)=>{const cx=M+i*(cw+gap);
+     doc.setFillColor(...hex(x.bg));doc.roundedRect(cx,y,cw,ch,4,4,'F');
+     doc.setFillColor(...hex(x.fg));doc.rect(cx,y+5,2.5,ch-10,'F');
+     doc.setFont('helvetica','normal');doc.setFontSize(6.6);doc.setTextColor(...hex(x.fg));doc.text(x.label,cx+9,y+12);
+     doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(x.value,cx+9,y+27);
+   });
+   y+=ch+10;}
+  header();
   data.forEach((r,ri)=>{
     doc.setFontSize(FS);
     const cells=COLS.map((c,i)=>{
@@ -119,7 +151,17 @@ function exportPdf(){
       if(c==='Status'&&r.Status){const [bg,fg]=statusColor(r.Status);doc.setFillColor(...hex(bg));doc.roundedRect(x+3,y+PAD-1,widths[i]-6,LH+3,3,3,'F');doc.setTextColor(...hex(fg));doc.setFont('helvetica','bold');}
       else if(c==='Key Project'&&r[c]==='Yes'){doc.setTextColor(...hex('B45309'));doc.setFont('helvetica','bold');}
       else{doc.setTextColor(...hex('334E63'));doc.setFont('helvetica',c==='Project name'?'bold':'normal');}
-      if(c==='%Progress'){const p=Math.max(0,Math.min(100,Number(r[c])||0));const bw=widths[i]-8;doc.setFillColor(...hex('E2E8F0'));doc.rect(x+4,y+h-PAD-3,bw,2.5,'F');doc.setFillColor(...hex(p>=100?'16A34A':'2563EB'));doc.rect(x+4,y+h-PAD-3,bw*p/100,2.5,'F');}
+      if(c==='%Progress'){
+        /* bar on the first text line; the % number sits right after the end of the coloured bar */
+        const p=Math.max(0,Math.min(100,Number(r[c])||0));
+        doc.setFont('helvetica','bold');doc.setFontSize(FS);
+        const tw=doc.getTextWidth('100%'),bh=3.5,bx=x+4,tw2=widths[i]-8-tw-3,by=y+PAD+LH-4-bh/2,fw=tw2*p/100;
+        doc.setFillColor(...hex('E2E8F0'));doc.roundedRect(bx,by,tw2,bh,bh/2,bh/2,'F');
+        if(fw>0){doc.setFillColor(...hex(p>=100?'16A34A':'2563EB'));doc.roundedRect(bx,by,Math.max(fw,bh),bh,bh/2,bh/2,'F');}
+        doc.setTextColor(...hex('334E63'));
+        doc.text(`${p}%`,bx+(fw>0?Math.max(fw,bh):0)+3,y+PAD+LH-2);
+        x+=widths[i];return;
+      }
       const center=c==='Status'||c==='Key Project'||c==='%Progress'||DATE_COLS.has(c), right=c==='Saving';
       doc.setFontSize(FS);
       doc.text(lines,right?x+widths[i]-PAD:center?x+widths[i]/2:x+PAD,y+PAD+LH-2,{align:right?'right':center?'center':'left',lineHeightFactor:LH/FS});

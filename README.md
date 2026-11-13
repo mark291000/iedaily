@@ -1,4 +1,4 @@
-# IE Team – Task & Project Tracking (v1.4.3)
+# IE Team – Task & Project Tracking (v1.4.4)
 
 Một file `index.html` duy nhất (HTML/CSS/JS) + Supabase cho Task / Project / Time Off.
 User & đăng nhập hardcode trong `index.html` (`window.HARDCODED_USER_ROWS`).
@@ -16,7 +16,7 @@ tools/excel_to_users.py  Tạo danh sách user từ Excel
 1. **Giải nén zip trên máy** (GitHub không tự giải nén file .zip).
 2. Repo → **Add file → Upload files** → kéo các FILE bên trong thư mục (không kéo cả thư mục) → **Commit**.
 3. Lần đầu: Settings → Pages → Source: *Deploy from a branch* → `main` / `(root)`.
-4. Đợi 1–2 phút → mở app → **Ctrl+F5**. Cuối sidebar phải hiện **IE Team app v1.4.3**.
+4. Đợi 1–2 phút → mở app → **Ctrl+F5**. Cuối sidebar phải hiện **IE Team app v1.4.4**.
 
 ## Quyền
 - Đăng nhập: User + Password.
@@ -30,6 +30,7 @@ tools/excel_to_users.py  Tạo danh sách user từ Excel
 - **Owner(s)** chọn nhiều người từ danh sách member của Team đang chọn.
 
 ## Changelog
+- **v1.4.4** – Export Project (PDF/Excel) có thêm các ô thống kê (Total, Working, Completed, Overdue, Not Started, Key, Avg %Progress, Total saving); PDF hiển thị số %Progress ở cuối thanh màu.
 - **v1.4.3** – Member được import Task (Daily Tracking / My Tasks); export Task bỏ cột Created By.
 - **v1.4.2** – Status project tự tính theo Start/Plan/Actual/hôm nay; form Create/Edit Project mới; Owner(s) chọn từ member.
 - **v1.4.1** – Gộp thành một file index.html.
