@@ -1,94 +1,17 @@
-(window.__appFiles=window.__appFiles||{})['45-hardcodedUsersV1']='1.4.1';
+(window.__appFiles=window.__appFiles||{})['45-hardcodedUsersV1']='1.5.0';
 (function(){
 'use strict';
 /* =====================================================================
-   HARDCODED USERS + SINGLE LOGIN + TEAM-ADMIN VIEW OTHER TEAMS
-   - User list: js/data/users.js (window.HARDCODED_USER_ROWS)
-   - Tables users / user_team_roles / teams are NOT read from / written to
-     the database. Tasks, projects, time off... still use Supabase.
-   - Only one login type: user + password (Viewer login removed).
-   - App Admin  : team dropdown = all teams, full rights.
-   - Team Admin : team dropdown = all teams. Own teams -> normal rights,
-                  other teams -> view only.
-   - Member     : own team(s) only.
-   - report:false on a user row -> counted in Overall headcount but hidden
-     from reports / workload / PIC statistics (show_in_reports = false).
+   HARDCODED LOGIN + DATABASE-DRIVEN USER / TEAM / ROLE
+   - Hardcoded rows are used ONLY to validate username + password.
+   - After successful login, users, status, team memberships and roles are
+     loaded from Supabase tables users, user_team_roles and teams.
+   - No Supabase table is mocked or replaced by hardcoded data.
    ===================================================================== */
 const HARDCODED_USER_ROWS = Array.isArray(window.HARDCODED_USER_ROWS) ? window.HARDCODED_USER_ROWS : [];
 window.HARDCODED_USER_ROWS = HARDCODED_USER_ROWS;
 const N = v => String(v ?? '').trim().toLowerCase().replace(/\s+/g,' ');
 const ESC = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const toRole = r => N(r)==='app admin' ? 'Admin' : (N(r)==='team admin' ? 'Team Admin' : 'Member');
-const HIDDEN_CFG = new Set(((window.APP_CONFIG && window.APP_CONFIG.HIDDEN_FROM_REPORTS) || []).map(x => String(x).trim().toLowerCase()));
-const noReport = r => r && (r.report === false || /^(no|n|false|0)$/i.test(String(r.report ?? '').trim()) || HIDDEN_CFG.has(String(r.member||'').trim().toLowerCase()));
-
-/* ---------- build users / user_team_roles / teams rows ---------- */
-const HC = { users: [], roles: [], teams: [] };
-(function build(){
-  const byName = new Map(); let roleId = 1;
-  HARDCODED_USER_ROWS.forEach(r => {
-    const k = N(r.member); if(!k) return;
-    let u = byName.get(k);
-    if(!u){
-      u = { id: byName.size + 1, name: String(r.member).trim(), password: String(r.password), role: toRole(r.role),
-            team: String(r.team).trim(), status: 'Active', show_in_reports: true, created_at: '', updated_at: '' };
-      byName.set(k, u); HC.users.push(u);
-    }
-    if(noReport(r)) u.show_in_reports = false;
-    if(!HC.roles.some(x => x.user_id === u.id && N(x.team) === N(r.team))){
-      HC.roles.push({ id: roleId++, user_id: u.id, team: String(r.team).trim(),
-                      role: toRole(r.role)==='Admin' ? 'Team Admin' : toRole(r.role),
-                      is_primary: N(r.team) === N(u.team) });
-    }
-  });
-  const teams = [...new Set(HARDCODED_USER_ROWS.map(r => String(r.team).trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-  HC.teams = teams.map((t,i) => ({ id: i + 1, code: t, name: t, status: 'Active' }));
-})();
-window.HARDCODED_USERS = HC;
-
-/* ---------- fake query builder for the hardcoded tables ---------- */
-const HC_TABLES = new Set(['users','user_team_roles','teams']);
-const READ_ONLY_MSG = 'User data is hardcoded in js/data/users.js. Edit that file to add or change users.';
-class HCQuery{
-  constructor(table){ this.t = table; this.f = []; this.op = 'select'; this.ord = []; this.rng = null; this.lim = null; this.sing = false; this.maybe = false; }
-  select(){ return this; }
-  insert(){ this.op = 'write'; return this; } update(){ this.op = 'write'; return this; }
-  upsert(){ this.op = 'write'; return this; } delete(){ this.op = 'write'; return this; }
-  eq(c,v){ this.f.push(r => String(r[c] ?? '') === String(v ?? '')); return this; }
-  neq(c,v){ this.f.push(r => String(r[c] ?? '') !== String(v ?? '')); return this; }
-  in(c,a){ const s = new Set((a||[]).map(String)); this.f.push(r => s.has(String(r[c]))); return this; }
-  is(c,v){ this.f.push(r => v === null ? r[c] == null : r[c] === v); return this; }
-  not(c,op,v){ if(op === 'is' && v === null) this.f.push(r => r[c] != null); return this; }
-  gte(c,v){ this.f.push(r => String(r[c]) >= String(v)); return this; }
-  lte(c,v){ this.f.push(r => String(r[c]) <= String(v)); return this; }
-  ilike(c,p){ const re = new RegExp('^' + String(p).replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/%/g,'.*') + '$','i'); this.f.push(r => re.test(String(r[c] ?? ''))); return this; }
-  or(){ return this; } match(o){ Object.entries(o||{}).forEach(([c,v]) => this.eq(c,v)); return this; }
-  order(c,o){ this.ord.push([c, !(o && o.ascending === false)]); return this; }
-  range(a,b){ this.rng = [a,b]; return this; } limit(n){ this.lim = n; return this; }
-  single(){ this.sing = true; return this; } maybeSingle(){ this.sing = true; this.maybe = true; return this; }
-  async exec(){
-    if(this.op === 'write') return { data: null, error: { message: READ_ONLY_MSG } };
-    let rows = (HC[this.t === 'user_team_roles' ? 'roles' : this.t] || []).map(r => ({ ...r })).filter(r => this.f.every(fn => fn(r)));
-    if(this.ord.length) rows.sort((a,b) => { for(const [c,asc] of this.ord){ const x = a[c], y = b[c]; if(x === y) continue; const d = (typeof x === 'number' && typeof y === 'number') ? x - y : String(x ?? '').localeCompare(String(y ?? ''), undefined, {numeric:true}); if(d) return asc ? d : -d; } return 0; });
-    if(this.rng) rows = rows.slice(this.rng[0], this.rng[1] + 1);
-    if(this.lim != null) rows = rows.slice(0, this.lim);
-    if(this.sing) return rows.length ? { data: rows[0], error: null } : { data: null, error: this.maybe ? null : { message: 'No rows found' } };
-    return { data: rows, error: null };
-  }
-  then(a,b){ return this.exec().then(a,b); }
-  catch(b){ return this.exec().catch(b); }
-}
-function patchClient(c){
-  if(!c || c.__hcUsersPatched || typeof c.from !== 'function') return c;
-  const realFrom = c.from.bind(c);
-  c.from = table => HC_TABLES.has(String(table)) ? new HCQuery(String(table)) : realFrom(table);
-  c.__hcUsersPatched = true;
-  return c;
-}
-try{ patchClient(supabaseClient); }catch(_){}
-const prevInit = initSupabaseClient;
-initSupabaseClient = function(){ const c = prevInit.apply(this, arguments); try{ patchClient(c); patchClient(supabaseClient); }catch(_){} return c; };
-window.initSupabaseClient = initSupabaseClient;
 
 /* ---------- single login type: user + password ---------- */
 const prevSetLoginMode = setLoginMode;
@@ -102,6 +25,68 @@ function prepareLoginForm(){
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepareLoginForm, { once:true });
 else prepareLoginForm();
 
+async function loadDatabaseIdentity(username){
+  const client = initSupabaseClient();
+  if(!client) throw supabaseInitError || new Error('Supabase client is not available.');
+
+  // Resolve the person from the real database. Never use hardcoded Team/Role.
+  const userResult = await client.from('users').select('*').ilike('name', String(username).trim()).limit(10);
+  if(userResult.error) throw new Error('Unable to load user profile from database: ' + userResult.error.message);
+  const matches = (userResult.data || []).filter(r => N(r.name) === N(username));
+  if(matches.length !== 1) throw new Error(matches.length ? 'More than one database user has this name. Please ask the administrator to correct duplicate user records.' : 'Login is valid, but this user does not exist in the database.');
+
+  const dbRow = matches[0];
+  const base = mapDbUserToApp(dbRow);
+  if(N(base.status) !== 'active') throw new Error('This account is inactive in the database.');
+
+  // Load the real team list and memberships before initializing the session.
+  const teamResult = await client.from('teams').select('*').order('code', {ascending:true});
+  if(teamResult.error){
+    console.warn('Teams table could not be loaded; team options will be derived from database memberships/data:', teamResult.error.message);
+    window.teamsTableRows = [];
+  }else window.teamsTableRows = teamResult.data || [];
+
+  const roleResult = await client.from('user_team_roles').select('id,user_id,team,role,is_primary').eq('user_id', dbRow.id).order('id', {ascending:true});
+  if(roleResult.error) throw new Error('Unable to load team permissions from database: ' + roleResult.error.message);
+
+  const dbRole = N(dbRow.role);
+  const isAppAdmin = dbRole === 'admin' || dbRole === 'app admin';
+  const memberships = (roleResult.data || []).map(r => ({
+    team: String(r.team || '').trim(),
+    role: N(r.role) === 'admin' || N(r.role) === 'app admin' ? 'Team Admin' :
+          (N(r.role) === 'team admin' ? 'Team Admin' : (N(r.role) === 'viewer' ? 'Viewer' : 'Member')),
+    primary: !!r.is_primary
+  })).filter(m => m.team);
+
+  // Backward compatibility: if the membership table has no row for this user,
+  // use the primary team/role stored in the DATABASE users row only.
+  const dbTeam = String(dbRow.team || '').trim();
+  const normalizedDbRole = isAppAdmin ? 'Admin' :
+    (dbRole === 'team admin' ? 'Team Admin' : (dbRole === 'viewer' ? 'Viewer' : 'Member'));
+  if(!memberships.length && dbTeam){
+    memberships.push({team:dbTeam, role:normalizedDbRole === 'Admin' ? 'Team Admin' : normalizedDbRole, primary:true});
+  }
+  if(!isAppAdmin && !memberships.length){
+    throw new Error('Login is valid, but no Team or role is assigned to this user in the database.');
+  }
+
+  const primary = memberships.find(m => m.primary) || memberships[0] || null;
+  const primaryTeam = isAppAdmin ? (dbTeam || String(window.teamsTableRows[0]?.code || '').trim()) : primary.team;
+  const primaryRole = isAppAdmin ? 'Admin' : primary.role;
+  if(!primaryTeam) throw new Error('No team is available for this user in the database.');
+
+  return {
+    ...base,
+    id: dbRow.id,
+    name: String(dbRow.name || username).trim(),
+    username: String(dbRow.name || username).trim(),
+    team: primaryTeam,
+    role: primaryRole,
+    memberships: isAppAdmin ? memberships : memberships,
+    __base: {team:primaryTeam, role:primaryRole}
+  };
+}
+
 handleLogin = async function(e){
   e.preventDefault();
   const errDiv = document.getElementById('loginError');
@@ -110,20 +95,20 @@ handleLogin = async function(e){
   if(btn){ btn.disabled = true; btn.textContent = 'Connecting...'; }
   try{
     if(!initSupabaseClient()) throw supabaseInitError || new Error('Supabase client is not available.');
-    users = HC.users.map(mapDbUserToApp);
     const uName = document.getElementById('loginUsername').value.trim();
     const pWord = document.getElementById('loginPassword').value.trim();
     if(!uName || !pWord) throw new Error('Please enter both username and password.');
-    const row = HARDCODED_USER_ROWS.find(r => N(r.member) === N(uName) && String(r.password) === pWord);
-    if(!row) throw new Error('Invalid username or password.');
-    const base = users.find(u => N(u.name) === N(row.member));
-    if(!base || N(base.status) !== 'active') throw new Error('This account is inactive.');
-    const team = String(row.team || '').trim();
-    if(!team) throw new Error('This account is not assigned to a team.');
-    currentUser = { ...base, team, role: toRole(row.role) };
-    window.activeTeamView = team;
+
+    // Authentication only: the hardcoded row contributes no Team or Role.
+    const credentialOk = HARDCODED_USER_ROWS.some(r => N(r.member) === N(uName) && String(r.password ?? '') === pWord);
+    if(!credentialOk) throw new Error('Invalid username or password.');
+
+    currentUser = await loadDatabaseIdentity(uName);
+    window.activeTeamView = currentUser.team;
     const loaded = await fetchAllDataFromSheet();
     if(!loaded) throw new Error('Unable to load application data from Supabase.');
+    if(!currentUser || !currentUser.team || !currentUser.role) throw new Error('Database authorization could not be initialized.');
+
     document.getElementById('loginScreen').classList.add('hidden');
     initUserSession();
     subscribeSupabaseRealtime();
@@ -135,6 +120,7 @@ handleLogin = async function(e){
     errDiv.textContent = err?.message || 'Unable to sign in.';
     errDiv.classList.remove('hidden'); errDiv.style.display = 'block';
     currentUser = null;
+    window.activeTeamView = '';
   }finally{
     if(btn){ btn.disabled = false; btn.textContent = 'Log In'; }
   }
@@ -190,7 +176,7 @@ function myMemberships(u){
   try{ return window.getUserMemberships?.({ id:u.id, team:u.__base?.team || u.team, role:u.__base?.role || u.role }) || []; }catch(_){ return []; }
 }
 const isTeamAdminUser = u => !!u && !isAppAdminUser(u) && myMemberships(u).some(m => m.role === 'Team Admin');
-const allTeams = () => HC.teams.map(t => t.code);
+const allTeams = () => (window.computeKnownTeams?.() || window.teamsTableRows?.map(t => t.code) || []).filter(Boolean);
 
 function ensureSwitchBox(){
   let box = document.getElementById('mtrSwitchBox');
@@ -245,9 +231,18 @@ window.switchTeamView = async function(value){
   }else{
     if(!currentUser.__viewAs){
       currentUser = { id:'readonly-viewer', name:real.name, username:real.name, role:'Viewer', status:'Active',
-                      isReadOnly:true, team:String(currentUser.team || ''), __viewAs:real };
+                      isReadOnly:true, team:team, __viewAs:real };
+    }else{
+      currentUser.team = team;
+      currentUser.role = 'Viewer';
+      currentUser.isReadOnly = true;
     }
-    await inheritedSwitch.call(this, team);
+    // Team Admin may inspect teams outside their memberships as read-only.
+    window.activeTeamView = team;
+    window.__loadedTaskKey = null;
+    try{ bomTopFilterState.Category.clear(); bomTopFilterState.Member.clear(); }catch(_){}
+    const loaded = await window.fetchAllDataFromSheet({background:false, forceRender:true});
+    if(!loaded) throw new Error('Unable to load the selected team from Supabase.');
     try{ applyViewerReadOnlyMode(); }catch(_){}
     if(!document.getElementById('tab-users')?.classList.contains('hidden')) try{ switchTab('overall'); }catch(_){}
   }
@@ -257,13 +252,9 @@ try{ switchTeamView = window.switchTeamView; }catch(_){}
 
 const prevLogout = window.logout;
 if(typeof prevLogout === 'function'){
-  window.logout = function(){ clearViewerReadOnlyMode(); return prevLogout.apply(this, arguments); };
+  window.logout = function(){ clearViewerReadOnlyMode(); window.activeTeamView = ''; window.__loadedTaskKey = null; return prevLogout.apply(this, arguments); };
   try{ logout = window.logout; }catch(_){}
 }
 
-/* Users page: every write path explains that users are maintained in code. */
-['saveUser','deleteUser','mtrDeleteUser','mtrToggleShow','createTeam','mtrOpenUser','openAddUserModal','openEditUserModal','openTeamModal','handleUserImport']
-  .forEach(name => { window[name] = function(e){ try{ e?.preventDefault?.(); }catch(_){} showAppNotification(READ_ONLY_MSG, 'Users are hardcoded'); };
-                     try{ (0,eval)(name + ' = window.' + name + ';'); }catch(_){} });
-document.getElementById('mtrUserForm')?.addEventListener('submit', e => { e.preventDefault(); e.stopImmediatePropagation(); showAppNotification(READ_ONLY_MSG, 'Users are hardcoded'); }, true);
+/* User and team administration uses the real Supabase tables. */
 })();
