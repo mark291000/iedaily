@@ -87,7 +87,7 @@ window.HARDCODED_USER_ROWS = [
   {"member": "Olic", "team": "PE", "role": "Member", "password": "1218"},
   {"member": "Peter", "team": "PE", "role": "Member", "password": "9808"},
   {"member": "Phung", "team": "PE", "role": "Member", "password": "8993"},
-  {"member": "Philip", "team": "GD", "role": "App Member", "password": "9999"},
+  {"member": "Philip", "team": "GD", "role": "Team Admin", "password": "9999"},
   {"member": "Quy", "team": "PE - Bedding/Component", "role": "Member", "password": "2141"},
   {"member": "Raphael", "team": "Innovation", "role": "Member", "password": "1605"},
   {"member": "Ray", "team": "R&D", "role": "Member", "password": "3180"},
