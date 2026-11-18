@@ -17012,33 +17012,20 @@ window.handleCapacityImport = function (e) {
 </script>
 <script data-src="js/modules/16-multiTeamSecurityV5.js">
 (() => {
-  const APP_ADMIN_NAMES = new Set(['mark','anny','rita']);
+  /* Authorization source of truth: currentUser.role loaded from Supabase.
+     Never promote an account by matching its name or email. */
   const key = value => String(value || '').trim().toLowerCase().replace(/\s+/g,' ');
-  const first = value => key(value).split(/[ ,._-]+/)[0];
-  const isNamedAppAdmin = user => [user?.name,user?.username,user?.displayName,user?.email].some(v=>APP_ADMIN_NAMES.has(first(v)));
-  window.APP_ADMIN_NAMES=[...APP_ADMIN_NAMES];
-  const originalIsAdmin=window.isAdminSession;
   window.isAdminSession=function(){
-    return !!currentUser && !currentUser.isReadOnly && (currentUser.role==='Admin' || isNamedAppAdmin(currentUser) || originalIsAdmin?.());
+    return !!currentUser && !currentUser.isReadOnly && String(currentUser.role || '').trim().toLowerCase()==='admin';
   };
   window.isAppAdminSession=window.isAdminSession;
   window.canManageTeams=()=>window.isAdminSession();
   window.canManageUsers=()=>window.isAdminSession() || window.isTeamAdminSession?.();
   window.canEditTeamData=function(team){
     if(window.isAdminSession()) return true;
-    if(!currentUser || currentUser.isReadOnly || currentUser.role==='Viewer') return false;
+    if(!currentUser || currentUser.isReadOnly || String(currentUser.role||'').toLowerCase()==='viewer') return false;
     return key(team)===key(currentUser.team);
   };
-  const oldInit=window.initUserSession;
-  if(typeof oldInit==='function'){
-    window.initUserSession=function(){
-      if(currentUser && isNamedAppAdmin(currentUser)) currentUser.role='Admin';
-      const result=oldInit.apply(this,arguments);
-      const badge=document.getElementById('currentUserRoleBadge');
-      if(badge && window.isAdminSession()) badge.textContent='App Admin';
-      return result;
-    };
-  }
   const lockTeamContext=()=>{
     if(!currentUser || window.isAdminSession() || !currentUser.team) return;
     window.activeTeamView=currentUser.team;
@@ -17049,8 +17036,8 @@ window.handleCapacityImport = function (e) {
     });
   };
   document.addEventListener('DOMContentLoaded',lockTeamContext);
-  /* PERF: throttle to 1 run per frame instead of on every DOM mutation */
-  let __lockQ=0;new MutationObserver(()=>{if(__lockQ)return;__lockQ=requestAnimationFrame(()=>{__lockQ=0;lockTeamContext();});}).observe(document.body,{childList:true,subtree:true});
+  let __lockQ=0;
+  new MutationObserver(()=>{if(__lockQ)return;__lockQ=requestAnimationFrame(()=>{__lockQ=0;lockTeamContext();});}).observe(document.body,{childList:true,subtree:true});
   document.addEventListener('DOMContentLoaded',()=>document.querySelectorAll('option[value="Admin"]').forEach(o=>o.textContent='App Admin'));
 })();
 
@@ -17719,7 +17706,7 @@ const PALETTE=['#6366f1','#0ea5e9','#10b981','#f59e0b','#ec4899','#8b5cf6','#14b
 const MT={rows:[],ok:false,all:[],view:'user',q:'',fTeam:'',fRole:'',fStatus:'',showPw:new Set(),edit:null};
 window.__mtr=MT;
 
-const isAppAdmin=()=>!!currentUser&&!currentUser.isReadOnly&&(typeof window.isAdminSession==='function'?window.isAdminSession():currentUser.role==='Admin');
+const isAppAdmin=()=>!!currentUser&&!currentUser.isReadOnly&&N(currentUser.role)==='admin';
 const roleOk=r=>ROLES.find(x=>N(x)===N(r))||'';
 function normRole(v){
   const x=N(v).replace(/[^a-z ]/g,'');
@@ -17767,7 +17754,9 @@ function membershipsOf(u){
   return list.sort((a,b)=>Number(b.primary)-Number(a.primary)||a.team.localeCompare(b.team));
 }
 window.getUserMemberships=membershipsOf;
-function baseUsers(){return MT.all.length?MT.all:(Array.isArray(users)?users:[]);}
+/* User Management must never fall back to the static users.js credential list.
+   MT.all is populated only by applyTeamScopeToState after Supabase Users are loaded. */
+function baseUsers(){return Array.isArray(MT.all)?MT.all:[];}
 
 /* teams the signed-in user may manage on the Users page */
 function manageableTeams(){
@@ -20794,7 +20783,7 @@ window.HARDCODED_USER_ROWS = [
   {"member": "Gloria", "team": "Cover Drawing", "role": "Team Admin", "password": "0241"},
   {"member": "Hank", "team": "PE", "role": "Member", "password": "0656"},
   {"member": "Hannie", "team": "PE", "role": "Member", "password": "7825"},
-  {"member": "Hardy", "team": "Routing UPH", "role": "Member", "password": "5409"},
+  {"member": "Hardy", "team": "CI", "role": "Member", "password": "5409"},
   {"member": "Huan", "team": "Routing C&S", "role": "Member", "password": "1442"},
   {"member": "Hugh", "team": "Innovation", "role": "Member", "password": "4349"},
   {"member": "Ian", "team": "PE", "role": "Member", "password": "2825"},

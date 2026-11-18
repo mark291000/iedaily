@@ -20,7 +20,7 @@ const PALETTE=['#6366f1','#0ea5e9','#10b981','#f59e0b','#ec4899','#8b5cf6','#14b
 const MT={rows:[],ok:false,all:[],view:'user',q:'',fTeam:'',fRole:'',fStatus:'',showPw:new Set(),edit:null};
 window.__mtr=MT;
 
-const isAppAdmin=()=>!!currentUser&&!currentUser.isReadOnly&&(typeof window.isAdminSession==='function'?window.isAdminSession():currentUser.role==='Admin');
+const isAppAdmin=()=>!!currentUser&&!currentUser.isReadOnly&&N(currentUser.role)==='admin';
 const roleOk=r=>ROLES.find(x=>N(x)===N(r))||'';
 function normRole(v){
   const x=N(v).replace(/[^a-z ]/g,'');
@@ -68,7 +68,9 @@ function membershipsOf(u){
   return list.sort((a,b)=>Number(b.primary)-Number(a.primary)||a.team.localeCompare(b.team));
 }
 window.getUserMemberships=membershipsOf;
-function baseUsers(){return MT.all.length?MT.all:(Array.isArray(users)?users:[]);}
+/* User Management must never fall back to the static users.js credential list.
+   MT.all is populated only by applyTeamScopeToState after Supabase Users are loaded. */
+function baseUsers(){return Array.isArray(MT.all)?MT.all:[];}
 
 /* teams the signed-in user may manage on the Users page */
 function manageableTeams(){
