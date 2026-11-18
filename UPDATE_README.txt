@@ -1,21 +1,16 @@
-IE Daily v1.5.0 - User Management database authorization fix
+IE DAILY — USERS & TEAM ACCESS FIX
 
-This update makes Supabase the only source of truth for User Management and App Admin authorization.
-Hardcoded credentials remain only for the existing login validation flow; hardcoded names no longer grant App Admin permissions, and the User Management page no longer falls back to the static users list.
+This patch restores the database management controls that were hidden by the hardcodedUsersV1Style CSS rule.
 
-Replace these files in the matching paths:
-1) index.html
-2) js/modules/16-multiTeamSecurityV5.js
-3) js/modules/20-multiTeamRolesV1.js
+Replace the root index.html with this file, then deploy/restart the app and press Ctrl+F5.
 
-The ZIP also includes the two mirrored root-level JS source files for source-project consistency:
-4) 16-multiTeamSecurityV5.js
-5) 20-multiTeamRolesV1.js
+Restored controls:
+- Add User (writes to Supabase users + user_team_roles)
+- Import / Template (App Admin only)
+- Add Team (writes to Supabase teams)
+- Edit / Delete actions in the user table
+- Show in reports toggle for App Admin
 
-After replacing files, deploy the updated project and hard-refresh the browser (Ctrl+F5).
+The existing 20-multiTeamRolesV1 logic already implements these operations. This patch removes the CSS rule that forcibly hid the buttons and disabled the Show toggle. It does not alter the database schema.
 
-Important:
-- The logged-in user's `users.role` value in Supabase must be `Admin` for App Admin access.
-- Team memberships and team-level roles are read from `user_team_roles`.
-- Team names are read from `teams` and database-loaded application data.
-- This patch does not alter Supabase schema or existing rows.
+Note: Team edit/delete is not present in the current application code; this patch restores Create Team only. Team edit/delete requires a separate safe cascade design because team codes are referenced by user memberships and operational records.

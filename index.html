@@ -6913,11 +6913,8 @@ body.report-exporting .tab-content>.bom-page-filter::before{display:none!importa
 #tab-projects .v13-project-table .v13-filter-head>button{flex:0 0 20px!important}
 #tab-projects .v13-project-table thead th:last-child{text-align:center!important}
 
-/* ===== hardcodedUsersV1Style ===== */
-/* User data is maintained in code: hide database write actions on the Users page. */
-#mtrUsers [onclick*="mtrOpenUser"],#mtrImportBtn,#mtrTemplateBtn,#mtrUsers [onclick*="openTeamModal"],
-#mtrUsers .mtr-icon.del,#mtrUsers .mtr-icon[onclick*="mtrOpenUser"]{display:none!important}
-#mtrUsers button.mtr-show{pointer-events:none!important;cursor:default!important}
+/* ===== Users & Team Access DB management ===== */
+/* User / Team actions are enabled. Authorization is enforced by the Supabase-backed module. */
 /* Single login type: user + password only. */
 #accessSwitch,#viewerTeamBox,#viewerHint{display:none!important}
 #memberCredentials.viewer-hidden{display:block!important}
