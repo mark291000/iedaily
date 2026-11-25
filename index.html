@@ -9838,10 +9838,18 @@ function setupInlineRequiredValidation(){
             const rawSelected=state?.[key];
             const selected=rawSelected instanceof Set ? rawSelected : new Set(Array.isArray(rawSelected)?rawSelected:(rawSelected==null||rawSelected===''?[]:[String(rawSelected)]));
             const values=(isGantt?getGanttFilterUniverse(key):getBomFilterUniverse(key)) || [];
+            const now=new Date();
+            const currentMonth=String(now.getMonth()+1);
+            const currentWeek=String(getIsoWeekNumber(formatDateLocal(now)));
+            const optionLabel=v=>{
+                const value=String(v);
+                return ((key==='Month' && value===currentMonth) || (key==='Week' && value===currentWeek))
+                    ? `${value} (Current)` : value;
+            };
             menu.innerHTML=`<input type="search" placeholder="Search ${key}..." oninput="filterBomOptionSearch(this)">${values.map(v=>`
-                <label class="bom-multi-option" data-label="${String(v).toLowerCase()}">
+                <label class="bom-multi-option" data-label="${optionLabel(v).toLowerCase()}">
                     <input type="checkbox" value="${escapeHtml(String(v))}" ${selected.has(String(v))?'checked':''} onchange="changeBomTopFilter('${key}', this)">
-                    <span>${escapeHtml(String(v))}</span>
+                    <span>${escapeHtml(optionLabel(v))}</span>
                 </label>`).join('')}
                 <div class="flex gap-1 pt-2 border-t mt-1">
                     <button type="button" class="text-[10px] px-2 py-1 bg-slate-100 rounded" onclick="selectAllBomFilter('${key}',true)">All</button>
@@ -9850,23 +9858,47 @@ function setupInlineRequiredValidation(){
         }
         function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
         function toggleBomFilter(btn){
-            const menu=btn.parentElement.querySelector('.bom-multi-menu');
-            document.querySelectorAll('.bom-multi-menu').forEach(m=>{if(m!==menu)m.classList.add('hidden')});
-            menu.classList.toggle('hidden');
-            if(!menu.classList.contains('hidden')){
-                bomFilterBarOptions(btn.parentElement,btn.parentElement.dataset.filterKey);
-                const rect = btn.getBoundingClientRect();
-                const menuWidth = 240;
-                const menuHeight = Math.min(menu.scrollHeight || 280, 280);
-                let left = rect.left;
-                let top = rect.bottom + 4;
-                if(left + menuWidth > window.innerWidth - 8) left = Math.max(8, window.innerWidth - menuWidth - 8);
-                if(top + menuHeight > window.innerHeight - 8) top = Math.max(8, rect.top - menuHeight - 4);
-                menu.style.left = `${left}px`;
-                menu.style.top = `${top}px`;
-                menu.style.zIndex = '2147483647';
+            const bar=btn.parentElement;
+            const menu=bar.querySelector('.bom-multi-menu');
+            const wasHidden=menu.classList.contains('hidden');
+            document.querySelectorAll('.bom-multi-menu').forEach(m=>m.classList.add('hidden'));
+            if(!wasHidden) return;
+
+            bomFilterBarOptions(bar,bar.dataset.filterKey);
+            menu.classList.remove('hidden');
+
+            // Move the popup to <body> while it is open. This prevents positioned /
+            // transformed filter containers from changing the coordinate system.
+            if(!menu.__bomHome){
+                menu.__bomHome=bar;
+                menu.__bomNext=menu.nextSibling;
             }
+            document.body.appendChild(menu);
+
+            const placeMenu=()=>{
+                const rect=btn.getBoundingClientRect();
+                const gap=4;
+                const viewportGap=8;
+                const menuWidth=Math.min(240,window.innerWidth-viewportGap*2);
+                menu.style.position='fixed';
+                menu.style.width=menuWidth+'px';
+                menu.style.maxHeight='280px';
+                const menuHeight=Math.min(menu.scrollHeight||280,280);
+                let left=rect.left;
+                let top=rect.bottom+gap;
+                if(left+menuWidth>window.innerWidth-viewportGap) left=window.innerWidth-menuWidth-viewportGap;
+                if(left<viewportGap) left=viewportGap;
+                if(top+menuHeight>window.innerHeight-viewportGap && rect.top-menuHeight-gap>=viewportGap){
+                    top=rect.top-menuHeight-gap;
+                }
+                menu.style.left=Math.round(left)+'px';
+                menu.style.top=Math.round(top)+'px';
+                menu.style.zIndex='2147483647';
+            };
+            placeMenu();
+            requestAnimationFrame(placeMenu);
         }
+
         function filterBomOptionSearch(input){
             const q=input.value.toLowerCase();
             input.parentElement.querySelectorAll('.bom-multi-option').forEach(o=>o.style.display=o.dataset.label.includes(q)?'flex':'none');
@@ -9906,8 +9938,13 @@ function setupInlineRequiredValidation(){
                 const selected=rawSelected instanceof Set ? rawSelected : new Set(Array.isArray(rawSelected)?rawSelected:(rawSelected==null||rawSelected===''?[]:[String(rawSelected)]));
                 const btn=bar.querySelector('.bom-multi-btn');
                 if(!btn)return;
-                const values=Array.from(selected).map(String);
-                const label=values.length ? `${key}: ${values.join(', ')}` : key;
+                const now=new Date();
+                const currentMonth=String(now.getMonth()+1);
+                const currentWeek=String(getIsoWeekNumber(formatDateLocal(now)));
+                const displayValues=Array.from(selected).map(String).map(v=>
+                    ((key==='Month' && v===currentMonth) || (key==='Week' && v===currentWeek)) ? `${v} (Current)` : v
+                );
+                const label=displayValues.length ? `${key}: ${displayValues.join(', ')}` : key;
                 btn.innerHTML=`<span class="truncate max-w-[220px]" title="${escapeHtml(label)}">${escapeHtml(label)}</span><i class="fa-solid fa-chevron-down text-[9px] ml-auto shrink-0"></i>`;
             });
         }
@@ -10459,7 +10496,16 @@ function setupInlineRequiredValidation(){
             });
             XLSX.writeFile(wb,`${tabId.replace('tab-','')}_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
-        document.addEventListener('click',e=>{if(!e.target.closest('.bom-multi'))document.querySelectorAll('.bom-multi-menu').forEach(m=>m.classList.add('hidden'));});
+        document.addEventListener('click',e=>{
+            if(e.target.closest('.bom-multi') || e.target.closest('.bom-multi-menu')) return;
+            document.querySelectorAll('.bom-multi-menu').forEach(m=>{
+                m.classList.add('hidden');
+                if(m.__bomHome && m.parentElement===document.body){
+                    if(m.__bomNext && m.__bomNext.parentNode===m.__bomHome) m.__bomHome.insertBefore(m,m.__bomNext);
+                    else m.__bomHome.appendChild(m);
+                }
+            });
+        });
         document.addEventListener('click',e=>{ if(!e.target.closest('#taskCategorySearch') && !e.target.closest('#taskCategoryLookup') && !e.target.closest('#taskNameSearch') && !e.target.closest('#taskNameLookup') && !e.target.closest('#taskCategoryLookup') && !e.target.closest('#taskNameLookup')) closeTaskLookups(); });
         function exportCapacityData() {
             if (capacityData.length === 0) { showAppNotification("No data to export."); return; }
