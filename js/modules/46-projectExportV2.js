@@ -10,7 +10,7 @@
 'use strict';
 const W=window;
 /* Same columns (and order) as the Project Management table on screen; Action column is not exported. */
-const COLS=['Project name','Owner','Start','Plan Completed','Actual','Status','Current Stage','%Progress','Archived goal','Saving','Key Project'];
+const COLS=['Team','Project name','Owner','Start','Plan Completed','Actual','Status','Current Stage','%Progress','Archived goal','Saving','Key Project'];
 const HEAD={'Saving':'Saving (if have)'};
 const DATE_COLS=new Set(['Start','Plan Completed','Actual']);
 const STATUS_COLORS={completed:['DCFCE7','166534'],done:['DCFCE7','166534'],working:['DBEAFE','1E40AF'],'working on it':['DBEAFE','1E40AF'],'in progress':['DBEAFE','1E40AF'],overdue:['FEE2E2','991B1B'],stuck:['FEE2E2','991B1B'],'not started':['F1F5F9','475569']};
@@ -25,7 +25,7 @@ function rows(){
   try{list=(typeof getVisibleProjectExportRows==='function'?getVisibleProjectExportRows():W.getVisibleProjectExportRows?.())||[];}catch(e){console.error('Project export rows failed',e);}
   if(!list.length){ /* fallback: no filter helpers available -> all projects of the live list */
     const src=typeof projectsList!=='undefined'&&Array.isArray(projectsList)?projectsList:[];
-    list=src.map(p=>({'Project name':p.name||'',Owner:(Array.isArray(p.owners)&&p.owners.length?p.owners.join(', '):p.owner)||'',Start:cleanDateStr(p.startDate)||'','Plan Completed':cleanDateStr(p.dueDate)||'',Actual:cleanDateStr(p.actualDate)||'',Status:p.status||'','Current Stage':p.currentStage||'','%Progress':Number(p.progress)||0,'Archived goal':p.archivedGoal||p.detailedStatus||'',Saving:(p.actualSaving||p.saving||''),'Key Project':p.keyProject===false?'No':'Yes'}));
+    list=src.map(p=>({'Team':p.team||'', 'Project name':p.name||'',Owner:(Array.isArray(p.owners)&&p.owners.length?p.owners.join(', '):p.owner)||'',Start:cleanDateStr(p.startDate)||'','Plan Completed':cleanDateStr(p.dueDate)||'',Actual:cleanDateStr(p.actualDate)||'',Status:p.status||'','Current Stage':p.currentStage||'','%Progress':Number(p.progress)||0,'Archived goal':p.archivedGoal||p.detailedStatus||'',Saving:(p.actualSaving||p.saving||''),'Key Project':p.keyProject===false?'No':'Yes'}));
   }
   return list.filter(r=>String(r['Project name']||'').trim());
 }
@@ -64,7 +64,7 @@ function exportExcel(){
   const ws=XLSX.utils.aoa_to_sheet(aoa,{cellDates:true}),wb=XLSX.utils.book_new();
   const HR=6; // header row index (0-based): title, sub, gap, stat labels, stat values, gap, header
   ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:COLS.length-1}},{s:{r:1,c:0},e:{r:1,c:COLS.length-1}}];
-  ws['!cols']=[36,22,12,15,12,15,28,11,46,15,11].map(w=>({wch:w}));
+  ws['!cols']=[18,36,22,12,15,12,15,28,11,46,15,11].map(w=>({wch:w}));
   ws['!rows']=[{hpt:24},{hpt:16},{hpt:6},{hpt:16},{hpt:26},{hpt:8},{hpt:30}];
   ws['!autofilter']={ref:`A${HR+1}:${XLSX.utils.encode_col(COLS.length-1)}${aoa.length}`};
   const border={top:{style:'thin',color:{rgb:'D7E1E8'}},bottom:{style:'thin',color:{rgb:'D7E1E8'}},left:{style:'thin',color:{rgb:'D7E1E8'}},right:{style:'thin',color:{rgb:'D7E1E8'}}};
@@ -110,7 +110,7 @@ function exportPdf(){
   if(!W.jspdf?.jsPDF){showAppNotification('PDF export library is not available. Please wait a moment and try again.','Export');return;}
   const doc=new W.jspdf.jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight(),M=20,tableW=pageW-M*2;
-  const base=[120,66,48,56,48,56,96,64,150,56,40], sum=base.reduce((a,b)=>a+b,0), widths=base.map(w=>w*tableW/sum);
+  const base=[58,120,66,48,56,48,56,96,64,150,56,40], sum=base.reduce((a,b)=>a+b,0), widths=base.map(w=>w*tableW/sum);
   const hex=h=>[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
   const FS=6.6, LH=8.2, PAD=4;
   let y=M, page=1;
