@@ -9831,18 +9831,23 @@ function setupInlineRequiredValidation(){
         }
 
         function bomFilterBarOptions(bar, key) {
-            const menu=bar.querySelector('.bom-multi-menu');
+            const menu=bar._bomFilterMenu || bar.querySelector('.bom-multi-menu');
             if (!menu) return;
             const isGantt=Object.prototype.hasOwnProperty.call(ganttFilterState,key);
             const state=isGantt?ganttFilterState:bomTopFilterState;
             const rawSelected=state?.[key];
             const selected=rawSelected instanceof Set ? rawSelected : new Set(Array.isArray(rawSelected)?rawSelected:(rawSelected==null||rawSelected===''?[]:[String(rawSelected)]));
             const values=(isGantt?getGanttFilterUniverse(key):getBomFilterUniverse(key)) || [];
-            menu.innerHTML=`<input type="search" placeholder="Search ${key}..." oninput="filterBomOptionSearch(this)">${values.map(v=>`
-                <label class="bom-multi-option" data-label="${String(v).toLowerCase()}">
+            const current = getBomCurrentPeriodValues();
+            menu.innerHTML=`<input type="search" placeholder="Search ${key}..." oninput="filterBomOptionSearch(this)">${values.map(v=>{
+                const isCurrent = !isGantt && (key==='Month' ? String(v)===current.month : key==='Week' ? String(v)===current.week : false);
+                const display = `${String(v)}${isCurrent?' (Current)':''}`;
+                return `
+                <label class="bom-multi-option" data-label="${display.toLowerCase()}">
                     <input type="checkbox" value="${escapeHtml(String(v))}" ${selected.has(String(v))?'checked':''} onchange="changeBomTopFilter('${key}', this)">
-                    <span>${escapeHtml(String(v))}</span>
-                </label>`).join('')}
+                    <span>${escapeHtml(display)}</span>
+                </label>`;
+            }).join('')}
                 <div class="flex gap-1 pt-2 border-t mt-1">
                     <button type="button" class="text-[10px] px-2 py-1 bg-slate-100 rounded" onclick="selectAllBomFilter('${key}',true)">All</button>
                     <button type="button" class="text-[10px] px-2 py-1 bg-slate-100 rounded" onclick="selectAllBomFilter('${key}',false)">Clear</button>
@@ -9850,21 +9855,41 @@ function setupInlineRequiredValidation(){
         }
         function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
         function toggleBomFilter(btn){
-            const menu=btn.parentElement.querySelector('.bom-multi-menu');
-            document.querySelectorAll('.bom-multi-menu').forEach(m=>{if(m!==menu)m.classList.add('hidden')});
+            const bar=btn.parentElement;
+            const menu=bar._bomFilterMenu || bar.querySelector('.bom-multi-menu');
+            document.querySelectorAll('.bom-multi-menu').forEach(m=>{
+                if(m!==menu){
+                    m.classList.add('hidden');
+                    if(m._bomOriginalParent){m._bomOriginalParent.insertBefore(m,m._bomOriginalNextSibling||null);m._bomOriginalParent=null;m._bomOriginalNextSibling=null;}
+                }
+            });
+            const willOpen=menu.classList.contains('hidden');
             menu.classList.toggle('hidden');
-            if(!menu.classList.contains('hidden')){
-                bomFilterBarOptions(btn.parentElement,btn.parentElement.dataset.filterKey);
-                const rect = btn.getBoundingClientRect();
-                const menuWidth = 240;
-                const menuHeight = Math.min(menu.scrollHeight || 280, 280);
-                let left = rect.left;
-                let top = rect.bottom + 4;
-                if(left + menuWidth > window.innerWidth - 8) left = Math.max(8, window.innerWidth - menuWidth - 8);
-                if(top + menuHeight > window.innerHeight - 8) top = Math.max(8, rect.top - menuHeight - 4);
-                menu.style.left = `${left}px`;
-                menu.style.top = `${top}px`;
-                menu.style.zIndex = '2147483647';
+            if(willOpen){
+                bomFilterBarOptions(bar,bar.dataset.filterKey);
+                // Portal the menu to <body> so transformed/scrolling ancestors cannot
+                // offset a fixed-position popup away from its own filter button.
+                if(!menu._bomOriginalParent){
+                    menu._bomOriginalParent=menu.parentElement;
+                    menu._bomOriginalNextSibling=menu.nextSibling;
+                }
+                document.body.appendChild(menu);
+                const rect=btn.getBoundingClientRect();
+                const menuWidth=240;
+                const menuHeight=Math.min(Math.max(menu.scrollHeight,120),280);
+                const left=Math.max(8,Math.min(rect.left,window.innerWidth-menuWidth-8));
+                let top=rect.bottom+4;
+                if(top+menuHeight>window.innerHeight-8) top=Math.max(8,rect.top-menuHeight-4);
+                menu.style.position='fixed';
+                menu.style.width=`${menuWidth}px`;
+                menu.style.left=`${left}px`;
+                menu.style.top=`${top}px`;
+                menu.style.zIndex='2147483647';
+                menu._bomAnchorButton=btn;
+                bar._bomFilterMenu=menu;
+            }else if(menu._bomOriginalParent){
+                menu._bomOriginalParent.insertBefore(menu,menu._bomOriginalNextSibling||null);
+                menu._bomOriginalParent=null;menu._bomOriginalNextSibling=null;
             }
         }
         function filterBomOptionSearch(input){
@@ -9898,6 +9923,15 @@ function setupInlineRequiredValidation(){
             if (key === 'Year') { window.__taskYearsExplicit = true; ensureTaskYearsLoaded().then(()=>applyBomUnifiedFilters()); return; }
             applyBomUnifiedFilters();
         }
+        function getBomCurrentPeriodValues(){
+            const now=new Date();
+            const week=getIsoWeekNumber(formatDateLocal(now));
+            const range=getIsoWeekRange(now.getFullYear(),week);
+            return {
+                week:String(week),
+                month:String(range ? Number(range.end.slice(5,7)) : now.getMonth()+1)
+            };
+        }
         function updateBomFilterButtons(){
             document.querySelectorAll('[data-bom-filter-bar="1"] .bom-multi').forEach(bar=>{
                 const key=bar.dataset.filterKey;
@@ -9906,7 +9940,12 @@ function setupInlineRequiredValidation(){
                 const selected=rawSelected instanceof Set ? rawSelected : new Set(Array.isArray(rawSelected)?rawSelected:(rawSelected==null||rawSelected===''?[]:[String(rawSelected)]));
                 const btn=bar.querySelector('.bom-multi-btn');
                 if(!btn)return;
-                const values=Array.from(selected).map(String);
+                const current=getBomCurrentPeriodValues();
+                const values=Array.from(selected).map(String).map(v=>{
+                    if(key==='Month' && v===current.month) return `${v} (Current)`;
+                    if(key==='Week' && v===current.week) return `${v} (Current)`;
+                    return v;
+                });
                 const label=values.length ? `${key}: ${values.join(', ')}` : key;
                 btn.innerHTML=`<span class="truncate max-w-[220px]" title="${escapeHtml(label)}">${escapeHtml(label)}</span><i class="fa-solid fa-chevron-down text-[9px] ml-auto shrink-0"></i>`;
             });
