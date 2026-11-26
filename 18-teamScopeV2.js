@@ -43,15 +43,16 @@ function ensureRoot(){
   return root;
 }
 async function load(){
-  const t=team(); S.team=t; S.items=[]; S.assign=new Set();
+  const t=team();
   if(!t) return;
   const [it,as]=await Promise.all([
     supabaseClient.from('scope_items').select('*').eq('team',t),
     supabaseClient.from('scope_assignments').select('item_code,member_name').eq('team',t)
   ]);
   if(it.error) throw it.error; if(as.error) throw as.error;
+  if(team()!==t || S.team!==t) return;
   S.items=it.data||[];
-  (as.data||[]).forEach(a=>S.assign.add(key(String(a.item_code),norm(a.member_name))));
+  S.assign=new Set((as.data||[]).map(a=>key(String(a.item_code),norm(a.member_name))));
 }
 function render(){
   const root=ensureRoot(); if(!root) return;
@@ -89,7 +90,8 @@ function render(){
 }
 async function reload(){
   const root=ensureRoot(); if(!root||!currentUser) return;
-  try{ await load(); render(); }
+  S.team=team(); S.items=[]; S.assign=new Set(); render();
+  try{ await load(); if(S.team===team()) render(); }
   catch(e){ console.error('Team scope load error:',e); render(); root.insertAdjacentHTML('beforeend',`<div class="ts2-empty">Unable to load scope: ${esc(e.message||e)}</div>`); }
 }
 window.renderScopeFromDb=reload;
