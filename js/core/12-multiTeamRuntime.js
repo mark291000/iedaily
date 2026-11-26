@@ -389,22 +389,28 @@ function syncScopeSelects() {
 syncScopeSelects();
 
 window.loadScopeOptions = async function (force) {
-  const v = getViewTeam();
-  if (!force && window.__scopeOptKey === v) return;
-  try {
-    let q = supabaseClient.from('scope_options').select('team,name,sort_order').order('sort_order', { ascending: true });
-    if (v !== TEAM_ALL) q = q.eq('team', v);
-    const r = await q;
-    if (r.error) throw r.error;
-    const names = [];
-    (r.data || []).forEach(x => { const n = String(x.name || '').trim(); if (n && !names.includes(n)) names.push(n); });
-    CAPACITY_SCOPES.splice(0, CAPACITY_SCOPES.length, ...(names.length ? names : DEFAULT_SCOPES));
-    window.__scopeOptKey = v;
-  } catch (e) {
-    console.warn('scope_options not available, using built-in defaults:', e?.message || e);
-    CAPACITY_SCOPES.splice(0, CAPACITY_SCOPES.length, ...DEFAULT_SCOPES);
-  }
+  const team = getViewTeam();
+  const token = (window.__scopeRequestToken || 0) + 1;
+  window.__scopeRequestToken = token;
+  CAPACITY_SCOPES.splice(0);
+  window.__scopeOptKey = null;
   syncScopeSelects();
+  try {
+    if (!team || team === TEAM_ALL) return;
+    const r = await supabaseClient.from('scope_options')
+      .select('team,name,sort_order').eq('team', team)
+      .order('sort_order', { ascending: true });
+    if (r.error) throw r.error;
+    if (token !== window.__scopeRequestToken || getViewTeam() !== team) return;
+    const names = [...new Set((r.data || [])
+      .filter(x => x.team === team)
+      .map(x => String(x.name || '').trim()).filter(Boolean))];
+    CAPACITY_SCOPES.splice(0, 0, ...names);
+    window.__scopeOptKey = team;
+    syncScopeSelects();
+  } catch (e) {
+    console.error('scope_options:', e);
+  }
 };
 
 const SCOPE_AVATAR_PALETTE = ['#e5a42a', '#e44b87', '#7b62d9', '#2da981', '#2388c9', '#2c9ed4', '#e58a35', '#6177cf', '#35a68e', '#55aee5'];
