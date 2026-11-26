@@ -369,56 +369,74 @@ window.importCapacityForTeam = async function (team, rows) {
 
 
 /* =====================================================================
-   SCOPE DATA FROM THE DATABASE  (nothing is hardcoded any more)
-   - scope_options     : values of the "Scope" dropdown (Category Setup / Task), per team
-   - scope_items       : rows of the "BOM C&S Scope" matrix (groups 1,2.. and sub-items 1.1..)
-   - scope_members     : matrix columns (member, order, avatar colour), per team
-   - scope_assignments : which member owns which item (the ticks)
-   The hardcoded array in CAPACITY_SCOPES is only a bootstrap fallback used when
-   the tables are missing / empty for the active team.
+   Scope dropdown options are master data from public.scope_options ONLY.
+   No hardcoded fallback is permitted. All Teams view intentionally has no
+   options because a Scope list must belong to one selected team.
    ===================================================================== */
-const DEFAULT_SCOPES = [...CAPACITY_SCOPES];
-
 function syncScopeSelects() {
   const sel = document.getElementById('capacityScope');
-  if (!sel) return;
-  const keep = sel.value;
-  sel.innerHTML = CAPACITY_SCOPES.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-  if (keep && CAPACITY_SCOPES.includes(keep)) sel.value = keep;
+  if (sel) {
+    const keep = sel.value;
+    sel.innerHTML = '<option value="">-- Select Scope --</option>' +
+      CAPACITY_SCOPES.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    sel.value = keep && CAPACITY_SCOPES.includes(keep) ? keep : '';
+  }
+  const datalist = document.getElementById('taskScopeOptions');
+  if (datalist) datalist.innerHTML = CAPACITY_SCOPES.map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
 }
-syncScopeSelects();
 
 window.loadScopeOptions = async function (force) {
-  const v = getViewTeam();
-  if (!v || v === TEAM_ALL) {
-    CAPACITY_SCOPES.splice(0);
-    window.__scopeOptKey = null;
+  const team = String(getViewTeam() || '').trim();
+  const key = team || TEAM_ALL;
+  const requestId = (window.__scopeOptRequestId || 0) + 1;
+  window.__scopeOptRequestId = requestId;
+
+  // Clear immediately on team change, including All Teams.
+  if (window.__scopeOptKey !== key) {
+    CAPACITY_SCOPES.splice(0, CAPACITY_SCOPES.length);
+    window.__scopeOptLoaded = false;
     syncScopeSelects();
-    return;
   }
-  if (!force && window.__scopeOptKey === v) return;
-  const token = (window.__scopeRequestToken || 0) + 1;
-  window.__scopeRequestToken = token;
-  CAPACITY_SCOPES.splice(0);
-  window.__scopeOptKey = null;
-  syncScopeSelects();
+  if (key === TEAM_ALL || !team) {
+    CAPACITY_SCOPES.splice(0, CAPACITY_SCOPES.length);
+    window.__scopeOptKey = key;
+    window.__scopeOptLoaded = true;
+    syncScopeSelects();
+    return [];
+  }
+  if (!force && window.__scopeOptKey === key && window.__scopeOptLoaded === true) return CAPACITY_SCOPES.slice();
+
   try {
-    const r = await supabaseClient.from('scope_options')
-      .select('team,name,sort_order').eq('team', v)
+    const result = await supabaseClient
+      .from('scope_options')
+      .select('team,name,sort_order')
+      .eq('team', team)
       .order('sort_order', { ascending: true });
-    if (r.error) throw r.error;
-    if (token !== window.__scopeRequestToken || getViewTeam() !== v) return;
-    const names = [...new Set((r.data || [])
-      .filter(x => String(x.team || '').trim() === String(v).trim())
-      .map(x => String(x.name || '').trim()).filter(Boolean))];
+    if (result.error) throw result.error;
+
+    // Ignore a late response if the user has switched teams while it was loading.
+    if (requestId !== window.__scopeOptRequestId || String(getViewTeam() || '').trim() !== team) return CAPACITY_SCOPES.slice();
+
+    const names = [];
+    (result.data || []).forEach(row => {
+      const rowTeam = String(row.team || '').trim();
+      const name = String(row.name || '').trim();
+      if (rowTeam === team && name && !names.includes(name)) names.push(name);
+    });
     CAPACITY_SCOPES.splice(0, CAPACITY_SCOPES.length, ...names);
-    window.__scopeOptKey = v;
+    window.__scopeOptKey = key;
+    window.__scopeOptLoaded = true;
     syncScopeSelects();
-  } catch (e) {
-    if (token !== window.__scopeRequestToken || getViewTeam() !== v) return;
-    console.error('Scope load failed for team', v, e);
-    CAPACITY_SCOPES.splice(0);
-    syncScopeSelects();
+    return names.slice();
+  } catch (error) {
+    if (requestId === window.__scopeOptRequestId) {
+      CAPACITY_SCOPES.splice(0, CAPACITY_SCOPES.length);
+      window.__scopeOptKey = key;
+      window.__scopeOptLoaded = false;
+      syncScopeSelects();
+    }
+    console.error('Unable to load Scope options from public.scope_options for team:', team, error?.message || error);
+    return [];
   }
 };
 

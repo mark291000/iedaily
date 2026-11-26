@@ -408,7 +408,7 @@
             return { id:r?.id, team:r?.team||'', name:r?.name||'', password:r?.password??'', role:r?.role||'Member', status:r?.status||'Active', show:r?.show_in_reports!==false&&!configHiddenMembers().includes(normalizePersonKey(r?.name||'')), createdAt:r?.created_at||'', updatedAt:r?.updated_at||'' };
         }
         function mapDbCapacityToApp(r){
-            return { id:r?.id, team:r?.team||'', category:r?.category||'', task:r?.task||'', scope:r?.scope||"In BOM's scope", workload:Number(r?.workload||0) };
+            return { id:r?.id, team:r?.team||'', category:r?.category||'', task:r?.task||'', scope:r?.scope||'', workload:Number(r?.workload||0) };
         }
         function mapDbTaskToApp(r){
             const pics = canonicalPersonList(r?.pic || '');
@@ -567,11 +567,11 @@ function normalizeProjectTasks(tasks,project){
                 const changedSheets=Object.keys(protectedIncoming).filter(k=>JSON.stringify(protectedIncoming[k])!==JSON.stringify(currentState[k]));
                 if(background&&changedSheets.length){const ae=document.activeElement;const editing=ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);const modalOpen=document.querySelector('.modal:not(.opacity-0):not(.pointer-events-none)');if(editing||modalOpen)return false;}
                 users=protectedIncoming.Users;capacityData=protectedIncoming.Capacity;dailyTasks=protectedIncoming.Tasks;timeoffOtList=protectedIncoming.TimeOff_OT;projectsList=protectedIncoming.Projects;
-                capacityData.forEach(c=>{c.id=Number(c.id)||c.id;c.category=String(c.category||'').trim();c.task=String(c.task||'').trim();c.scope=String(c.scope||"In BOM's scope").trim();c.workload=Number(c.workload||0)||0;});
+                capacityData.forEach(c=>{c.id=Number(c.id)||c.id;c.category=String(c.category||'').trim();c.task=String(c.task||'').trim();c.scope=String(c.scope||'').trim();c.workload=Number(c.workload||0)||0;});
                 dailyTasks.forEach(t=>{if(!t.pics&&t.pic)t.pics=String(t.pic).split(',').map(s=>s.trim()).filter(Boolean);if(!t.pics)t.pics=[];t.start=cleanDateStr(t.start);t.plan=cleanDateStr(t.plan);t.actual=cleanDateStr(t.actual);});
                 ensureTaskIds(dailyTasks);dailyTasks=dedupeTasks(dailyTasks);
                 timeoffOtList.forEach(t=>{t.startDate=cleanDateStr(t.startDate);t.endDate=cleanDateStr(t.endDate);});
-                projectsList.forEach(p=>{p.scope=CAPACITY_SCOPES.includes(String(p.scope||'').trim())?String(p.scope).trim():'Projects';p.startDate=cleanDateStr(p.startDate);p.dueDate=cleanDateStr(p.dueDate);p.actualDate=cleanDateStr(p.actualDate);if(!p.owners&&p.owner)p.owners=String(p.owner).split(',').map(s=>s.trim()).filter(Boolean);if(!p.hoursUsed)p.hoursUsed={};const meta=getProjectMetaFromStorage(p.hoursUsed);p.gainDemand=String(p.gainDemand||meta.gainDemand||'');p.tasks=normalizeProjectTasks(p.tasks||meta.tasks,p);p.phases=normalizeProjectPhases(p.phases||meta.phases,p);});
+                projectsList.forEach(p=>{p.scope=CAPACITY_SCOPES.includes(String(p.scope||'').trim())?String(p.scope).trim():'';p.startDate=cleanDateStr(p.startDate);p.dueDate=cleanDateStr(p.dueDate);p.actualDate=cleanDateStr(p.actualDate);if(!p.owners&&p.owner)p.owners=String(p.owner).split(',').map(s=>s.trim()).filter(Boolean);if(!p.hoursUsed)p.hoursUsed={};const meta=getProjectMetaFromStorage(p.hoursUsed);p.gainDemand=String(p.gainDemand||meta.gainDemand||'');p.tasks=normalizeProjectTasks(p.tasks||meta.tasks,p);p.phases=normalizeProjectPhases(p.phases||meta.phases,p);});
                 synchronizePICReferences();
                 applyPendingGanttHoursToState();
                 const curState={Users:users,Capacity:capacityData,Tasks:dailyTasks,TimeOff_OT:timeoffOtList,Projects:projectsList};
@@ -752,7 +752,7 @@ function setupInlineRequiredValidation(){
         function rowHasDbId(row){return Number.isSafeInteger(Number(row?.id)) && Number(row.id)>0;}
         function dbPayloadForSheet(sheetName,row){
             if(sheetName==='Users') return {name:String(row.name||'').trim(),password:String(row.password??''),role:row.role||'Member',status:row.status||'Active'};
-            if(sheetName==='Capacity') return {category:String(row.category||'').trim(),task:String(row.task||'').trim(),scope:String(row.scope||"In BOM's scope").trim(),workload:Math.max(0,Number(row.workload)||0)};
+            if(sheetName==='Capacity') return {category:String(row.category||'').trim(),task:String(row.task||'').trim(),scope:String(row.scope||'').trim(),workload:Math.max(0,Number(row.workload)||0)};
             if(sheetName==='TimeOff_OT') {
                 const type=String(row?.type??'').trim();
                 const pic=String(row?.pic??'').trim();
@@ -1584,7 +1584,7 @@ function setupInlineRequiredValidation(){
             decorateAdvancedFilterControls();
         }
 
-        const CAPACITY_SCOPES = ["In BOM's scope","Out of BOM's scope","RND process","Compliance","Projects","New Go Tracking"];
+        const CAPACITY_SCOPES = []; // Loaded exclusively from Supabase public.scope_options for the active team.
         function renderCapacityTable() {
             const tbody = document.getElementById('capacityTableBody');
             if (!tbody) return;
@@ -1593,12 +1593,12 @@ function setupInlineRequiredValidation(){
             capacityData.forEach((item,index)=>{
                 const tr=document.createElement('tr');
                 tr.className='hover:bg-slate-50 transition border-b border-slate-100';
-                const scope=CAPACITY_SCOPES.includes(String(item.scope||'')) ? String(item.scope) : (item.scope||CAPACITY_SCOPES[0]);
+                const scope=CAPACITY_SCOPES.includes(String(item.scope||'')) ? String(item.scope) : ''; 
                 tr.innerHTML=`
                     <td class="py-2.5 px-4 text-center font-semibold text-slate-400">${index+1}</td>
                     <td class="py-2.5 px-4 font-bold text-slate-800">${escapeHtml(item.category||'')}</td>
                     <td class="py-2.5 px-4 text-slate-700">${escapeHtml(item.task||'')}</td>
-                    <td class="py-2.5 px-2 text-center"><select onchange="updateCapacityField(${item.id},'scope',this.value)" class="w-full max-w-[190px] px-2 py-1 bg-white border border-slate-300 rounded text-[11px]">${[...new Set([...CAPACITY_SCOPES,scope].filter(Boolean))].map(x=>`<option value="${escapeHtml(x)}" ${x===scope?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select></td>
+                    <td class="py-2.5 px-2 text-center"><select onchange="updateCapacityField(${item.id},'scope',this.value)" class="w-full max-w-[190px] px-2 py-1 bg-white border border-slate-300 rounded text-[11px]">${`<option value="">-- Select Scope --</option>`+CAPACITY_SCOPES.map(x=>`<option value="${escapeHtml(x)}" ${x===scope?'selected':''}>${escapeHtml(x)}</option>`).join('') }</select></td>
                     <td class="py-2.5 px-2 text-center text-[11px] font-semibold text-slate-600">${escapeHtml(item.team||"—")}</td>
                     <td class="py-2.5 px-2 text-center">
                         <button type="button" onclick="openCapacityCategoryModal(${item.id})" class="text-slate-400 hover:text-indigo-600 mr-2" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -1610,7 +1610,7 @@ function setupInlineRequiredValidation(){
         async function updateCapacityField(id, field, val) {
             const item=capacityData.find(c=>String(c.id)===String(id)); if(!item) return;
             if(field==='workload') return; // Workload is calculated from Daily Tracking.
-            if(field==='scope'){ item.scope=String(val||'').trim()||item.scope||CAPACITY_SCOPES[0]; }
+            if(field==='scope'){ item.scope=String(val||'').trim(); }
             renderCapacityTable(); await saveSheetData('Capacity',capacityData); populateFilterOptions();
         }
         async function deleteCapacityItem(id){
@@ -1668,6 +1668,7 @@ function setupInlineRequiredValidation(){
                         return { excelRow: rowIndex+2, category, task, scope, workload, team:String(normalized.team ?? '').trim() };
                     });
 
+                    if (typeof window.loadScopeOptions === 'function') await window.loadScopeOptions(true);
                     const errors=[];
                     const seen=new Set();
                     // MULTI-TEAM: an import may only ever touch ONE team: the team of the signed-in member
@@ -1678,7 +1679,7 @@ function setupInlineRequiredValidation(){
                     rows.forEach(r=>{
                         if(!r.category) errors.push(`Row ${r.excelRow}: Category is required.`);
                         if(!r.task) errors.push(`Row ${r.excelRow}: Task Name is required.`);
-                        if(!CAPACITY_SCOPES.includes(r.scope)) errors.push(`Row ${r.excelRow}: Scope must be one of: ${CAPACITY_SCOPES.join(', ')}.`);
+                        if(!r.scope || !CAPACITY_SCOPES.includes(r.scope)) errors.push(`Row ${r.excelRow}: Scope must be selected from this team's Scope options in Supabase.`);
                         if(!Number.isFinite(r.workload) || r.workload < 0) errors.push(`Row ${r.excelRow}: Workload (Hour) must be a number >= 0.`);
                         const key=`${r.category.toLowerCase()}|||${r.task.toLowerCase()}`;
                         if(r.category && r.task){
@@ -1706,7 +1707,8 @@ function setupInlineRequiredValidation(){
             };
             reader.readAsArrayBuffer(file);
         }
-        function openCapacityCategoryModal(editId=null) {
+        async function openCapacityCategoryModal(editId=null) {
+            if (typeof window.loadScopeOptions === 'function') await window.loadScopeOptions(true);
             const modal=document.getElementById('capacityCategoryModal'); const select=document.getElementById('capacityCategorySelect');
             const cats=[...new Set(capacityData.map(c=>String(c.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
             select.innerHTML='<option value="">-- Select existing category --</option>'+cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')+'<option value="__NEW__">+ Create new Category</option>';
@@ -1714,8 +1716,8 @@ function setupInlineRequiredValidation(){
             document.getElementById('capacityNewCategory').value='';
             if(editId!==null){ const item=capacityData.find(c=>String(c.id)===String(editId)); if(item){
                 if(!Array.from(select.options).some(o=>String(o.value)===String(item.category||''))){ select.insertBefore(new Option(String(item.category||''),String(item.category||'')),select.querySelector('option[value="__NEW__"]')); }
-                select.value=item.category; document.getElementById('capacityTaskName').value=item.task||''; {const sc=document.getElementById('capacityScope');const v=String(item.scope||'').trim();if(v&&!Array.from(sc.options).some(o=>o.value===v))sc.add(new Option(v,v));sc.value=v||CAPACITY_SCOPES[0];}  document.getElementById('capacityModalTitle').innerText='Edit Category';} }
-            else {document.getElementById('capacityTaskName').value=''; document.getElementById('capacityScope').value=CAPACITY_SCOPES[0]; document.getElementById('capacityWorkload').value='0'; document.getElementById('capacityModalTitle').innerText='Add Capacity';}
+                select.value=item.category; document.getElementById('capacityTaskName').value=item.task||''; {const sc=document.getElementById('capacityScope');const v=String(item.scope||'').trim();sc.value=CAPACITY_SCOPES.includes(v)?v:'';}  document.getElementById('capacityModalTitle').innerText='Edit Category';} }
+            else {document.getElementById('capacityTaskName').value=''; document.getElementById('capacityScope').value=''; document.getElementById('capacityWorkload').value='0'; document.getElementById('capacityModalTitle').innerText='Add Capacity';}
             onCapacityCategoryModeChange(); modal.classList.remove('opacity-0','pointer-events-none'); document.body.classList.add('modal-active');
         }
         function closeCapacityCategoryModal(){document.getElementById('capacityCategoryModal').classList.add('opacity-0','pointer-events-none');document.body.classList.remove('modal-active');}
@@ -1723,7 +1725,7 @@ function setupInlineRequiredValidation(){
         async function saveCapacityCategory(e){
             e.preventDefault(); const editId=document.getElementById('capacityEditId').value; const sel=document.getElementById('capacityCategorySelect').value;
             const category=(sel==='__NEW__'?document.getElementById('capacityNewCategory').value:sel).trim(); const task=document.getElementById('capacityTaskName').value.trim(); const scope=document.getElementById('capacityScope').value; const workload=0;
-            if(!category||!task||!String(scope||'').trim()){
+            if(!category||!task||!String(scope||'').trim()||!CAPACITY_SCOPES.includes(String(scope).trim())){
                 validateRequiredFormFields(document.getElementById('capacityCategoryForm'));
                 return;
             }
@@ -2740,9 +2742,9 @@ function setupInlineRequiredValidation(){
         function onTaskScopeUserChange(){
             taskScopeUserChanged = true;
             const field=document.getElementById('taskScope');
-            const options=document.getElementById('taskScopeOptions');
             const value=String(field?.value||'').trim();
-            if(value && options && !Array.from(options.options).some(o=>String(o.value).trim()===value)) options.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(value)}"></option>`);
+            if(value && !CAPACITY_SCOPES.includes(value)) field.setCustomValidity('Select a Scope defined for your team in Supabase.');
+            else field?.setCustomValidity('');
         }
         function updateTaskScopeSuggestion(preserveExplicit=false){
             const wrap=document.getElementById('taskScopeWrap'), select=document.getElementById('taskScope');
@@ -2752,10 +2754,7 @@ function setupInlineRequiredValidation(){
             const teamRows=(Array.isArray(capacityData)?capacityData:[]).filter(c=>teamMatch(c,{}));
             const scopeOptions=document.getElementById('taskScopeOptions');
             if(scopeOptions){
-                const known=[...CAPACITY_SCOPES,...teamRows.map(c=>String(c.scope||'').trim())];
-                const current=String(select.value||'').trim();
-                if(current) known.push(current);
-                scopeOptions.innerHTML=[...new Set(known.filter(Boolean))].map(v=>`<option value="${escapeHtml(v)}"></option>`).join('');
+                scopeOptions.innerHTML=CAPACITY_SCOPES.map(v=>`<option value="${escapeHtml(v)}"></option>`).join('');
             }
             wrap.classList.remove('hidden');
             const otherTask=normalizeWorkloadKey(taskName)==='other task';
@@ -3307,7 +3306,7 @@ function setupInlineRequiredValidation(){
             const actualDate = cleanDateStr(document.getElementById('taskActual').value);
 
             const isOtherTask = normalizeWorkloadKey(taskName) === 'other task';
-            if (!category || !taskName || !items || selectedPics.length === 0 || !priority || !isFinite(usageTime) || usageTime <= 0 || !startDate || !planDate || (!scope && !isOtherTask)) {
+            if (!category || !taskName || !items || selectedPics.length === 0 || !priority || !isFinite(usageTime) || usageTime <= 0 || !startDate || !planDate || (!scope && !isOtherTask) || (scope && !CAPACITY_SCOPES.includes(scope))) {
                 validateRequiredFormFields(document.getElementById('taskForm'));
                 if(selectedPics.length===0){
                     const picWrap=document.querySelector('.task-pic-checkbox')?.closest('.grid');
@@ -6697,13 +6696,13 @@ function setCalendarView(view) {
             const explicit=String(task?.scope||'').trim();
             if(explicit) return explicit;
             const c=getCapacityTaskForDailyTask(task);
-            return String(c?.scope||c?.unit||"In BOM's scope").trim()||"In BOM's scope";
+            return String(c?.scope||c?.unit||'').trim();
         }
 
         function renderScopeWorkloadHeatmap(filteredTasks){
             const head=document.getElementById('dashScopeHeatmapHeader'),body=document.getElementById('dashScopeHeatmapBody'); if(!head||!body)return;
             const members=[...new Set(filteredTasks.flatMap(t=>bomTaskValues('Member',t)))].filter(m=>m&&!isHiddenMember(m)).sort((a,b)=>a.localeCompare(b));
-            const scopes=[...new Set([...capacityData.map(c=>String(c.scope||c.unit||"In BOM's scope").trim()), ...filteredTasks.map(getDailyTaskScope)].filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+            const scopes=[...new Set([...capacityData.map(c=>String(c.scope||c.unit||'').trim()), ...filteredTasks.map(getDailyTaskScope)].filter(Boolean))].sort((a,b)=>a.localeCompare(b));
             const pr=getDashboardPeriodRange();
             head.innerHTML='<tr><th class="py-2.5 px-3 bg-slate-900">Scope</th>'+members.map(m=>`<th class="py-2 px-2 text-center bg-slate-900">${escapeHtml(m)}</th>`).join('')+'<th class="py-2.5 px-3 text-center bg-indigo-900">Total %</th></tr>';
             if(!members.length||!scopes.length){body.innerHTML='<tr><td colspan="20" class="py-4 text-center text-slate-400">No scope workload data</td></tr>';return;}
