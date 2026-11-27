@@ -10791,6 +10791,11 @@ function setupInlineRequiredValidation(){
             const role = normalizeTaskPersonName(currentUser.role);
             // Admin is allowed to edit/delete every task.
             if (role === 'admin' || role === 'administrator') return true;
+            if (role === 'team admin' && !currentUser.isReadOnly && typeof window.isTeamAdminSession === 'function' && window.isTeamAdminSession()) {
+                const taskTeam = String(task.team || '').trim().toLowerCase();
+                const ownTeam = String(currentUser.team || '').trim().toLowerCase();
+                if (taskTeam && ownTeam && taskTeam === ownTeam) return true;
+            }
             const pics = taskPICs(task).map(normalizeTaskPersonName).filter(Boolean);
             const creator = normalizeTaskPersonName(task.createdBy || task.created_by);
             return !!me && (pics.includes(me) || creator === me);
